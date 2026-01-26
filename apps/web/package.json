@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@notetaiker/api": "workspace:*",
     "@notetaiker/env": "workspace:*",
+    "hono": "^4.6.14",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

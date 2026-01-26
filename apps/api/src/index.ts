@@ -7,7 +7,7 @@ const app = new Hono();
 // Validate environment variables on startup
 console.log("Starting server with environment:", env.NODE_ENV);
 
-app.get("/health", (c) => {
+const routes = app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });
 
@@ -19,5 +19,5 @@ serve({
   port,
 });
 
-export type AppType = typeof app;
+export type AppType = typeof routes;
 export default app;
