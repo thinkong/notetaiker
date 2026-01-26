@@ -1,7 +1,7 @@
 # Requirements: NoteTaiker
 
 **Defined:** 2026-01-26
-**Core Value:** Zero-friction capture with intelligent, automated organization.
+**Core value:** Zero-friction capture with intelligent, automated organization.
 
 ## v1 Requirements
 
@@ -47,20 +47,20 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAPT-01 | | Pending |
-| CAPT-02 | | Pending |
-| CAPT-03 | | Pending |
-| CAPT-04 | | Pending |
-| AI-01 | | Pending |
-| AI-02 | | Pending |
-| AI-03 | | Pending |
-| AI-04 | | Pending |
-| CONT-01 | | Pending |
+| CAPT-01 | Phase 3, Phase 8 | Pending |
+| CAPT-02 | Phase 3 | Pending |
+| CAPT-03 | Phase 2 | Pending |
+| CAPT-04 | Phase 4 | Pending |
+| AI-01 | Phase 6 | Pending |
+| AI-02 | Phase 7 | Pending |
+| AI-03 | Phase 7 | Pending |
+| AI-04 | Phase 5 | Pending |
+| CONT-01 | Phase 2 | Pending |
 
 **Coverage:**
 - v1 requirements: 9 total
-- Mapped to phases: 0
-- Unmapped: 9 ⚠️
+- Mapped to phases: 9
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-01-26*
