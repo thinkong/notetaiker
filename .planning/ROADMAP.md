@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
+| 1. Foundation | 0/4 | Not started | - |
 | 2. Storage Engine | 0/2 | Not started | - |
 | 3. Editor Core | 0/2 | Not started | - |
 | 4. Timeline UI | 0/2 | Not started | - |
