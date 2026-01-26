@@ -2,6 +2,7 @@
   "name": "@notetaiker/tsconfig",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "main": "base.json",
   "files": [
     "base.json"
