@@ -29,11 +29,13 @@ NoteTaiker will be built as a local-first, AI-enhanced note-taking system. The j
   1. Project initializes with TypeScript and required dependencies.
   2. Local development server runs and serves a basic "hello world" state.
   3. Environment variables and basic project structure are verified.
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Initialize monorepo structure (Backend/Frontend)
-- [ ] 01-02: Setup build pipeline and linting
+- [ ] 01-01-PLAN.md — Initialize monorepo and shared configs
+- [ ] 01-02-PLAN.md — Establish Hono API foundation
+- [ ] 01-03-PLAN.md — Setup React frontend with Tailwind v4 and RPC
+- [ ] 01-04-PLAN.md — Configure development tooling (Husky, Changesets)
 
 ### Phase 2: Storage Engine
 **Goal**: Implement the atomic, timestamp-based filesystem storage logic.
