@@ -4,7 +4,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
-const _env = envSchema.safeParse(process.env);
+const processEnv = typeof (globalThis as any).process !== "undefined" ? (globalThis as any).process.env : {};
+const _env = envSchema.safeParse(processEnv);
 
 if (!_env.success) {
   console.error("❌ Invalid environment variables:", _env.error.format());
