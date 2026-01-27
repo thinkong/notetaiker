@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
+    "@hono/zod-validator": "^0.7.6",
     "@notetaiker/env": "workspace:*",
     "date-fns": "^4.0.0",
     "gray-matter": "^4.0.3",
