@@ -4,6 +4,7 @@ import { env } from "@notetaiker/env";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { notes } from "./routes/notes";
 
 const app = new Hono();
 
@@ -31,9 +32,11 @@ try {
 // Validate environment variables on startup
 console.log("Starting server with environment:", env.NODE_ENV);
 
-const routes = app.get("/health", (c) => {
-  return c.json({ status: "ok" });
-});
+const routes = app
+  .get("/health", (c) => {
+    return c.json({ status: "ok" });
+  })
+  .route("/notes", notes);
 
 const port = 3001;
 console.log(`Server is running on port ${port}`);
