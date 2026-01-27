@@ -11,7 +11,7 @@ NoteTaiker will be built as a local-first, AI-enhanced note-taking system. The j
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [ ] **Phase 1: Foundation** - Project scaffolding and architecture setup.
-- [ ] **Phase 2: Storage Engine** - Atomic Markdown file operations and filesystem management.
+- [x] **Phase 2: Storage Engine** - Atomic Markdown file operations and filesystem management.
 - [ ] **Phase 3: Editor Core** - Instant-capture web interface with Markdown support.
 - [ ] **Phase 4: Timeline UI** - Reverse-chronological note stream and basic navigation.
 - [ ] **Phase 5: AI Configuration** - Cloud API key management and settings.
@@ -143,8 +143,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Not started | - |
-| 2. Storage Engine | 0/2 | Not started | - |
+| 1. Foundation | 4/4 | Complete | 2026-01-26 |
+| 2. Storage Engine | 3/3 | Complete | 2026-01-27 |
 | 3. Editor Core | 0/2 | Not started | - |
 | 4. Timeline UI | 0/2 | Not started | - |
 | 5. AI Configuration | 0/2 | Not started | - |

@@ -49,13 +49,13 @@
 |-------------|-------|--------|
 | CAPT-01 | Phase 3, Phase 8 | Pending |
 | CAPT-02 | Phase 3 | Pending |
-| CAPT-03 | Phase 2 | Pending |
+| CAPT-03 | Phase 2 | Complete |
 | CAPT-04 | Phase 4 | Pending |
 | AI-01 | Phase 6 | Pending |
 | AI-02 | Phase 7 | Pending |
 | AI-03 | Phase 7 | Pending |
 | AI-04 | Phase 5 | Pending |
-| CONT-01 | Phase 2 | Pending |
+| CONT-01 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
