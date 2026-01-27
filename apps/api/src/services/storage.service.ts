@@ -100,7 +100,7 @@ export class StorageService {
     }
   }
 
-  async listNotes(): Promise<ParsedNote[]> {
+  async listNotes(limit?: number, offset?: number): Promise<ParsedNote[]> {
     try {
       const files = await fs.readdir(this.storagePath);
       const notes: ParsedNote[] = [];
@@ -115,9 +115,19 @@ export class StorageService {
         }
       }
 
-      return notes.sort((a, b) => {
-        return new Date(b.metadata.createdAt).getTime() - new Date(a.metadata.createdAt).getTime();
+      const sortedNotes = notes.sort((a, b) => {
+        const dateA = a.metadata.createdAt ? new Date(a.metadata.createdAt).getTime() : 0;
+        const dateB = b.metadata.createdAt ? new Date(b.metadata.createdAt).getTime() : 0;
+        return dateB - dateA;
       });
+
+      if (limit !== undefined || offset !== undefined) {
+        const start = offset ?? 0;
+        const end = limit !== undefined ? start + limit : undefined;
+        return sortedNotes.slice(start, end);
+      }
+
+      return sortedNotes;
     } catch {
       return [];
     }
