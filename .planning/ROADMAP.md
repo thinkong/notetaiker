@@ -12,7 +12,7 @@ NoteTaiker will be built as a local-first, AI-enhanced note-taking system. The j
 
 - [ ] **Phase 1: Foundation** - Project scaffolding and architecture setup.
 - [x] **Phase 2: Storage Engine** - Atomic Markdown file operations and filesystem management.
-- [ ] **Phase 3: Editor Core** - Instant-capture web interface with Markdown support.
+- [x] **Phase 3: Editor Core** - Instant-capture web interface with Markdown support.
 - [ ] **Phase 4: Timeline UI** - Reverse-chronological note stream and basic navigation.
 - [ ] **Phase 5: AI Configuration** - Cloud API key management and settings.
 - [ ] **Phase 6: AI Processor** - Background worker orchestration for note processing.
@@ -60,12 +60,13 @@ Plans:
   1. User can start typing immediately upon page load (sub-100ms readiness).
   2. Markdown characters (e.g., #, **, -) are rendered/handled correctly in the editor.
   3. Notes are automatically saved to the storage engine as the user types or on blur.
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
 - [ ] 03-01-PLAN.md — Foundation & Theme
 - [ ] 03-02-PLAN.md — Persistence & Layout
 - [ ] 03-03-PLAN.md — Markdown UX & Polish
+- [ ] 03-04-PLAN.md — Gap Closure: Persistence & Theme Fixes
 
 ### Phase 4: Timeline UI
 **Goal**: Enable users to view and navigate their notes history.
@@ -146,7 +147,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-26 |
 | 2. Storage Engine | 3/3 | Complete | 2026-01-27 |
-| 3. Editor Core | 0/3 | Not started | - |
+| 3. Editor Core | 4/4 | Complete | 2026-01-27 |
 | 4. Timeline UI | 0/2 | Not started | - |
 | 5. AI Configuration | 0/2 | Not started | - |
 | 6. AI Processor | 0/2 | Not started | - |
