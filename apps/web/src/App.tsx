@@ -1,53 +1,42 @@
-import { useEffect, useState } from "react";
-import { api } from "./lib/api";
+import { useState } from "react";
 import { Editor } from "./components/editor/Editor";
+import { useDebouncedSave } from "./hooks/useDebouncedSave";
+import { StatusIndicator } from "./components/layout/StatusIndicator";
 
 function App() {
-  const [health, setHealth] = useState<string>("loading...");
   const [content, setContent] = useState<string>(
     "# Welcome to NoteTaiker\n\nStart typing your thoughts here...",
   );
 
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const res = await api.health.$get({});
-        const data = (await res.json()) as { status: string };
-        setHealth(data.status);
-      } catch (error) {
-        setHealth("error");
-        console.error("Failed to fetch health:", error);
-      }
-    };
-    checkHealth();
-  }, []);
+  const { status, save } = useDebouncedSave();
+
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    save(newContent);
+  };
 
   return (
-    <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 flex flex-col items-center p-8 transition-colors duration-300">
-      <h1 className="text-4xl font-bold text-nord-frost3 mb-8">NoteTaiker</h1>
-
-      <div className="w-full max-w-3xl flex flex-col gap-6">
-        <div className="bg-white dark:bg-nord-polar1 p-4 rounded-lg shadow-sm border border-nord-snow0 dark:border-nord-polar2">
-          <p className="text-nord-polar3 dark:text-nord-snow0">
-            Backend status:{" "}
-            <span className="font-mono font-bold text-nord-aurora3">
-              {health}
-            </span>
+    <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 transition-colors duration-300">
+      <main className="max-w-3xl mx-auto w-full py-12 px-4">
+        <header className="mb-12">
+          <h1 className="text-3xl font-bold text-nord-frost3 tracking-tight">
+            NoteTaiker
+          </h1>
+          <p className="text-nord-polar3 dark:text-nord-snow1 mt-2">
+            Focused, distraction-free capturing.
           </p>
-        </div>
+        </header>
 
-        <div className="h-[500px] border border-nord-snow0 dark:border-nord-polar2 rounded-lg overflow-hidden shadow-lg">
+        <div className="min-h-[60vh]">
           <Editor
             value={content}
-            onChange={setContent}
+            onChange={handleContentChange}
             placeholder="Capture your thoughts..."
           />
         </div>
+      </main>
 
-        <p className="text-nord-polar3 dark:text-nord-snow1 text-sm text-center">
-          Nord theme is active. Try switching your system color scheme.
-        </p>
-      </div>
+      <StatusIndicator status={status} />
     </div>
   );
 }
