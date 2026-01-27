@@ -9,7 +9,7 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 3 of 8 (User Interface)
+Phase: 3 of 8 (Editor Core)
 Plan: 4 of 4 in current phase
 Status: Phase complete
 Last activity: 2026-01-27 — Completed 03-04-PLAN.md
@@ -62,6 +62,8 @@ Recent decisions affecting current work:
 - [03-02]: Chose max-w-3xl for optimal line length and focus in the editor.
 - [03-03]: Use hierarchical font sizes for headers (1.5rem, 1.25rem, 1.125rem) to provide visual cues while maintaining the raw Markdown editing feel.
 - [03-03]: Implemented link navigation via modifier key (Cmd/Ctrl) to prevent accidental navigation while editing text.
+- [03-04]: Added Nord4-6 theme colors to Tailwind config for consistent UI styling.
+- [03-04]: Implemented session-based note persistence using ID tracking to prevent duplicate file creation.
 - [03-04]: Nord Palette Completeness—Defined Nord4-6 colors to fix visual regressions in status indicators.
 - [03-04]: Session Persistence—Implemented Note ID tracking using React Refs and StorageService lookups to ensure in-place updates during a single capture session.
 

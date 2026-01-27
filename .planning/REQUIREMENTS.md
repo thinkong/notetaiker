@@ -48,7 +48,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | CAPT-01 | Phase 3, Phase 8 | Pending |
-| CAPT-02 | Phase 3 | Pending |
+| CAPT-02 | Phase 3 | Complete |
 | CAPT-03 | Phase 2 | Complete |
 | CAPT-04 | Phase 4 | Pending |
 | AI-01 | Phase 6 | Pending |
