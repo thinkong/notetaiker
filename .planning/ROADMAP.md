@@ -76,11 +76,12 @@ Plans:
   1. User sees a vertical list of notes sorted by most recent first.
   2. Note previews show the first few lines of content.
   3. Scrolling the timeline is smooth and responsive.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Implement Timeline data retrieval
-- [ ] 04-02: Create Timeline feed components
+- [ ] 04-01-PLAN.md — Implement Timeline data retrieval
+- [ ] 04-02-PLAN.md — Setup TanStack Query and useTimeline hook
+- [ ] 04-03-PLAN.md — Create Timeline UI components and integrate
 
 ### Phase 5: AI Configuration
 **Goal**: Allow users to securely manage their AI service credentials.
