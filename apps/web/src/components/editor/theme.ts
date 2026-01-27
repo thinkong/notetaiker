@@ -2,7 +2,7 @@ import { EditorView } from "@codemirror/view";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 
-const nordColors = {
+export const nordColors = {
   polar0: "#2e3440",
   polar1: "#3b4252",
   polar2: "#434c5e",

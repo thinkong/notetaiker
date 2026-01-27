@@ -5,6 +5,7 @@ import { languages } from "@codemirror/language-data";
 import { history } from "@codemirror/commands";
 import { bracketMatching } from "@codemirror/language";
 import { nordDark, nordLight } from "./theme";
+import { markdownStyleExtension } from "./extensions/markdownStyle";
 
 export interface EditorProps {
   value: string;
@@ -46,6 +47,7 @@ export const Editor: React.FC<EditorProps> = ({
   const extensions = useMemo(
     () => [
       markdown({ base: markdownLanguage, codeLanguages: languages }),
+      markdownStyleExtension,
       history(),
       bracketMatching(),
     ],
