@@ -1,8 +1,12 @@
 import React, { useCallback, useMemo, useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+import {
+  markdown,
+  markdownLanguage,
+  insertNewlineContinueMarkup,
+} from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import { history, insertNewlineContinueMarkup } from "@codemirror/commands";
+import { history } from "@codemirror/commands";
 import { bracketMatching } from "@codemirror/language";
 import { keymap } from "@codemirror/view";
 import { nordDark, nordLight } from "./theme";

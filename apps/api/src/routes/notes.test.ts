@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Hono } from 'hono';
 import { notes } from './notes';
-import { StorageService } from '../services/storage.service';
 
 // Mock StorageService
 const { mockListNotes, mockSaveNote, mockGetNote } = vi.hoisted(() => ({

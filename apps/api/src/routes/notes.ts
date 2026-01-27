@@ -15,48 +15,45 @@ const notesDir = path.isAbsolute(env.NOTES_DIR)
 
 const storageService = new StorageService(notesDir);
 
-export const notes = new Hono();
-
-notes.get(
-  '/',
-  zValidator(
-    'query',
-    z.object({
-      limit: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 50)),
-      offset: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 0)),
-    })
-  ),
-  async (c) => {
-    const { limit, offset } = c.req.valid('query');
-    const allNotes = await storageService.listNotes(limit, offset);
-    return c.json(allNotes);
-  }
-);
-
-notes.post(
-  '/',
-  zValidator(
-    'json',
-    z.object({
-      content: z.string(),
-      id: z.string().optional(),
-      metadata: z.record(z.any()).optional(),
-    })
-  ),
-  async (c) => {
-    const { content, id, metadata } = c.req.valid('json');
-    const fullMetadata = { ...metadata, id };
-    const fileName = await storageService.saveNote(content, fullMetadata);
-    const savedNote = await storageService.getNote(fileName);
-    return c.json(savedNote, 201);
-  }
-);
-
-notes.get('/:id', async (c) => {
-  const id = c.req.param('id');
-  const note = await storageService.getNote(id);
-  if (!note) {
-    return c.json({ error: 'Note not found' }, 404);
-  }
-  return c.json(note);
-});
+export const notes = new Hono()
+  .get(
+    '/',
+    zValidator(
+      'query',
+      z.object({
+        limit: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 50)),
+        offset: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 0)),
+      })
+    ),
+    async (c) => {
+      const { limit, offset } = c.req.valid('query');
+      const allNotes = await storageService.listNotes(limit, offset);
+      return c.json(allNotes);
+    }
+  )
+  .post(
+    '/',
+    zValidator(
+      'json',
+      z.object({
+        content: z.string(),
+        id: z.string().optional(),
+        metadata: z.record(z.any()).optional(),
+      })
+    ),
+    async (c) => {
+      const { content, id, metadata } = c.req.valid('json');
+      const fullMetadata = { ...metadata, id };
+      const fileName = await storageService.saveNote(content, fullMetadata);
+      const savedNote = await storageService.getNote(fileName);
+      return c.json(savedNote, 201);
+    }
+  )
+  .get('/:id', async (c) => {
+    const id = c.req.param('id');
+    const note = await storageService.getNote(id);
+    if (!note) {
+      return c.json({ error: 'Note not found' }, 404);
+    }
+    return c.json(note);
+  });
