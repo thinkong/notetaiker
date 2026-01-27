@@ -20,10 +20,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold text-blue-600 mb-4">Hello NoteTaiker</h1>
+      <h1 className="text-4xl font-bold text-blue-600 mb-4">
+        Hello NoteTaiker
+      </h1>
       <div className="bg-white p-6 rounded-lg shadow-md">
         <p className="text-gray-700">
-          Backend status: <span className="font-mono font-bold text-green-500">{health}</span>
+          Backend status:{" "}
+          <span className="font-mono font-bold text-green-500">{health}</span>
         </p>
       </div>
       <p className="mt-8 text-gray-500 text-sm">

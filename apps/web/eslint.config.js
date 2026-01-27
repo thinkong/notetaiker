@@ -4,13 +4,13 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
+  {
+    ignores: ["dist/**", "eslint_debug.txt"],
+  },
   ...baseConfig,
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [
-      ...tseslint.configs.recommended,
-      ...tseslint.configs.stylistic,
-    ],
+    extends: [...tseslint.configs.recommended, ...tseslint.configs.stylistic],
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
@@ -22,5 +22,5 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
     },
-  }
+  },
 );
