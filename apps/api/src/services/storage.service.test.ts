@@ -60,4 +60,59 @@ describe('StorageService', () => {
       expect(matter(file2Content).content.trim()).toBe(content2);
     });
   });
+
+  describe('getNote', () => {
+    it('should retrieve a note by filename', async () => {
+      const content = 'Test content';
+      const metadata = { title: 'Find me' };
+      const fileName = await storageService.saveNote(content, metadata);
+
+      const note = await storageService.getNote(fileName);
+
+      expect(note).not.toBeNull();
+      expect(note?.content.trim()).toBe(content);
+      expect(note?.metadata.title).toBe('Find me');
+    });
+
+    it('should retrieve a note by UUID', async () => {
+      const content = 'Test content';
+      const metadata = { title: 'UUID search' };
+      await storageService.saveNote(content, metadata);
+
+      // We need to read the file to get the generated UUID
+      const files = await fs.readdir(tempDir);
+      const fileContent = await fs.readFile(path.join(tempDir, files[0]), 'utf-8');
+      const { data } = matter(fileContent);
+      const uuid = data.id;
+
+      const note = await storageService.getNote(uuid);
+
+      expect(note).not.toBeNull();
+      expect(note?.content.trim()).toBe(content);
+      expect(note?.metadata.id).toBe(uuid);
+    });
+
+    it('should return null if note not found', async () => {
+      const note = await storageService.getNote('non-existent.md');
+      expect(note).toBeNull();
+    });
+  });
+
+  describe('listNotes', () => {
+    it('should list all notes in the directory sorted by date descending', async () => {
+      vi.useFakeTimers();
+
+      vi.setSystemTime(new Date('2024-01-01T10:00:00Z'));
+      await storageService.saveNote('Note 1', { title: 'Older' });
+
+      vi.setSystemTime(new Date('2024-01-01T11:00:00Z'));
+      await storageService.saveNote('Note 2', { title: 'Newer' });
+
+      const notes = await storageService.listNotes();
+
+      expect(notes).toHaveLength(2);
+      expect(notes[0].metadata.title).toBe('Newer');
+      expect(notes[1].metadata.title).toBe('Older');
+    });
+  });
 });

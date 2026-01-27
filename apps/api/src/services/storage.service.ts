@@ -4,6 +4,7 @@ import writeFileAtomic from 'write-file-atomic';
 import matter from 'gray-matter';
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
+import { parseMarkdown, type ParsedNote } from '../lib/markdown';
 
 export interface NoteMetadata {
   id?: string;
@@ -36,6 +37,54 @@ export class StorageService {
     await writeFileAtomic(filePath, fileContent);
 
     return fileName;
+  }
+
+  async getNote(idOrFilename: string): Promise<ParsedNote | null> {
+    try {
+      let fileName = idOrFilename;
+      if (!fileName.endsWith('.md')) {
+        // Try to find by UUID
+        const files = await fs.readdir(this.storagePath);
+        for (const file of files) {
+          if (!file.endsWith('.md')) continue;
+          const content = await fs.readFile(path.join(this.storagePath, file), 'utf-8');
+          const parsed = parseMarkdown(content);
+          if (parsed.metadata.id === idOrFilename) {
+            return parsed;
+          }
+        }
+        return null;
+      }
+
+      const filePath = path.join(this.storagePath, fileName);
+      const content = await fs.readFile(filePath, 'utf-8');
+      return parseMarkdown(content);
+    } catch {
+      return null;
+    }
+  }
+
+  async listNotes(): Promise<ParsedNote[]> {
+    try {
+      const files = await fs.readdir(this.storagePath);
+      const notes: ParsedNote[] = [];
+
+      for (const file of files) {
+        if (!file.endsWith('.md')) continue;
+        const content = await fs.readFile(path.join(this.storagePath, file), 'utf-8');
+        try {
+          notes.push(parseMarkdown(content));
+        } catch (err) {
+          console.error(`Failed to parse note ${file}:`, err);
+        }
+      }
+
+      return notes.sort((a, b) => {
+        return new Date(b.metadata.createdAt).getTime() - new Date(a.metadata.createdAt).getTime();
+      });
+    } catch {
+      return [];
+    }
   }
 
   private async generateUniqueFileName(date: Date): Promise<string> {
