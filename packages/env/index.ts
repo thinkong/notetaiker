@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NOTES_DIR: z.string().default("./data/notes"),
 });
 
 const processEnv = typeof (globalThis as any).process !== "undefined" ? (globalThis as any).process.env : {};
