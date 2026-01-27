@@ -17,10 +17,21 @@ const storageService = new StorageService(notesDir);
 
 export const notes = new Hono();
 
-notes.get('/', async (c) => {
-  const allNotes = await storageService.listNotes();
-  return c.json(allNotes);
-});
+notes.get(
+  '/',
+  zValidator(
+    'query',
+    z.object({
+      limit: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 50)),
+      offset: z.string().optional().transform((v) => (v ? parseInt(v, 10) : 0)),
+    })
+  ),
+  async (c) => {
+    const { limit, offset } = c.req.valid('query');
+    const allNotes = await storageService.listNotes(limit, offset);
+    return c.json(allNotes);
+  }
+);
 
 notes.post(
   '/',
