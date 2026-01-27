@@ -2,10 +2,12 @@ import React, { useCallback, useMemo, useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import { history } from "@codemirror/commands";
+import { history, insertNewlineContinueMarkup } from "@codemirror/commands";
 import { bracketMatching } from "@codemirror/language";
+import { keymap } from "@codemirror/view";
 import { nordDark, nordLight } from "./theme";
 import { markdownStyleExtension } from "./extensions/markdownStyle";
+import { linkHandler } from "./extensions/links";
 
 export interface EditorProps {
   value: string;
@@ -48,8 +50,10 @@ export const Editor: React.FC<EditorProps> = ({
     () => [
       markdown({ base: markdownLanguage, codeLanguages: languages }),
       markdownStyleExtension,
+      linkHandler,
       history(),
       bracketMatching(),
+      keymap.of([{ key: "Enter", run: insertNewlineContinueMarkup }]),
     ],
     [],
   );
