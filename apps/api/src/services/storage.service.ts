@@ -32,14 +32,47 @@ export class StorageService {
       updatedAt,
     };
 
-    const fileName = await this.generateUniqueFileName(now);
-    const filePath = path.join(this.storagePath, fileName);
+    let filePath: string;
+    let fileName: string;
+
+    if (metadata.id) {
+      const existingFilePath = await this.findFilePathById(metadata.id);
+      if (existingFilePath) {
+        filePath = existingFilePath;
+        fileName = path.basename(existingFilePath);
+      } else {
+        fileName = await this.generateUniqueFileName(now);
+        filePath = path.join(this.storagePath, fileName);
+      }
+    } else {
+      fileName = await this.generateUniqueFileName(now);
+      filePath = path.join(this.storagePath, fileName);
+    }
+
     const fileContent = matter.stringify(content, fullMetadata);
 
     await fs.mkdir(this.storagePath, { recursive: true });
     await writeFileAtomic(filePath, fileContent);
 
     return fileName;
+  }
+
+  async findFilePathById(id: string): Promise<string | null> {
+    try {
+      const files = await fs.readdir(this.storagePath);
+      for (const file of files) {
+        if (!file.endsWith('.md')) continue;
+        const filePath = path.join(this.storagePath, file);
+        const content = await fs.readFile(filePath, 'utf-8');
+        const parsed = parseMarkdown(content);
+        if (parsed.metadata.id === id) {
+          return filePath;
+        }
+      }
+      return null;
+    } catch {
+      return null;
+    }
   }
 
   async getNote(idOrFilename: string): Promise<ParsedNote | null> {

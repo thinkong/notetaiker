@@ -28,12 +28,14 @@ notes.post(
     'json',
     z.object({
       content: z.string(),
+      id: z.string().optional(),
       metadata: z.record(z.any()).optional(),
     })
   ),
   async (c) => {
-    const { content, metadata } = c.req.valid('json');
-    const fileName = await storageService.saveNote(content, metadata);
+    const { content, id, metadata } = c.req.valid('json');
+    const fullMetadata = { ...metadata, id };
+    const fileName = await storageService.saveNote(content, fullMetadata);
     const savedNote = await storageService.getNote(fileName);
     return c.json(savedNote, 201);
   }
