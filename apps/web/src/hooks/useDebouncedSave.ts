@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import debounce from "lodash.debounce";
 import { api } from "../lib/api";
 
@@ -6,51 +6,53 @@ export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export function useDebouncedSave(delay = 1000) {
   const [status, setStatus] = useState<SaveStatus>("idle");
+  const noteIdRef = useRef<string | null>(null);
+  const debouncedSaveRef = useRef<ReturnType<typeof debounce> | null>(null);
 
-  const save = useCallback(async (content: string) => {
-    if (!content.trim()) {
-      setStatus("idle");
-      return;
-    }
+  // Initialize/update debounced function
+  useEffect(() => {
+    debouncedSaveRef.current = debounce(async (content: string) => {
+      if (!content.trim()) {
+        setStatus("idle");
+        return;
+      }
 
-    setStatus("saving");
-    try {
-      const res = await api.notes.$post({
-        json: { content },
-      });
+      setStatus("saving");
+      try {
+        const res = await api.notes.$post({
+          json: {
+            content,
+            id: noteIdRef.current || undefined,
+          },
+        });
 
-      if (res.ok) {
-        setStatus("saved");
-      } else {
-        console.error("Save failed with status:", res.status);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && "metadata" in data && data.metadata.id) {
+            noteIdRef.current = data.metadata.id;
+          }
+          setStatus("saved");
+        } else {
+          console.error("Save failed with status:", res.status);
+          setStatus("error");
+        }
+      } catch (error) {
+        console.error("Failed to save note:", error);
         setStatus("error");
       }
-    } catch (error) {
-      console.error("Failed to save note:", error);
-      setStatus("error");
-    }
-  }, []);
+    }, delay);
 
-  const debouncedSave = useMemo(() => debounce(save, delay), [save, delay]);
-
-  // Clean up debounce on unmount
-  useEffect(() => {
     return () => {
-      debouncedSave.cancel();
+      debouncedSaveRef.current?.cancel();
     };
-  }, [debouncedSave]);
+  }, [delay]);
 
-  const handleContentChange = useCallback(
-    (content: string) => {
-      // Don't mark as saving if content is empty (to avoid flicker on initial load if we had one)
-      // But for now, we follow the "typing triggers saving" logic
-      if (content.trim()) {
-        setStatus("saving");
-      }
-      debouncedSave(content);
-    },
-    [debouncedSave],
-  );
+  const handleContentChange = useCallback((content: string) => {
+    if (content.trim()) {
+      setStatus("saving");
+    }
+    debouncedSaveRef.current?.(content);
+  }, []);
 
   return {
     status,
