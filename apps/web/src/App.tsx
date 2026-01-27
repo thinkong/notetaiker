@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Editor } from "./components/editor/Editor";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
 import { StatusIndicator } from "./components/layout/StatusIndicator";
+import { Timeline } from "./components/timeline/Timeline";
 
 const queryClient = new QueryClient();
 
@@ -31,12 +32,16 @@ function App() {
             </p>
           </header>
 
-          <div className="min-h-[60vh]">
+          <div className="min-h-[50vh] mb-16">
             <Editor
               value={content}
               onChange={handleContentChange}
               placeholder="Capture your thoughts..."
             />
+          </div>
+
+          <div className="border-t border-nord-snow0 dark:border-nord-polar1 pt-12">
+            <Timeline />
           </div>
         </main>
 

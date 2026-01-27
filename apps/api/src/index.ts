@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { notes } from "./routes/notes";
+export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 const app = new Hono();
 
