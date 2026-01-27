@@ -9,7 +9,7 @@
 - [ ] **CAPT-01**: User can open app and type within 100ms (Instant Capture)
 - [ ] **CAPT-02**: User can edit notes in standard Markdown
 - [ ] **CAPT-03**: Notes are saved automatically as timestamped atomic files (e.g., `YYYYMMDD-HHMMSS.md`)
-- [ ] **CAPT-04**: User can view recent notes in a reverse-chronological stream (Timeline)
+- [x] **CAPT-04**: User can view recent notes in a reverse-chronological stream (Timeline)
 
 ### AI & Organization
 - [ ] **AI-01**: New notes are automatically processed by AI in the background
@@ -50,7 +50,7 @@
 | CAPT-01 | Phase 3, Phase 8 | Pending |
 | CAPT-02 | Phase 3 | Complete |
 | CAPT-03 | Phase 2 | Complete |
-| CAPT-04 | Phase 4 | Pending |
+| CAPT-04 | Phase 4 | Complete |
 | AI-01 | Phase 6 | Pending |
 | AI-02 | Phase 7 | Pending |
 | AI-03 | Phase 7 | Pending |

@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 4 of 8 (Timeline UI)
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-27 — Completed 04-01-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 04-03-PLAN.md
 
-Progress: [████████░░] 85.7% (12/14 Plans)
+Progress: [██████████] 100% (Phase 4 Complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 9.5 min
+- Total plans completed: 14
+- Average duration: 8 min
 - Total execution time: 1.9 hours
 
 **By Phase:**
@@ -30,10 +30,10 @@ Progress: [████████░░] 85.7% (12/14 Plans)
 | 1 | 4 | 4 | 5 min |
 | 2 | 3 | 3 | 10 min |
 | 3 | 4 | 4 | 7.3 min |
-| 4 | 1 | 3 | 2.5 min |
+| 4 | 3 | 3 | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: [10 min, 2 min, 8 min, 5 min, 2.5 min]
+- Last 5 plans: [8 min, 5 min, 2.5 min, 3.6 min, 2.2 min]
 - Trend: Improving
 
 *Updated after each plan completion*
@@ -68,6 +68,9 @@ Recent decisions affecting current work:
 - [03-04]: Nord Palette Completeness—Defined Nord4-6 colors to fix visual regressions in status indicators.
 - [03-04]: Session Persistence—Implemented Note ID tracking using React Refs and StorageService lookups to ensure in-place updates during a single capture session.
 - [04-01]: Default pagination set to 50 items with 0 offset to provide a reasonable default for initial load while preventing over-fetching.
+- [04-02]: Initialized QueryClient at the root of the App to provide cache context to the entire application.
+- [04-03]: Implemented a simple title extraction heuristic (# Header -> Title) for timeline scanability.
+- [04-03]: Clamped note body to 3 lines with "expand" button to balance timeline density and content access.
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-27 10:53
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-01-27 11:01
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
