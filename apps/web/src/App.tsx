@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "./lib/api";
+import { Editor } from "./components/editor/Editor";
 
 function App() {
   const [health, setHealth] = useState<string>("loading...");
+  const [content, setContent] = useState<string>(
+    "# Welcome to NoteTaiker\n\nStart typing your thoughts here...",
+  );
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -19,19 +23,31 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold text-blue-600 mb-4">
-        Hello NoteTaiker
-      </h1>
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <p className="text-gray-700">
-          Backend status:{" "}
-          <span className="font-mono font-bold text-green-500">{health}</span>
+    <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 flex flex-col items-center p-8 transition-colors duration-300">
+      <h1 className="text-4xl font-bold text-nord-frost3 mb-8">NoteTaiker</h1>
+
+      <div className="w-full max-w-3xl flex flex-col gap-6">
+        <div className="bg-white dark:bg-nord-polar1 p-4 rounded-lg shadow-sm border border-nord-snow0 dark:border-nord-polar2">
+          <p className="text-nord-polar3 dark:text-nord-snow0">
+            Backend status:{" "}
+            <span className="font-mono font-bold text-nord-aurora3">
+              {health}
+            </span>
+          </p>
+        </div>
+
+        <div className="h-[500px] border border-nord-snow0 dark:border-nord-polar2 rounded-lg overflow-hidden shadow-lg">
+          <Editor
+            value={content}
+            onChange={setContent}
+            placeholder="Capture your thoughts..."
+          />
+        </div>
+
+        <p className="text-nord-polar3 dark:text-nord-snow1 text-sm text-center">
+          Nord theme is active. Try switching your system color scheme.
         </p>
       </div>
-      <p className="mt-8 text-gray-500 text-sm">
-        Tailwind v4 is working if this page is styled.
-      </p>
     </div>
   );
 }

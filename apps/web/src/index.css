@@ -2,3 +2,22 @@
 
 @source "../../packages/ui/src/**/*.tsx";
 @source "./**/*.{ts,tsx}";
+
+@theme {
+  --color-nord-polar0: #2e3440;
+  --color-nord-polar1: #3b4252;
+  --color-nord-polar2: #434c5e;
+  --color-nord-polar3: #4c566a;
+  --color-nord-snow0: #d8dee9;
+  --color-nord-snow1: #e5e9f0;
+  --color-nord-snow2: #eceff4;
+  --color-nord-frost0: #8fbcbb;
+  --color-nord-frost1: #88c0d0;
+  --color-nord-frost2: #81a1c1;
+  --color-nord-frost3: #5e81ac;
+  --color-nord-aurora0: #bf616a;
+  --color-nord-aurora1: #d08770;
+  --color-nord-aurora2: #ebcb8b;
+  --color-nord-aurora3: #a3be8c;
+  --color-nord-aurora4: #b48ead;
+}

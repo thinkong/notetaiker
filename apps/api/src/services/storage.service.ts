@@ -14,7 +14,10 @@ export interface NoteMetadata {
 }
 
 export class StorageService {
-  constructor(private storagePath: string) {}
+  private storagePath: string;
+  constructor(storagePath: string) {
+    this.storagePath = storagePath;
+  }
 
   async saveNote(content: string, metadata: NoteMetadata = {}): Promise<string> {
     const now = new Date();
