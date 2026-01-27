@@ -114,5 +114,36 @@ describe('StorageService', () => {
       expect(notes[0].metadata.title).toBe('Newer');
       expect(notes[1].metadata.title).toBe('Older');
     });
+
+    it('should support pagination with limit and offset', async () => {
+      vi.useFakeTimers();
+
+      // Create 5 notes
+      for (let i = 1; i <= 5; i++) {
+        vi.setSystemTime(new Date(`2024-01-01T10:00:0${i}Z`));
+        await storageService.saveNote(`Note ${i}`, { title: `Note ${i}`, index: i });
+      }
+
+      // First page (limit 2, offset 0) -> Note 5, Note 4
+      const page1 = await storageService.listNotes(2, 0);
+      expect(page1).toHaveLength(2);
+      expect(page1[0].metadata.index).toBe(5);
+      expect(page1[1].metadata.index).toBe(4);
+
+      // Middle page (limit 2, offset 2) -> Note 3, Note 2
+      const page2 = await storageService.listNotes(2, 2);
+      expect(page2).toHaveLength(2);
+      expect(page2[0].metadata.index).toBe(3);
+      expect(page2[1].metadata.index).toBe(2);
+
+      // Last page (limit 2, offset 4) -> Note 1
+      const page3 = await storageService.listNotes(2, 4);
+      expect(page3).toHaveLength(1);
+      expect(page3[0].metadata.index).toBe(1);
+
+      // Out of bounds (offset 10) -> Empty
+      const emptyPage = await storageService.listNotes(2, 10);
+      expect(emptyPage).toHaveLength(0);
+    });
   });
 });
