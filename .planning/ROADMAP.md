@@ -45,11 +45,12 @@ Plans:
   1. System can create a new `.md` file with a timestamped name (e.g., `20260126-120000.md`).
   2. Plain text content is correctly written to the local filesystem.
   3. Basic file read/write operations are abstracted into a stable service.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Implement FileSystem service for atomic writes
-- [ ] 02-02: Setup local directory watching/management
+- [ ] 02-01-PLAN.md — Setup dependencies and environment
+- [ ] 02-02-PLAN.md — Implement Storage Service (atomic writes/frontmatter)
+- [ ] 02-03-PLAN.md — Expose Storage API routes
 
 ### Phase 3: Editor Core
 **Goal**: Create the high-performance capture interface.
