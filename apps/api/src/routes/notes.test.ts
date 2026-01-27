@@ -43,6 +43,24 @@ describe('Notes Routes', () => {
     expect(data).toEqual(mockNotes);
   });
 
+  it('GET /notes should pass pagination parameters to storage service', async () => {
+    mockListNotes.mockResolvedValue([]);
+
+    const res = await app.request('/notes?limit=10&offset=20');
+    expect(res.status).toBe(200);
+
+    expect(mockListNotes).toHaveBeenCalledWith(10, 20);
+  });
+
+  it('GET /notes should use default pagination parameters', async () => {
+    mockListNotes.mockResolvedValue([]);
+
+    const res = await app.request('/notes');
+    expect(res.status).toBe(200);
+
+    expect(mockListNotes).toHaveBeenCalledWith(50, 0);
+  });
+
   it('POST /notes should create a new note', async () => {
     const newNote = { content: 'New Note', metadata: { tags: ['test'] } };
     const savedNote = {
