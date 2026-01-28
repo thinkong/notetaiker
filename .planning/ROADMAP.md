@@ -91,11 +91,13 @@ Plans:
   1. User can enter and save OpenAI or Anthropic API keys via the UI.
   2. API keys are stored securely (local configuration file).
   3. System validates the keys (simple connectivity check).
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: Create settings UI for API configuration
-- [ ] 05-02: Implement secure local storage for secrets
+- [x] 05-01-PLAN.md — Create settings UI for API configuration
+- [x] 05-02-PLAN.md — Implement secure local storage for secrets
+- [x] 05-03-PLAN.md — Implement masked input and form handling
+- [x] 05-04-PLAN.md — E2E Integration plan
 
 ### Phase 6: AI Processor
 **Goal**: Orchestrate background processing for newly created notes.
@@ -105,11 +107,12 @@ Plans:
   1. New notes trigger a background processing job without blocking the UI.
   2. Processing status (queued, working, complete) is tracked by the system.
   3. The worker handles failures and retries gracefully.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: Implement background job queue/worker
-- [ ] 06-02: Link file creation events to AI worker
+- [ ] 06-01-PLAN.md — Persistent Queue with SQLite
+- [ ] 06-02-PLAN.md — Background Worker Orchestration
+- [ ] 06-03-PLAN.md — Real-time Updates (SSE) & UI Polish
 
 ### Phase 7: Smart Tagging
 **Goal**: Implement automated organization via AI-generated metadata.
