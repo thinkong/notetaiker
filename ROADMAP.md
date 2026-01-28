@@ -66,7 +66,7 @@ Plans:
 - [x] 03-01-PLAN.md — Foundation & Theme
 - [x] 03-02-PLAN.md — Persistence & Layout
 - [x] 03-03-PLAN.md — Markdown UX & Polish
-- [ ] 03-04-PLAN.md — Gap Closure: Persistence & Styling
+- [x] 03-04-PLAN.md — Gap Closure: Persistence & Theme Fixes
 
 ### Phase 4: Timeline UI
 **Goal**: Enable users to view and navigate their notes history.
@@ -76,11 +76,12 @@ Plans:
   1. User sees a vertical list of notes sorted by most recent first.
   2. Note previews show the first few lines of content.
   3. Scrolling the timeline is smooth and responsive.
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Implement Timeline data retrieval
-- [ ] 04-02: Create Timeline feed components
+- [x] 04-01-PLAN.md — Implement Timeline data retrieval
+- [x] 04-02-PLAN.md — Create Timeline feed components
+- [x] 04-03-PLAN.md — Implement Timeline UI with infinite scroll
 
 ### Phase 5: AI Configuration
 **Goal**: Allow users to securely manage their AI service credentials.
@@ -90,11 +91,13 @@ Plans:
   1. User can enter and save OpenAI or Anthropic API keys via the UI.
   2. API keys are stored securely (local configuration file).
   3. System validates the keys (simple connectivity check).
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: Create settings UI for API configuration
-- [ ] 05-02: Implement secure local storage for secrets
+- [ ] 05-01-PLAN.md — Implement backend secrets service and settings routes
+- [ ] 05-02-PLAN.md — Implement AI credential validation endpoints
+- [ ] 05-03-PLAN.md — Create Settings UI shell and provider forms
+- [ ] 05-04-PLAN.md — Integrate Settings UI with backend (save/test)
 
 ### Phase 6: AI Processor
 **Goal**: Orchestrate background processing for newly created notes.
@@ -107,8 +110,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 06-01: Implement background job queue/worker
-- [ ] 06-02: Link file creation events to AI worker
+- [ ] 06-01-PLAN.md: Implement background job queue/worker
+- [ ] 06-02-PLAN.md: Link file creation events to AI worker
 
 ### Phase 7: Smart Tagging
 **Goal**: Implement automated organization via AI-generated metadata.
@@ -121,8 +124,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: Integrate LLM prompts for tag generation
-- [ ] 07-02: Implement YAML frontmatter parser/injector
+- [ ] 07-01-PLAN.md: Integrate LLM prompts for tag generation
+- [ ] 07-02-PLAN.md: Implement YAML frontmatter parser/injector
 
 ### Phase 8: V1 Polish
 **Goal**: Finalize performance and UX for the initial release.
@@ -135,8 +138,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Performance profiling and optimization
-- [ ] 08-02: UI/UX refinement and final bug fixes
+- [ ] 08-01-PLAN.md: Performance profiling and optimization
+- [ ] 08-02-PLAN.md: UI/UX refinement and final bug fixes
 
 ## Progress
 
@@ -147,8 +150,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-26 |
 | 2. Storage Engine | 3/3 | Complete | 2026-01-27 |
-| 3. Editor Core | 3/4 | In progress | - |
-| 4. Timeline UI | 0/2 | Not started | - |
+| 3. Editor Core | 4/4 | Complete | 2026-01-27 |
+| 4. Timeline UI | 3/3 | Complete | 2026-01-27 |
 | 5. AI Configuration | 0/2 | Not started | - |
 | 6. AI Processor | 0/2 | Not started | - |
 | 7. Smart Tagging | 0/2 | Not started | - |
