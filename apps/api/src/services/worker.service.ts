@@ -1,14 +1,17 @@
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
 import { QueueService } from './queue.service';
+import type { EventsService } from './events.service';
 
 export class WorkerService {
   private queue: PQueue;
   private queueService: QueueService;
+  private eventsService: EventsService;
   private isRunning: boolean = false;
 
-  constructor(queueService: QueueService) {
+  constructor(queueService: QueueService, eventsService: EventsService) {
     this.queueService = queueService;
+    this.eventsService = eventsService;
     // Concurrency limited to 2 as per requirements
     this.queue = new PQueue({ concurrency: 2 });
 
@@ -70,6 +73,7 @@ export class WorkerService {
       );
 
       this.queueService.updateJobStatus(jobId, 'completed');
+      this.eventsService.broadcast('note_updated', { noteId });
     } catch (error) {
       console.error(`Worker: Job ${jobId} failed after retries:`, error);
       this.queueService.updateJobStatus(jobId, 'failed', (error as Error).message);
