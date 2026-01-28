@@ -5,6 +5,23 @@ const envSchema = z.object({
   NOTES_DIR: z.string().default("./data/notes"),
 });
 
+export const SecretsSchema = z.object({
+  openai: z.object({
+    apiKey: z.string().optional(),
+    baseUrl: z.string().optional(),
+  }).optional(),
+  anthropic: z.object({
+    apiKey: z.string().optional(),
+    baseUrl: z.string().optional(),
+  }).optional(),
+  gemini: z.object({
+    apiKey: z.string().optional(),
+    baseUrl: z.string().optional(),
+  }).optional(),
+});
+
+export type Secrets = z.infer<typeof SecretsSchema>;
+
 const processEnv = typeof (globalThis as any).process !== "undefined" ? (globalThis as any).process.env : {};
 const _env = envSchema.safeParse(processEnv);
 
