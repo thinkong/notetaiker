@@ -15,7 +15,7 @@
 - [ ] **AI-01**: New notes are automatically processed by AI in the background
 - [ ] **AI-02**: AI generates tags based on note content
 - [ ] **AI-03**: Tags are saved to the file's YAML frontmatter
-- [ ] **AI-04**: User can configure Cloud API keys (OpenAI/Anthropic) for AI processing
+- [x] **AI-04**: User can configure Cloud API keys (OpenAI/Anthropic) for AI processing
 
 ### Content
 - [ ] **CONT-01**: User can capture plain text notes
@@ -54,7 +54,7 @@
 | AI-01 | Phase 6 | Pending |
 | AI-02 | Phase 7 | Pending |
 | AI-03 | Phase 7 | Pending |
-| AI-04 | Phase 5 | Pending |
+| AI-04 | Phase 5 | Complete |
 | CONT-01 | Phase 2 | Complete |
 
 **Coverage:**
