@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import Database from 'better-sqlite3';
 import { v4 as uuidv4 } from 'uuid';
+import { EventEmitter } from 'node:events';
 
 export type JobStatus = 'queued' | 'processing' | 'completed' | 'failed';
 
@@ -15,10 +16,11 @@ export interface Job {
   updatedAt: string;
 }
 
-export class QueueService {
+export class QueueService extends EventEmitter {
   private db: Database.Database;
 
   constructor(workspaceRoot: string) {
+    super();
     const configDir = path.join(workspaceRoot, '.notetaiker');
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
@@ -58,6 +60,7 @@ export class QueueService {
     `);
 
     stmt.run(id, noteId, now, now);
+    this.emit('job:enqueued', id);
     return id;
   }
 
