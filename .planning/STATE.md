@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Phase 4: Timeline UI
+**Current focus:** Phase 5: AI Configuration
 
 ## Current Position
 
-Phase: 4 of 8 (Timeline UI)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 04-03-PLAN.md
+Phase: 5 of 8 (AI Configuration)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-28 — Completed 05-01-PLAN.md
 
-Progress: [██████████] 100% (Phase 4 Complete)
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 8 min
-- Total execution time: 1.9 hours
+- Total plans completed: 15
+- Average duration: 7.7 min
+- Total execution time: 1.96 hours
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [██████████] 100% (Phase 4 Complete)
 | 2 | 3 | 3 | 10 min |
 | 3 | 4 | 4 | 7.3 min |
 | 4 | 3 | 3 | 2.5 min |
+| 5 | 1 | 3 | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: [8 min, 5 min, 2.5 min, 3.6 min, 2.2 min]
-- Trend: Improving
+- Last 5 plans: [5 min, 2.5 min, 3.6 min, 2.2 min, 4 min]
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 - [04-02]: Initialized QueryClient at the root of the App to provide cache context to the entire application.
 - [04-03]: Implemented a simple title extraction heuristic (# Header -> Title) for timeline scanability.
 - [04-03]: Clamped note body to 3 lines with "expand" button to balance timeline density and content access.
+- [05-01]: Masking keys in UI is handled by frontend; API returns raw keys for editability.
+- [05-01]: Storage directory for secrets is .notetaiker/ in workspace root.
+- [05-01]: Port 3001 remains default but configurable via PORT env var.
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-27 11:01
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-01-28 01:21
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
