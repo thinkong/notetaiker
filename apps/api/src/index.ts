@@ -7,9 +7,15 @@ import { fileURLToPath } from "node:url";
 import { notes } from "./routes/notes";
 import { settings } from "./routes/settings";
 import { QueueService } from "./services/queue.service";
+import { WorkerService } from "./services/worker.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
-const app = new Hono();
+type Bindings = {};
+type Variables = {
+  queueService: QueueService;
+};
+
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Initialize notes directory
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +29,16 @@ const recoveredCount = queueService.resetProcessingJobs();
 if (recoveredCount > 0) {
   console.log(`Recovered ${recoveredCount} stuck jobs from previous session`);
 }
+
+// Initialize and start Worker Service
+const workerService = new WorkerService(queueService);
+workerService.start();
+
+// Inject queueService into context for routes
+app.use("*", async (c, next) => {
+  c.set("queueService", queueService);
+  await next();
+});
 
 const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR

@@ -2,11 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Hono } from 'hono';
 import { notes } from './notes';
 
-// Mock StorageService
-const { mockListNotes, mockSaveNote, mockGetNote } = vi.hoisted(() => ({
+// Mock Services
+const { mockListNotes, mockSaveNote, mockGetNote, mockEnqueue } = vi.hoisted(() => ({
   mockListNotes: vi.fn(),
   mockSaveNote: vi.fn(),
   mockGetNote: vi.fn(),
+  mockEnqueue: vi.fn(),
 }));
 
 vi.mock('../services/storage.service', () => {
@@ -22,11 +23,16 @@ vi.mock('../services/storage.service', () => {
 });
 
 describe('Notes Routes', () => {
-  let app: Hono;
+  let app: Hono<any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     app = new Hono();
+    // Inject mock queueService into context
+    app.use('*', async (c, next) => {
+      c.set('queueService', { enqueue: mockEnqueue });
+      await next();
+    });
     app.route('/notes', notes);
   });
 
@@ -60,7 +66,7 @@ describe('Notes Routes', () => {
     expect(mockListNotes).toHaveBeenCalledWith(50, 0);
   });
 
-  it('POST /notes should create a new note', async () => {
+  it('POST /notes should create a new note and enqueue a job', async () => {
     const newNote = { content: 'New Note', metadata: { tags: ['test'] } };
     const savedNote = {
       content: 'New Note',
@@ -86,6 +92,9 @@ describe('Notes Routes', () => {
     expect(res.status).toBe(201);
     const data = await res.json();
     expect(data).toEqual(savedNote);
+
+    // Verify job was enqueued
+    expect(mockEnqueue).toHaveBeenCalledWith('new-id');
   });
 
   it('POST /notes with invalid body should return 400', async () => {

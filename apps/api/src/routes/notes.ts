@@ -5,6 +5,7 @@ import { StorageService } from '../services/storage.service';
 import { env } from '@notetaiker/env';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { QueueService } from '../services/queue.service';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,12 @@ const notesDir = path.isAbsolute(env.NOTES_DIR)
 
 const storageService = new StorageService(notesDir);
 
-export const notes = new Hono()
+type Bindings = {};
+type Variables = {
+  queueService: QueueService;
+};
+
+export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
   .get(
     '/',
     zValidator(
@@ -47,6 +53,13 @@ export const notes = new Hono()
       const fullMetadata = { ...metadata, id };
       const fileName = await storageService.saveNote(content, fullMetadata);
       const savedNote = await storageService.getNote(fileName);
+
+      // Enqueue background processing job
+      const queueService = c.get('queueService');
+      if (savedNote && savedNote.metadata.id) {
+        queueService.enqueue(savedNote.metadata.id);
+      }
+
       return c.json(savedNote, 201);
     }
   )
