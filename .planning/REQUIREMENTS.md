@@ -51,7 +51,7 @@
 | CAPT-02 | Phase 3 | Complete |
 | CAPT-03 | Phase 2 | Complete |
 | CAPT-04 | Phase 4 | Complete |
-| AI-01 | Phase 6 | Pending |
+| AI-01 | Phase 6 | Complete |
 | AI-02 | Phase 7 | Pending |
 | AI-03 | Phase 7 | Pending |
 | AI-04 | Phase 5 | Complete |
