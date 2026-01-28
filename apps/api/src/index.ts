@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { notes } from "./routes/notes";
 import { settings } from "./routes/settings";
+import { QueueService } from "./services/queue.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 const app = new Hono();
@@ -15,6 +16,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // apps/api/src/index.ts -> go up 3 levels to reach workspace root
 const workspaceRoot = path.resolve(__dirname, "../../..");
+
+// Initialize Queue Service and recover stuck jobs
+const queueService = new QueueService(workspaceRoot);
+const recoveredCount = queueService.resetProcessingJobs();
+if (recoveredCount > 0) {
+  console.log(`Recovered ${recoveredCount} stuck jobs from previous session`);
+}
+
 const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR
   : path.resolve(workspaceRoot, env.NOTES_DIR);
