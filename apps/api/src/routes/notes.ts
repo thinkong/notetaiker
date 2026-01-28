@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const workspaceRoot = path.resolve(__dirname, "../../..");
+// apps/api/src/routes/notes.ts -> go up 4 levels to reach workspace root
+const workspaceRoot = path.resolve(__dirname, "../../../..");
 const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR
   : path.resolve(workspaceRoot, env.NOTES_DIR);

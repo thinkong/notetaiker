@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { notes } from "./routes/notes";
+import { settings } from "./routes/settings";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 const app = new Hono();
@@ -37,9 +38,10 @@ const routes = app
   .get("/health", (c) => {
     return c.json({ status: "ok" });
   })
-  .route("/notes", notes);
+  .route("/notes", notes)
+  .route("/settings", settings);
 
-const port = 3001;
+const port = Number(process.env.PORT) || 3001;
 console.log(`Server is running on port ${port}`);
 
 serve({
