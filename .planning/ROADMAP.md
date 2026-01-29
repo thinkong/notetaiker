@@ -74,8 +74,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: Filter frontmatter from note list and detail views
-- [ ] 10-02: Implement universal Save shortcut (Ctrl/Cmd + Enter)
+- [ ] 10-01-PLAN.md — Metadata Toggle and Frontmatter Polish
+- [ ] 10-02-PLAN.md — Universal Save Shortcut and Save Feedback
 
 ## Progress
 
@@ -83,4 +83,4 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v1.0 | 26/26 | Complete | 2026-01-29 |
 | 9 | v1.1 | 1/1 | Complete | 2026-01-29 |
-| 10 | v1.1 | 0/2 | Not started | - |
+| 10 | v1.1 | 0/2 | Ready | - |
