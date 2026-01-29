@@ -21,37 +21,37 @@ human_verification:
 
 ### Observable Truths
 
-| #   | Truth   | Status     | Evidence       |
-| --- | ------- | ---------- | -------------- |
-| 1   | System can create a new `.md` file with a timestamped name | ✓ VERIFIED | `StorageService.generateUniqueFileName` produces `yyyyMMdd-HHmmss.md` format. Verified by tests. |
-| 2   | Plain text content is correctly written to the local filesystem | ✓ VERIFIED | `StorageService.saveNote` uses `write-file-atomic` and `gray-matter` to persist content and metadata. |
-| 3   | Basic file read/write operations are abstracted into a stable service | ✓ VERIFIED | `StorageService` provides `saveNote`, `getNote`, and `listNotes` methods used by Hono routes. |
+| #   | Truth                                                                 | Status     | Evidence                                                                                              |
+| --- | --------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------- |
+| 1   | System can create a new `.md` file with a timestamped name            | ✓ VERIFIED | `StorageService.generateUniqueFileName` produces `yyyyMMdd-HHmmss.md` format. Verified by tests.      |
+| 2   | Plain text content is correctly written to the local filesystem       | ✓ VERIFIED | `StorageService.saveNote` uses `write-file-atomic` and `gray-matter` to persist content and metadata. |
+| 3   | Basic file read/write operations are abstracted into a stable service | ✓ VERIFIED | `StorageService` provides `saveNote`, `getNote`, and `listNotes` methods used by Hono routes.         |
 
 **Score:** 3/3 truths verified
 
 ### Required Artifacts
 
-| Artifact | Expected    | Status | Details |
-| -------- | ----------- | ------ | ------- |
-| `apps/api/src/services/storage.service.ts` | Storage abstraction | ✓ VERIFIED | Full implementation with atomic writes and collision handling. |
-| `apps/api/src/lib/markdown.ts` | Markdown parsing logic | ✓ VERIFIED | Uses `gray-matter` and `zod` for validated frontmatter extraction. |
-| `apps/api/src/routes/notes.ts` | API routes for notes | ✓ VERIFIED | Wires `StorageService` to GET/POST endpoints. |
-| `apps/api/src/services/storage.service.test.ts` | Unit tests | ✓ VERIFIED | 6 tests passing, covering save, collision, UUID lookup, and listing. |
+| Artifact                                        | Expected               | Status     | Details                                                              |
+| ----------------------------------------------- | ---------------------- | ---------- | -------------------------------------------------------------------- |
+| `apps/api/src/services/storage.service.ts`      | Storage abstraction    | ✓ VERIFIED | Full implementation with atomic writes and collision handling.       |
+| `apps/api/src/lib/markdown.ts`                  | Markdown parsing logic | ✓ VERIFIED | Uses `gray-matter` and `zod` for validated frontmatter extraction.   |
+| `apps/api/src/routes/notes.ts`                  | API routes for notes   | ✓ VERIFIED | Wires `StorageService` to GET/POST endpoints.                        |
+| `apps/api/src/services/storage.service.test.ts` | Unit tests             | ✓ VERIFIED | 6 tests passing, covering save, collision, UUID lookup, and listing. |
 
 ### Key Link Verification
 
-| From | To  | Via | Status | Details |
-| ---- | --- | --- | ------ | ------- |
-| `notes.ts` | `StorageService` | Dependency Injection (Constructor) | ✓ WIRED | API routes use the service for all IO. |
-| `StorageService` | Filesystem | `write-file-atomic` | ✓ WIRED | Ensures atomic operations as per goal. |
-| `StorageService` | `markdown.ts` | Function Call | ✓ WIRED | Uses `parseMarkdown` for reading notes. |
+| From             | To               | Via                                | Status  | Details                                 |
+| ---------------- | ---------------- | ---------------------------------- | ------- | --------------------------------------- |
+| `notes.ts`       | `StorageService` | Dependency Injection (Constructor) | ✓ WIRED | API routes use the service for all IO.  |
+| `StorageService` | Filesystem       | `write-file-atomic`                | ✓ WIRED | Ensures atomic operations as per goal.  |
+| `StorageService` | `markdown.ts`    | Function Call                      | ✓ WIRED | Uses `parseMarkdown` for reading notes. |
 
 ### Requirements Coverage
 
-| Requirement | Status | Blocking Issue |
-| ----------- | ------ | -------------- |
-| CAPT-03 (Timestamped atomic files) | ✓ SATISFIED | Implemented in `StorageService`. |
-| CONT-01 (Capture plain text) | ✓ SATISFIED | Supported via POST `/notes` and standard MD persistence. |
+| Requirement                        | Status      | Blocking Issue                                           |
+| ---------------------------------- | ----------- | -------------------------------------------------------- |
+| CAPT-03 (Timestamped atomic files) | ✓ SATISFIED | Implemented in `StorageService`.                         |
+| CONT-01 (Capture plain text)       | ✓ SATISFIED | Supported via POST `/notes` and standard MD persistence. |
 
 ### Anti-Patterns Found
 

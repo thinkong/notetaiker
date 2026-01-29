@@ -9,8 +9,8 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { UseFormRegister, UseFormGetValues } from "react-hook-form";
-import { Secrets } from "@notetaiker/env";
+import type { UseFormRegister, UseFormGetValues } from "react-hook-form";
+import type { Secrets } from "@notetaiker/env";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
@@ -34,7 +34,8 @@ export const ProviderSection = ({
   const validateMutation = useMutation({
     mutationFn: async () => {
       const values = getValues(provider);
-      if (!values.apiKey)
+      // Ensure values is defined before accessing properties
+      if (!values || !values.apiKey)
         throw new Error("API Key is required to test connection");
 
       const res = await api.settings.validate.$post({
@@ -49,7 +50,9 @@ export const ProviderSection = ({
       if (!res.ok) {
         throw new Error("error" in data ? data.error : "Validation failed");
       }
-      return data;
+      return data as
+        | { success: true; models: string[] }
+        | { success: false; error: string };
     },
   });
 
@@ -119,7 +122,7 @@ export const ProviderSection = ({
           />
         </div>
 
-        {validateMutation.isSuccess && (
+        {validateMutation.isSuccess && validateMutation.data.success && (
           <div className="flex items-center text-nord-aurora4 text-sm animate-in fade-in slide-in-from-top-1">
             <CheckCircle2 className="w-4 h-4 mr-2" />
             Connection successful! Available models:{" "}

@@ -14,30 +14,35 @@ Finalize performance and UX for the initial release. Ensure cold start meets 100
 ## Implementation Decisions
 
 ### Tag Filtering UX
+
 - **Primary Action:** Clicking a tag opens a **Dedicated View** (separate from main timeline).
 - **Selection Logic:** **Single-select** only. Clicking a new tag replaces the current filter.
 - **Discovery:** Tags appear in **Search Autocomplete** suggestions.
 - **Clearing:** **Explicit Clear Button** to remove the active filter.
 
 ### Processing Feedback
+
 - **Location:** Status shown directly **On Note Card**.
 - **Thinking State:** **Small Spinner** while AI processes.
 - **Success:** **Success Toast** ("Tags added") when complete.
 - **Failure:** **Silent Fail** (no user interruption).
 
 ### Keyboard Control
+
 - **Focus Input:** `Cmd+K`
 - **Submit Note:** `Cmd+Enter`
 - **Timeline Navigation:** **Arrow Keys** to move selection.
 - **Escape Key:** **Blur Input** (removes focus, keeps text).
 
 ### Empty States
+
 - **Zero Notes (Fresh):** **Minimal Input Focus** (clean interface, focus in input).
 - **No Filter Matches:** Simple **No Matches Message**.
 - **Loading:** **Skeleton Loader** (gray bars).
 - **Error:** **Manual Retry Button**.
 
 ### Claude's Discretion
+
 - Exact styling of the "Dedicated View" for tags.
 - Animation details for the skeleton loader.
 - Specific implementation of the search autocomplete dropdown.
@@ -65,5 +70,5 @@ Finalize performance and UX for the initial release. Ensure cold start meets 100
 
 ---
 
-*Phase: 08-v1-polish*
-*Context gathered: 2026-01-29*
+_Phase: 08-v1-polish_
+_Context gathered: 2026-01-29_

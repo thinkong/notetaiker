@@ -41,13 +41,13 @@ NoteTaiker follows a **Decoupled Background Agent** architecture. The UI remains
 
 ### Component Responsibilities
 
-| Component | Responsibility | Implementation |
-|-----------|----------------|----------------|
-| **Editor** | Low-latency text entry and Markdown rendering. | React + CodeMirror/Lexical |
-| **FS Watcher** | Monitoring local `.md` files for changes. | Tauri `fs` + `notify` (Rust) |
-| **AI Worker** | Local LLM inference (Tagging/Embedding). | Transformers.js v3 (WebGPU) |
-| **Vector Store** | Fast semantic retrieval and tag indexing. | LanceDB (Node/Rust) |
-| **Source of Truth** | Permanent storage. | Plain Markdown + YAML files |
+| Component           | Responsibility                                 | Implementation               |
+| ------------------- | ---------------------------------------------- | ---------------------------- |
+| **Editor**          | Low-latency text entry and Markdown rendering. | React + CodeMirror/Lexical   |
+| **FS Watcher**      | Monitoring local `.md` files for changes.      | Tauri `fs` + `notify` (Rust) |
+| **AI Worker**       | Local LLM inference (Tagging/Embedding).       | Transformers.js v3 (WebGPU)  |
+| **Vector Store**    | Fast semantic retrieval and tag indexing.      | LanceDB (Node/Rust)          |
+| **Source of Truth** | Permanent storage.                             | Plain Markdown + YAML files  |
 
 ## Recommended Project Structure
 
@@ -71,16 +71,19 @@ NoteTaiker follows a **Decoupled Background Agent** architecture. The UI remains
 ## Architectural Patterns
 
 ### Pattern 1: Optimistic FS Updates
+
 **What:** The UI updates its local state immediately when a user types, then debounces the write to the physical `.md` file.
 **When:** Essential for "Zero-Friction" capture.
 **Trade-offs:** If the app crashes before the debounce, the last few characters might be lost. (Mitigation: 500ms debounce + WAL-style temp file).
 
 ### Pattern 2: Sidecar Metadata Indexing
+
 **What:** While Markdown is the Source of Truth, a transient LanceDB index is maintained in the background for fast search.
 **When:** When the note count exceeds ~100.
 **Trade-offs:** The index must be "re-hydrated" if deleted; it's a derived view, not the primary data.
 
 ### Pattern 3: Worker Isolation
+
 **What:** Running the LLM in a separate Web Worker with a dedicated WebGPU context.
 **When:** Always.
 **Trade-offs:** Slight overhead in message passing (postMessage), but prevents UI jank.
@@ -88,6 +91,7 @@ NoteTaiker follows a **Decoupled Background Agent** architecture. The UI remains
 ## Data Flow
 
 ### The "Magic" Tagging Flow
+
 1. **User saves note** → Tauri triggers `fs-notify`.
 2. **Event Bus** → Sends `FILE_CHANGED` message to AI Worker.
 3. **AI Worker** → Reads content, runs SLM (Small Language Model) to extract tags.
@@ -107,11 +111,11 @@ Based on component dependencies, the recommended implementation sequence is:
 
 ## Scaling Considerations
 
-| Concern | At 100 notes | At 10k notes | At 100k notes |
-|---------|--------------|--------------|---------------|
-| **Search** | Grep is fine | LanceDB Required | LanceDB + IVF-PQ Index |
-| **AI Processing** | Real-time | Batch/Queue | Distant-Background (Idle) |
-| **Memory** | < 200MB | ~500MB (Index) | ~1GB+ (Vector Cache) |
+| Concern           | At 100 notes | At 10k notes     | At 100k notes             |
+| ----------------- | ------------ | ---------------- | ------------------------- |
+| **Search**        | Grep is fine | LanceDB Required | LanceDB + IVF-PQ Index    |
+| **AI Processing** | Real-time    | Batch/Queue      | Distant-Background (Idle) |
+| **Memory**        | < 200MB      | ~500MB (Index)   | ~1GB+ (Vector Cache)      |
 
 ## Sources
 
@@ -120,5 +124,6 @@ Based on component dependencies, the recommended implementation sequence is:
 - [Local-first Web Patterns (Ink & Switch)](https://www.inkandswitch.com/local-first/)
 
 ---
-*Architecture research for: NoteTaiker*
-*Researched: 2026-01-26*
+
+_Architecture research for: NoteTaiker_
+_Researched: 2026-01-26_

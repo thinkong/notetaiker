@@ -14,12 +14,14 @@ Allow users to securely manage their AI service credentials. This phase delivers
 ## Implementation Decisions
 
 ### Settings UI Location & Layout
+
 - **Full Page UI**: Dedicated settings route/page, not a modal or sidebar.
 - **Visual Security**: API keys are masked by default with a show/hide toggle.
 - **Minimalist**: Just the inputs and labels, no heavy wizard or guided onboarding.
 - **Manual Save**: Explicit "Save" button required to persist changes.
 
 ### Storage Strategy
+
 - **Project-local**: Secrets stored in a file within the project directory (e.g., `.notetaiker/secrets.json`).
 - **Git Safety**: Application must automatically ensure this file is added to `.gitignore`.
 - **Security Level**: Standard file permissions (0600), plain text JSON content (no complex encryption/keychain integration).
@@ -32,18 +34,21 @@ Allow users to securely manage their AI service credentials. This phase delivers
   ```
 
 ### Validation Behavior
+
 - **Real Verification**: Validation performs a real HTTP request to the provider's API (e.g., `listModels` or `user` endpoint).
 - **Non-blocking**: User can save invalid keys (system warns but persists).
 - **Trigger**: Validation happens only on explicit "Test" or "Save" action.
 - **Detailed Feedback**: Show specific error messages from the API (e.g., "Quota Exceeded") rather than generic failures.
 
 ### Provider Scope
+
 - **Supported Providers**: Anthropic, OpenAI, and Google Gemini.
 - **Custom Base URL**: Users can configure the Base URL for any provider (enables proxies).
 - **Model Selection**: Dynamic fetching of available models from the API where possible.
 - **Advanced Config**: Support per-provider settings beyond just the key (e.g., default temperature, max tokens).
 
 ### Claude's Discretion
+
 - Specific library choices for form handling (e.g., React Hook Form vs controlled inputs).
 - Exact design of the "Advanced Settings" collapsible/section.
 - Detailed error message mapping.
@@ -70,5 +75,5 @@ Allow users to securely manage their AI service credentials. This phase delivers
 
 ---
 
-*Phase: 05-ai-configuration*
-*Context gathered: 2026-01-27*
+_Phase: 05-ai-configuration_
+_Context gathered: 2026-01-27_

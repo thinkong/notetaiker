@@ -7,7 +7,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Secrets } from "@notetaiker/env";
+import type { Secrets } from "@notetaiker/env";
 import { ProviderSection } from "./ProviderSection";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";

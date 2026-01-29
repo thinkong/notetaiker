@@ -1,10 +1,10 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import Database from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
-import { EventEmitter } from 'node:events';
+import path from "node:path";
+import fs from "node:fs";
+import Database from "better-sqlite3";
+import { v4 as uuidv4 } from "uuid";
+import { EventEmitter } from "node:events";
 
-export type JobStatus = 'queued' | 'processing' | 'completed' | 'failed';
+export type JobStatus = "queued" | "processing" | "completed" | "failed";
 
 export interface Job {
   id: string;
@@ -21,12 +21,12 @@ export class QueueService extends EventEmitter {
 
   constructor(workspaceRoot: string) {
     super();
-    const configDir = path.join(workspaceRoot, '.notetaiker');
+    const configDir = path.join(workspaceRoot, ".notetaiker");
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
     }
 
-    const dbPath = path.join(configDir, 'queue.db');
+    const dbPath = path.join(configDir, "queue.db");
     this.db = new Database(dbPath);
     this.init();
   }
@@ -60,37 +60,48 @@ export class QueueService extends EventEmitter {
     `);
 
     stmt.run(id, noteId, now, now);
-    this.emit('job:enqueued', id);
+    this.emit("job:enqueued", id);
     return id;
   }
 
   getNextJob(): Job | null {
     // In better-sqlite3, we can use a transaction to ensure atomicity
     const getJob = this.db.transaction(() => {
-      const job = this.db.prepare(`
+      const job = this.db
+        .prepare(
+          `
         SELECT * FROM jobs
         WHERE status = 'queued'
         ORDER BY createdAt ASC
         LIMIT 1
-      `).get() as Job | undefined;
+      `,
+        )
+        .get() as Job | undefined;
 
       if (!job) return null;
 
       const now = new Date().toISOString();
-      this.db.prepare(`
+      this.db
+        .prepare(
+          `
         UPDATE jobs
         SET status = 'processing',
             attempts = attempts + 1,
             updatedAt = ?
         WHERE id = ?
-      `).run(now, job.id);
+      `,
+        )
+        .run(now, job.id);
 
-      return {
+      // Create a new object with the updated fields correctly typed
+      const updatedJob: Job = {
         ...job,
-        status: 'processing',
+        status: "processing",
         attempts: job.attempts + 1,
-        updatedAt: now
+        updatedAt: now,
       };
+
+      return updatedJob;
     });
 
     return getJob();
@@ -124,6 +135,8 @@ export class QueueService extends EventEmitter {
 
   // Helper for testing/debugging
   getJob(id: string): Job | undefined {
-    return this.db.prepare('SELECT * FROM jobs WHERE id = ?').get(id) as Job | undefined;
+    return this.db.prepare("SELECT * FROM jobs WHERE id = ?").get(id) as
+      | Job
+      | undefined;
   }
 }

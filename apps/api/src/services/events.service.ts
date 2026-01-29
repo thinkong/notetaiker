@@ -1,4 +1,4 @@
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from "node:events";
 
 export class EventsService extends EventEmitter {
   constructor() {
@@ -8,6 +8,6 @@ export class EventsService extends EventEmitter {
   }
 
   broadcast(event: string, data: any) {
-    this.emit('broadcast', { event, data });
+    this.emit("broadcast", { event, data });
   }
 }

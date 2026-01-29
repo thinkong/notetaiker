@@ -11,7 +11,13 @@ tech-stack:
   patterns: ["Worker dependency injection", "Metadata merging"]
 key-files:
   created: ["apps/api/src/lib/markdown.test.ts"]
-  modified: ["apps/api/src/lib/markdown.ts", "apps/api/src/services/worker.service.ts", "apps/api/src/services/storage.service.ts", "apps/api/src/index.ts"]
+  modified:
+    [
+      "apps/api/src/lib/markdown.ts",
+      "apps/api/src/services/worker.service.ts",
+      "apps/api/src/services/storage.service.ts",
+      "apps/api/src/index.ts",
+    ]
 decisions:
   - "[07-02]: Title Case Tags—Enforced Title Case in mergeTags to ensure UI consistency regardless of LLM output."
   - "[07-02]: Preservation over Replacement—StorageService now merges metadata to prevent AI tagging from wiping manual fields (like 'ai: false')."

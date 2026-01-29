@@ -23,23 +23,29 @@ metrics:
 # Phase 07 Plan 01: Core AI Service Implementation Summary
 
 ## Objective
+
 Implement the core AI service responsible for generating structured tags from note content using the Vercel AI SDK.
 
 ## One-liner
+
 **Multi-provider AI service for structured tag generation using Vercel AI SDK.**
 
 ## Key Changes
+
 - Installed Vercel AI SDK and providers (OpenAI, Anthropic, Google).
 - Implemented `AIService` with dynamic provider selection based on `SecretsService`.
 - Configured `generateObject` with Zod schema to enforce 3-5 Title Case tags.
 - Added comprehensive unit tests for provider selection logic and tag generation.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written.
 
 ## Decisions Made
+
 - **Multi-provider Support**: The service automatically falls back from OpenAI -> Anthropic -> Gemini depending on which API keys are configured in the user's secrets.
 - **Strict Schema**: Used `z.array(z.string()).min(3).max(5)` to ensure the AI always returns a manageable number of tags.
 
 ## Next Phase Readiness
+
 `AIService` is ready to be integrated into the background worker for automatic note processing.

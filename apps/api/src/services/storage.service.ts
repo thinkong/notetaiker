@@ -1,11 +1,11 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import writeFileAtomic from 'write-file-atomic';
-import matter from 'gray-matter';
-import { v4 as uuidv4 } from 'uuid';
-import { format } from 'date-fns';
-import { parseMarkdown, type ParsedNote } from '../lib/markdown';
-import type { IndexerService } from './indexer.service';
+import path from "node:path";
+import fs from "node:fs/promises";
+import writeFileAtomic from "write-file-atomic";
+import matter from "gray-matter";
+import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
+import { parseMarkdown, type ParsedNote } from "../lib/markdown";
+import type { IndexerService } from "./indexer.service";
 
 export interface NoteMetadata {
   id?: string;
@@ -24,7 +24,10 @@ export class StorageService {
     this.indexer = indexer;
   }
 
-  async saveNote(content: string, metadata: NoteMetadata = {}): Promise<string> {
+  async saveNote(
+    content: string,
+    metadata: NoteMetadata = {},
+  ): Promise<string> {
     const now = new Date();
     let id = metadata.id || uuidv4();
     let createdAt = metadata.createdAt || now.toISOString();
@@ -41,13 +44,16 @@ export class StorageService {
         fileName = path.basename(existingFilePath);
 
         try {
-          const fileContent = await fs.readFile(filePath, 'utf-8');
+          const fileContent = await fs.readFile(filePath, "utf-8");
           const parsed = parseMarkdown(fileContent);
           existingMetadata = parsed.metadata;
           id = existingMetadata.id || id;
           createdAt = existingMetadata.createdAt || createdAt;
         } catch (err) {
-          console.warn(`Failed to read existing metadata for ${metadata.id}, proceeding with provided metadata`, err);
+          console.warn(
+            `Failed to read existing metadata for ${metadata.id}, proceeding with provided metadata`,
+            err,
+          );
         }
       } else {
         fileName = await this.generateUniqueFileName(now);
@@ -92,7 +98,7 @@ export class StorageService {
   async getNote(idOrFilename: string): Promise<ParsedNote | null> {
     try {
       let fileName = idOrFilename;
-      if (!fileName.endsWith('.md')) {
+      if (!fileName.endsWith(".md")) {
         // Try to find by UUID using the index
         const entry = this.indexer.getById(idOrFilename);
         if (!entry) return null;
@@ -100,7 +106,7 @@ export class StorageService {
       }
 
       const filePath = path.join(this.storagePath, fileName);
-      const content = await fs.readFile(filePath, 'utf-8');
+      const content = await fs.readFile(filePath, "utf-8");
       return parseMarkdown(content);
     } catch {
       return null;
@@ -120,13 +126,13 @@ export class StorageService {
         },
       }));
     } catch (err) {
-      console.error('Failed to list notes from index:', err);
+      console.error("Failed to list notes from index:", err);
       return [];
     }
   }
 
   private async generateUniqueFileName(date: Date): Promise<string> {
-    const baseName = format(date, 'yyyyMMdd-HHmmss');
+    const baseName = format(date, "yyyyMMdd-HHmmss");
     let fileName = `${baseName}.md`;
     let counter = 1;
 

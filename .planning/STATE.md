@@ -20,4 +20,3 @@ Progress: [--------------------] 0%
 
 - Clear decisions summary (full log in PROJECT.md)
 - v1.0 MVP shipped successfully.
-

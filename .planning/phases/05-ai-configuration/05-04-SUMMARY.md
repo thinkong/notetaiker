@@ -10,7 +10,11 @@ tech-stack:
   patterns: ["mutation-driven-persistence", "live-credential-validation"]
 key-files:
   created: []
-  modified: ["apps/web/src/components/settings/SettingsPage.tsx", "apps/web/src/components/settings/ProviderSection.tsx"]
+  modified:
+    [
+      "apps/web/src/components/settings/SettingsPage.tsx",
+      "apps/web/src/components/settings/ProviderSection.tsx",
+    ]
 decisions:
   - "Use TanStack Query for both fetching and mutations to leverage its loading/error state management."
   - "Implement masking for API keys in the UI with a visibility toggle."

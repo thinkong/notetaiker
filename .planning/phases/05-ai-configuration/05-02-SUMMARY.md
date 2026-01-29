@@ -22,18 +22,22 @@ metrics:
 # Phase 05 Plan 02: Credential Validation Summary
 
 ## Objective
+
 Implement server-side validation for AI provider credentials and discover available models.
 
 ## Delivered
+
 - `POST /settings/validate`: A new endpoint that verifies API keys against external providers.
 - **Provider Support**: OpenAI, Anthropic, and Gemini.
 - **Model Discovery**: The validation response includes a list of available models for the validated key.
 - **Custom Base URL**: Fully supports custom endpoints for local proxies or alternative API gateways.
 
 ## Deviations from Plan
+
 None - plan executed as written. Combined Task 1 and 2 into a single efficient endpoint.
 
 ## Verification Results
+
 - Manual tests with mocked `fetch` verified:
   - Successful OpenAI validation + model extraction.
   - Graceful Anthropic error handling (forwarding provider message).

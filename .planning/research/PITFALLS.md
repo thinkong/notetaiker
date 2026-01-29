@@ -34,7 +34,7 @@ The background AI agent updates a file's frontmatter, which triggers a "file cha
 The file watcher does not distinguish between user-initiated changes and agent-initiated changes.
 
 **How to avoid:**
-Implement an exclusion mechanism in the file watcher (e.g., ignore changes with a specific metadata flag or "debouncing" based on the agent's own write operations). Use a "dirty bit" or checksum that only triggers the agent if the *content* (not metadata) has changed.
+Implement an exclusion mechanism in the file watcher (e.g., ignore changes with a specific metadata flag or "debouncing" based on the agent's own write operations). Use a "dirty bit" or checksum that only triggers the agent if the _content_ (not metadata) has changed.
 
 **Warning signs:**
 High CPU usage even when the user is idle. The "Last Modified" time of files updating constantly in a loop.
@@ -103,44 +103,44 @@ Phase 2 (AI Agent Implementation)
 
 ## Technical Debt Patterns
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Simple File Writes | Fast MVP development | Data loss during concurrent AI/User edits | Never - Sync must be robust from start |
-| Cloud-Only AI | No local model infra needed | High latency, high cost, privacy concerns | Only for the first 1-2 weeks of prototyping |
-| Full-text scan search | Easy to implement | Search becomes unusable as note count grows | Only for < 500 notes |
-| No Link Tracking | Faster note creation | Renaming a file breaks all "atomic" links | Never - links are the "graph" of note taking |
+| Shortcut              | Immediate Benefit           | Long-term Cost                              | When Acceptable                              |
+| --------------------- | --------------------------- | ------------------------------------------- | -------------------------------------------- |
+| Simple File Writes    | Fast MVP development        | Data loss during concurrent AI/User edits   | Never - Sync must be robust from start       |
+| Cloud-Only AI         | No local model infra needed | High latency, high cost, privacy concerns   | Only for the first 1-2 weeks of prototyping  |
+| Full-text scan search | Easy to implement           | Search becomes unusable as note count grows | Only for < 500 notes                         |
+| No Link Tracking      | Faster note creation        | Renaming a file breaks all "atomic" links   | Never - links are the "graph" of note taking |
 
 ## Integration Gotchas
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| LLM API | Sending full note history for every small edit | Only trigger AI tagging on "note closed" or "idle" events with a debounced timer. |
-| File System | Blocking the main thread with I/O | Use a worker thread for file system operations and AI processing. |
-| YAML Parser | Stripping user comments or custom formatting in frontmatter | Use a round-trip aware YAML parser that preserves comments and formatting. |
+| Integration | Common Mistake                                              | Correct Approach                                                                  |
+| ----------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| LLM API     | Sending full note history for every small edit              | Only trigger AI tagging on "note closed" or "idle" events with a debounced timer. |
+| File System | Blocking the main thread with I/O                           | Use a worker thread for file system operations and AI processing.                 |
+| YAML Parser | Stripping user comments or custom formatting in frontmatter | Use a round-trip aware YAML parser that preserves comments and formatting.        |
 
 ## Performance Traps
 
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| UI-Thread AI Parsing | Frame drops during typing | Move Markdown parsing and AI logic to a Web Worker. | > 1,000 words |
-| Unindexed Tag Search | Filtering tags takes > 100ms | Maintain a normalized `tags` table in a local database. | > 5,000 notes |
-| Excessive File Watching | High CPU usage on startup | Only watch the active "notes" directory; ignore `.git`, `node_modules`, etc. | > 50,000 files |
+| Trap                    | Symptoms                     | Prevention                                                                   | When It Breaks |
+| ----------------------- | ---------------------------- | ---------------------------------------------------------------------------- | -------------- |
+| UI-Thread AI Parsing    | Frame drops during typing    | Move Markdown parsing and AI logic to a Web Worker.                          | > 1,000 words  |
+| Unindexed Tag Search    | Filtering tags takes > 100ms | Maintain a normalized `tags` table in a local database.                      | > 5,000 notes  |
+| Excessive File Watching | High CPU usage on startup    | Only watch the active "notes" directory; ignore `.git`, `node_modules`, etc. | > 50,000 files |
 
 ## Security Mistakes
 
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| API Key Exposure | Stealing the user's LLM credits | Store keys in the OS keychain (Node-keytar) or secure environment variables, never plain text config. |
-| Prompt Injection via Notes | Note content could "trick" the AI into deleting files or leaking data | Sanitize input and use strict JSON schema for AI outputs. |
-| Unencrypted Local Cache | Sensitive AI-extracted metadata is visible in the local DB | Use an encrypted database (SQLCipher) for the metadata cache. |
+| Mistake                    | Risk                                                                  | Prevention                                                                                            |
+| -------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| API Key Exposure           | Stealing the user's LLM credits                                       | Store keys in the OS keychain (Node-keytar) or secure environment variables, never plain text config. |
+| Prompt Injection via Notes | Note content could "trick" the AI into deleting files or leaking data | Sanitize input and use strict JSON schema for AI outputs.                                             |
+| Unencrypted Local Cache    | Sensitive AI-extracted metadata is visible in the local DB            | Use an encrypted database (SQLCipher) for the metadata cache.                                         |
 
 ## UX Pitfalls
 
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| "Magic" Tagging Ghosting | Tags appear and disappear without user knowing why | Provide an "Activity Feed" or subtle UI indicator when the AI is working. |
-| Over-notification | Constant "AI updated tags" popups are distracting | Silent updates by default; only notify if the AI needs clarification. |
-| Brittle Renaming | Renaming a file breaks links in other notes | Automatic backlink updates or use UUIDs for internal links instead of filenames. |
+| Pitfall                  | User Impact                                        | Better Approach                                                                  |
+| ------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| "Magic" Tagging Ghosting | Tags appear and disappear without user knowing why | Provide an "Activity Feed" or subtle UI indicator when the AI is working.        |
+| Over-notification        | Constant "AI updated tags" popups are distracting  | Silent updates by default; only notify if the AI needs clarification.            |
+| Brittle Renaming         | Renaming a file breaks links in other notes        | Automatic backlink updates or use UUIDs for internal links instead of filenames. |
 
 ## "Looks Done But Isn't" Checklist
 
@@ -151,20 +151,20 @@ Phase 2 (AI Agent Implementation)
 
 ## Recovery Strategies
 
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| Data Loss (Sync) | HIGH | Restore from hidden `.backup` folder or Git history (if enabled). |
-| Tag Bloat | MEDIUM | Run a "Tag Consolidation" script to merge similar tags using an LLM. |
-| Corrupt Frontmatter | LOW | Re-parse Markdown and use a regex fallback to extract content from the mess. |
+| Pitfall             | Recovery Cost | Recovery Steps                                                               |
+| ------------------- | ------------- | ---------------------------------------------------------------------------- |
+| Data Loss (Sync)    | HIGH          | Restore from hidden `.backup` folder or Git history (if enabled).            |
+| Tag Bloat           | MEDIUM        | Run a "Tag Consolidation" script to merge similar tags using an LLM.         |
+| Corrupt Frontmatter | LOW           | Re-parse Markdown and use a regex fallback to extract content from the mess. |
 
 ## Pitfall-to-Phase Mapping
 
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| Frontmatter Race Conditions | Phase 1 (Sync) | Stress test with concurrent automated writes and manual typing. |
-| AI Write-Loops | Phase 2 (AI) | Log watcher events to ensure AI writes don't re-trigger processing. |
-| Privacy Value Conflict | Phase 1 (Setup) | Integration test with a local LLM mock to ensure no network calls. |
-| Scale Performance | Phase 3 (Search) | Load test with 10,000 markdown files and measure search latency. |
+| Pitfall                     | Prevention Phase | Verification                                                        |
+| --------------------------- | ---------------- | ------------------------------------------------------------------- |
+| Frontmatter Race Conditions | Phase 1 (Sync)   | Stress test with concurrent automated writes and manual typing.     |
+| AI Write-Loops              | Phase 2 (AI)     | Log watcher events to ensure AI writes don't re-trigger processing. |
+| Privacy Value Conflict      | Phase 1 (Setup)  | Integration test with a local LLM mock to ensure no network calls.  |
+| Scale Performance           | Phase 3 (Search) | Load test with 10,000 markdown files and measure search latency.    |
 
 ## Sources
 
@@ -174,5 +174,6 @@ Phase 2 (AI Agent Implementation)
 - [Transformers.js WebGPU Performance Benchmarks 2026](https://github.com/xenova/transformers.js)
 
 ---
-*Pitfalls research for: Local-first AI Note Taking App*
-*Researched: 2026-01-26*
+
+_Pitfalls research for: Local-first AI Note Taking App_
+_Researched: 2026-01-26_

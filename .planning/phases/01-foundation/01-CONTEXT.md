@@ -14,24 +14,28 @@ Establish the development environment and core system architecture. Initialize m
 ## Implementation Decisions
 
 ### Stack & Frameworks
+
 - **Frontend:** React (via Vite) — chosen to support shadcn/ui
 - **Backend/Server:** Hono — lightweight, high performance
 - **Build Tool:** Vite — fast HMR
 - **Styling:** Tailwind CSS + shadcn/ui component library
 
 ### Monorepo & Tooling
+
 - **Package Manager:** pnpm — fast, disk-efficient
 - **Orchestrator:** Turborepo — simple, fast task running
 - **Structure:** `apps/` (applications) & `packages/` (shared libraries)
 - **Versioning:** Changesets — automated versioning strategy
 
 ### Code Standards
+
 - **Linting:** Airbnb style — strict rules
 - **Formatting:** Prettier — consistent style
 - **TypeScript:** Strict mode — `noImplicitAny`, etc.
 - **Git:** Conventional Commits (feat:, fix:, chore:) enforced
 
 ### Claude's Discretion
+
 - Exact directory names within `apps/` (e.g., `apps/web`, `apps/api`)
 - Specific ESLint config composition (e.g., extending airbnb-typescript)
 - Initial shared packages list (e.g., `ui`, `tsconfig`, `eslint-config`)
@@ -55,5 +59,5 @@ None — discussion stayed within phase scope.
 
 ---
 
-*Phase: 01-foundation*
-*Context gathered: 2026-01-26*
+_Phase: 01-foundation_
+_Context gathered: 2026-01-26_

@@ -14,30 +14,35 @@ Implement automated tag generation and YAML frontmatter injection. The system an
 ## Implementation Decisions
 
 ### Tag Taxonomy & Style
+
 - **Casing:** Title Case (e.g., `ProjectPlanning`, `React`, `MeetingNotes`).
 - **Specificity:** Mixed/Balanced - include both high-level categories and specific keywords.
 - **Quantity:** Target 3-5 tags per note.
 - **Hierarchy:** Flat structure only (no nested tags like `dev/react`).
 
 ### Injection Strategy
+
 - **Location:** YAML Frontmatter at the top of the file.
 - **Format:** Comma-separated string (e.g., `tags: React, TypeScript, Planning`).
 - **Conflict Handling:** Merge strategy. Preserve existing user-defined tags, deduplicate, and append new AI tags.
 - **Scope:** Inject **only** tags. Do not add titles, summaries, or other metadata fields.
 
 ### Context Awareness
-- **Scope:** Isolated/Stateless. The AI analyzes *only* the current note content. It is not aware of other tags in the codebase.
+
+- **Scope:** Isolated/Stateless. The AI analyzes _only_ the current note content. It is not aware of other tags in the codebase.
 - **Bias:** Precision over consistency. Prioritize describing the specific note accurately rather than forcing it into a pre-existing taxonomy.
 - **Inputs:** Content only. Ignore file paths or folder structures.
 - **Configuration:** Standard/Generic prompt. No support for custom `.cursorrules` or project-specific tagging instructions yet.
 
 ### Trigger Rules
+
 - **Triggers:** Run on note creation AND on significant edits.
 - **Minimum Content:** No minimum length (process everything).
 - **Opt-out:** Support an explicit frontmatter flag (e.g., `ai: false`) to disable processing for specific notes.
 - **Failure Mode:** Retry with exponential backoff if the AI service fails.
 
 ### Claude's Discretion
+
 - Exact debounce logic for "Update on Edit" to prevent excessive API calls.
 - Specific name of the opt-out flag (e.g., `ai: false` vs `no-tag: true`).
 - Prompt engineering details to ensure Title Case and quantity limits.
@@ -63,5 +68,5 @@ Implement automated tag generation and YAML frontmatter injection. The system an
 
 ---
 
-*Phase: 07-smart-tagging*
-*Context gathered: 2026-01-29*
+_Phase: 07-smart-tagging_
+_Context gathered: 2026-01-29_

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Command } from "cmdk";
 import { useQuery } from "@tanstack/react-query";
 import { Search, FileText, Calendar, Tag } from "lucide-react";

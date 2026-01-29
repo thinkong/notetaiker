@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import writeFileAtomic from 'write-file-atomic';
-import { SecretsSchema, type Secrets } from '@notetaiker/env';
+import fs from "node:fs/promises";
+import path from "node:path";
+import writeFileAtomic from "write-file-atomic";
+import { SecretsSchema, type Secrets } from "@notetaiker/env";
 
 export class SecretsService {
   private secretsPath: string;
@@ -9,14 +9,14 @@ export class SecretsService {
   private configDir: string;
 
   constructor(workspaceRoot: string) {
-    this.configDir = path.join(workspaceRoot, '.notetaiker');
-    this.secretsPath = path.join(this.configDir, 'secrets.json');
-    this.gitignorePath = path.join(workspaceRoot, '.gitignore');
+    this.configDir = path.join(workspaceRoot, ".notetaiker");
+    this.secretsPath = path.join(this.configDir, "secrets.json");
+    this.gitignorePath = path.join(workspaceRoot, ".gitignore");
   }
 
   async getSecrets(): Promise<Secrets> {
     try {
-      const content = await fs.readFile(this.secretsPath, 'utf-8');
+      const content = await fs.readFile(this.secretsPath, "utf-8");
       const data = JSON.parse(content);
       const result = SecretsSchema.safeParse(data);
       if (result.success) {
@@ -24,7 +24,7 @@ export class SecretsService {
       }
       return {};
     } catch (error) {
-      if ((error as any).code === 'ENOENT') {
+      if ((error as any).code === "ENOENT") {
         return {};
       }
       throw error;
@@ -43,19 +43,19 @@ export class SecretsService {
 
   private async ensureGitignore(): Promise<void> {
     try {
-      let content = '';
+      let content = "";
       try {
-        content = await fs.readFile(this.gitignorePath, 'utf-8');
+        content = await fs.readFile(this.gitignorePath, "utf-8");
       } catch (error) {
-        if ((error as any).code !== 'ENOENT') throw error;
+        if ((error as any).code !== "ENOENT") throw error;
       }
 
-      if (!content.split('\n').some(line => line.trim() === '.notetaiker')) {
-        const separator = content.endsWith('\n') || content === '' ? '' : '\n';
+      if (!content.split("\n").some((line) => line.trim() === ".notetaiker")) {
+        const separator = content.endsWith("\n") || content === "" ? "" : "\n";
         await fs.appendFile(this.gitignorePath, `${separator}.notetaiker\n`);
       }
     } catch (error) {
-      console.error('Failed to update .gitignore:', error);
+      console.error("Failed to update .gitignore:", error);
     }
   }
 }

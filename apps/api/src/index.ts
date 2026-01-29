@@ -70,7 +70,7 @@ const workerService = new WorkerService(
   queueService,
   eventsService,
   aiService,
-  storageService
+  storageService,
 );
 workerService.start();
 

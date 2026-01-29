@@ -8,7 +8,11 @@ provides: ["Debounced persistence", "Centered layout"]
 tech-stack:
   added: ["lodash.debounce"]
 key-files:
-  created: ["apps/web/src/hooks/useDebouncedSave.ts", "apps/web/src/components/layout/StatusIndicator.tsx"]
+  created:
+    [
+      "apps/web/src/hooks/useDebouncedSave.ts",
+      "apps/web/src/components/layout/StatusIndicator.tsx",
+    ]
   modified: ["apps/web/src/App.tsx"]
 metrics:
   duration: 2 min

@@ -1,7 +1,7 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import Database from 'better-sqlite3';
-import { parseMarkdown } from '../lib/markdown';
+import path from "node:path";
+import fs from "node:fs";
+import Database from "better-sqlite3";
+import { parseMarkdown } from "../lib/markdown";
 
 export interface IndexEntry {
   id: string;
@@ -16,8 +16,8 @@ export interface QueryOptions {
   limit?: number;
   offset?: number;
   tags?: string[];
-  sortBy?: 'createdAt' | 'updatedAt';
-  sortOrder?: 'ASC' | 'DESC';
+  sortBy?: "createdAt" | "updatedAt";
+  sortOrder?: "ASC" | "DESC";
 }
 
 export class IndexerService {
@@ -26,12 +26,12 @@ export class IndexerService {
 
   constructor(workspaceRoot: string, notesDir: string) {
     this.notesDir = notesDir;
-    const configDir = path.join(workspaceRoot, '.notetaiker');
+    const configDir = path.join(workspaceRoot, ".notetaiker");
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
     }
 
-    const dbPath = path.join(configDir, 'index.db');
+    const dbPath = path.join(configDir, "index.db");
     this.db = new Database(dbPath);
     this.init();
   }
@@ -76,25 +76,29 @@ export class IndexerService {
   }
 
   deleteNote(id: string) {
-    this.db.prepare('DELETE FROM notes_index WHERE id = ?').run(id);
+    this.db.prepare("DELETE FROM notes_index WHERE id = ?").run(id);
   }
 
   getById(id: string): IndexEntry | undefined {
-    return this.db.prepare('SELECT * FROM notes_index WHERE id = ?').get(id) as IndexEntry | undefined;
+    return this.db.prepare("SELECT * FROM notes_index WHERE id = ?").get(id) as
+      | IndexEntry
+      | undefined;
   }
 
   async syncAll() {
     const files = await fs.promises.readdir(this.notesDir);
-    const validFiles = files.filter(f => f.endsWith('.md'));
+    const validFiles = files.filter((f) => f.endsWith(".md"));
 
     // Get current IDs in DB to handle deletions
-    const existingIds = (this.db.prepare('SELECT id FROM notes_index').all() as { id: string }[]).map(r => r.id);
+    const existingIds = (
+      this.db.prepare("SELECT id FROM notes_index").all() as { id: string }[]
+    ).map((r) => r.id);
     const seenIds = new Set<string>();
 
     for (const filename of validFiles) {
       try {
         const filePath = path.join(this.notesDir, filename);
-        const content = await fs.promises.readFile(filePath, 'utf-8');
+        const content = await fs.promises.readFile(filePath, "utf-8");
         const { metadata } = parseMarkdown(content);
 
         if (metadata.id) {
@@ -102,7 +106,10 @@ export class IndexerService {
           seenIds.add(metadata.id);
         }
       } catch (err) {
-        console.error(`Failed to sync note ${filename}:`, err instanceof Error ? err.message : String(err));
+        console.error(
+          `Failed to sync note ${filename}:`,
+          err instanceof Error ? err.message : String(err),
+        );
       }
     }
 
@@ -115,30 +122,36 @@ export class IndexerService {
   }
 
   query(options: QueryOptions = {}): IndexEntry[] {
-    const { limit, offset, tags, sortBy = 'createdAt', sortOrder = 'DESC' } = options;
+    const {
+      limit,
+      offset,
+      tags,
+      sortBy = "createdAt",
+      sortOrder = "DESC",
+    } = options;
 
-    let query = 'SELECT * FROM notes_index';
+    let query = "SELECT * FROM notes_index";
     const params: any[] = [];
 
     if (tags && tags.length > 0) {
       // Simple tag filtering: check if any of the tags exist in the JSON string
       // This is a bit naive but works for a starter SQLite implementation
-      const tagConditions = tags.map(t => {
+      const tagConditions = tags.map((t) => {
         params.push(`%${t}%`);
-        return 'tags LIKE ?';
+        return "tags LIKE ?";
       });
-      query += ` WHERE ${tagConditions.join(' OR ')}`;
+      query += ` WHERE ${tagConditions.join(" OR ")}`;
     }
 
     query += ` ORDER BY ${sortBy} ${sortOrder}`;
 
     if (limit !== undefined) {
-      query += ' LIMIT ?';
+      query += " LIMIT ?";
       params.push(limit);
     }
 
     if (offset !== undefined) {
-      query += ' OFFSET ?';
+      query += " OFFSET ?";
       params.push(offset);
     }
 

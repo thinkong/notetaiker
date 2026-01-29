@@ -1,10 +1,10 @@
-import PQueue from 'p-queue';
-import pRetry from 'p-retry';
-import { QueueService } from './queue.service';
-import type { EventsService } from './events.service';
-import type { AIService } from './ai.service';
-import type { StorageService } from './storage.service';
-import { mergeTags } from '../lib/markdown';
+import PQueue from "p-queue";
+import pRetry from "p-retry";
+import { QueueService } from "./queue.service";
+import type { EventsService } from "./events.service";
+import type { AIService } from "./ai.service";
+import type { StorageService } from "./storage.service";
+import { mergeTags } from "../lib/markdown";
 
 export class WorkerService {
   private queue: PQueue;
@@ -18,7 +18,7 @@ export class WorkerService {
     queueService: QueueService,
     eventsService: EventsService,
     aiService: AIService,
-    storageService: StorageService
+    storageService: StorageService,
   ) {
     this.queueService = queueService;
     this.eventsService = eventsService;
@@ -28,7 +28,7 @@ export class WorkerService {
     this.queue = new PQueue({ concurrency: 2 });
 
     // Listen for new jobs
-    this.queueService.on('job:enqueued', () => {
+    this.queueService.on("job:enqueued", () => {
       this.processNext();
     });
   }
@@ -36,7 +36,7 @@ export class WorkerService {
   async start() {
     if (this.isRunning) return;
     this.isRunning = true;
-    console.log('WorkerService started');
+    console.log("WorkerService started");
 
     // Process any jobs already in the queue on startup
     this.processNext();
@@ -66,12 +66,16 @@ export class WorkerService {
 
           const note = await this.storageService.getNote(noteId);
           if (!note) {
-            console.warn(`Worker: Note ${noteId} not found, skipping job ${jobId}`);
+            console.warn(
+              `Worker: Note ${noteId} not found, skipping job ${jobId}`,
+            );
             return;
           }
 
           if (note.metadata.ai === false) {
-            console.log(`Worker: AI processing disabled for note ${noteId}, skipping`);
+            console.log(
+              `Worker: AI processing disabled for note ${noteId}, skipping`,
+            );
             return;
           }
 
@@ -91,7 +95,9 @@ export class WorkerService {
             };
 
             await this.storageService.saveNote(note.content, updatedMetadata);
-            console.log(`Worker: Updated tags for note ${noteId}: ${updatedTags.join(', ')}`);
+            console.log(
+              `Worker: Updated tags for note ${noteId}: ${updatedTags.join(", ")}`,
+            );
           } else {
             console.log(`Worker: No new tags for note ${noteId}`);
           }
@@ -102,17 +108,21 @@ export class WorkerService {
           retries: 3,
           onFailedAttempt: (error) => {
             console.warn(
-              `Worker: Job ${jobId} failed attempt ${error.attemptNumber}. ${error.retriesLeft} retries left.`
+              `Worker: Job ${jobId} failed attempt ${error.attemptNumber}. ${error.retriesLeft} retries left.`,
             );
           },
-        }
+        },
       );
 
-      this.queueService.updateJobStatus(jobId, 'completed');
-      this.eventsService.broadcast('note_updated', { noteId });
+      this.queueService.updateJobStatus(jobId, "completed");
+      this.eventsService.broadcast("note_updated", { noteId });
     } catch (error) {
       console.error(`Worker: Job ${jobId} failed after retries:`, error);
-      this.queueService.updateJobStatus(jobId, 'failed', (error as Error).message);
+      this.queueService.updateJobStatus(
+        jobId,
+        "failed",
+        (error as Error).message,
+      );
     } finally {
       // Check if there are more jobs to process
       this.processNext();
@@ -122,6 +132,6 @@ export class WorkerService {
   stop() {
     this.isRunning = false;
     this.queue.clear();
-    console.log('WorkerService stopped');
+    console.log("WorkerService stopped");
   }
 }
