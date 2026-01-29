@@ -8,6 +8,7 @@ import {
   Loader2,
   CheckCircle2,
   XCircle,
+  Cpu,
 } from "lucide-react";
 import type { UseFormRegister, UseFormGetValues } from "react-hook-form";
 import type { Secrets } from "@notetaiker/env";
@@ -21,6 +22,12 @@ interface ProviderSectionProps {
   register: UseFormRegister<Secrets>;
   getValues: UseFormGetValues<Secrets>;
 }
+
+const DEFAULT_PLACEHOLDERS = {
+  openai: "https://api.openai.com/v1",
+  anthropic: "https://api.anthropic.com/v1",
+  gemini: "https://generativelanguage.googleapis.com/v1beta",
+};
 
 export const ProviderSection = ({
   title,
@@ -40,7 +47,7 @@ export const ProviderSection = ({
 
       const res = await api.settings.validate.$post({
         json: {
-          provider,
+          provider: provider as "openai" | "anthropic" | "gemini",
           apiKey: values.apiKey,
           baseUrl: values.baseUrl,
         },
@@ -50,9 +57,7 @@ export const ProviderSection = ({
       if (!res.ok) {
         throw new Error("error" in data ? data.error : "Validation failed");
       }
-      return data as
-        | { success: true; models: string[] }
-        | { success: false; error: string };
+      return data as { success: true; models: string[] };
     },
   });
 
@@ -109,24 +114,53 @@ export const ProviderSection = ({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-nord-polar3 dark:text-nord-snow1 mb-1.5 flex items-center">
-            <Globe className="w-4 h-4 mr-2" />
-            Base URL (Optional)
-          </label>
-          <input
-            type="text"
-            {...register(`${provider}.baseUrl`)}
-            placeholder="https://api.example.com/v1"
-            className="w-full bg-nord-snow2 dark:bg-nord-polar0 border border-nord-snow0 dark:border-nord-polar2 rounded-md px-3 py-2 focus:ring-2 focus:ring-nord-frost3 focus:border-transparent outline-none transition-all text-nord-polar0 dark:text-nord-snow2"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-nord-polar3 dark:text-nord-snow1 mb-1.5 flex items-center">
+              <Globe className="w-4 h-4 mr-2" />
+              Base URL (Optional)
+            </label>
+            <input
+              type="text"
+              {...register(`${provider}.baseUrl`)}
+              placeholder={
+                DEFAULT_PLACEHOLDERS[
+                  provider as keyof typeof DEFAULT_PLACEHOLDERS
+                ]
+              }
+              className="w-full bg-nord-snow2 dark:bg-nord-polar0 border border-nord-snow0 dark:border-nord-polar2 rounded-md px-3 py-2 focus:ring-2 focus:ring-nord-frost3 focus:border-transparent outline-none transition-all text-nord-polar0 dark:text-nord-snow2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-nord-polar3 dark:text-nord-snow1 mb-1.5 flex items-center">
+              <Cpu className="w-4 h-4 mr-2" />
+              Model (Optional)
+            </label>
+            <input
+              type="text"
+              list={`${provider}-models`}
+              {...register(`${provider}.model`)}
+              placeholder="Select or type model name"
+              className="w-full bg-nord-snow2 dark:bg-nord-polar0 border border-nord-snow0 dark:border-nord-polar2 rounded-md px-3 py-2 focus:ring-2 focus:ring-nord-frost3 focus:border-transparent outline-none transition-all text-nord-polar0 dark:text-nord-snow2"
+            />
+            <datalist id={`${provider}-models`}>
+              {validateMutation.isSuccess &&
+                validateMutation.data.success &&
+                validateMutation.data.models.map((model) => (
+                  <option key={model} value={model} />
+                ))}
+            </datalist>
+          </div>
         </div>
 
         {validateMutation.isSuccess && validateMutation.data.success && (
           <div className="flex items-center text-nord-aurora4 text-sm animate-in fade-in slide-in-from-top-1">
             <CheckCircle2 className="w-4 h-4 mr-2" />
-            Connection successful! Available models:{" "}
-            {validateMutation.data.models.length}
+            Connection successful! Found {
+              validateMutation.data.models.length
+            }{" "}
+            models.
           </div>
         )}
 
