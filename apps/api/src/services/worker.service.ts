@@ -2,16 +2,28 @@ import PQueue from 'p-queue';
 import pRetry from 'p-retry';
 import { QueueService } from './queue.service';
 import type { EventsService } from './events.service';
+import type { AIService } from './ai.service';
+import type { StorageService } from './storage.service';
+import { mergeTags } from '../lib/markdown';
 
 export class WorkerService {
   private queue: PQueue;
   private queueService: QueueService;
   private eventsService: EventsService;
+  private aiService: AIService;
+  private storageService: StorageService;
   private isRunning: boolean = false;
 
-  constructor(queueService: QueueService, eventsService: EventsService) {
+  constructor(
+    queueService: QueueService,
+    eventsService: EventsService,
+    aiService: AIService,
+    storageService: StorageService
+  ) {
     this.queueService = queueService;
     this.eventsService = eventsService;
+    this.aiService = aiService;
+    this.storageService = storageService;
     // Concurrency limited to 2 as per requirements
     this.queue = new PQueue({ concurrency: 2 });
 
@@ -52,12 +64,36 @@ export class WorkerService {
         async () => {
           console.log(`Worker: Processing job ${jobId} (note: ${noteId})...`);
 
-          // STUB: Simulate AI processing
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          const note = await this.storageService.getNote(noteId);
+          if (!note) {
+            console.warn(`Worker: Note ${noteId} not found, skipping job ${jobId}`);
+            return;
+          }
 
-          // Randomly fail to test retry logic (10% chance)
-          if (Math.random() < 0.1) {
-            throw new Error('Simulated transient AI failure');
+          if (note.metadata.ai === false) {
+            console.log(`Worker: AI processing disabled for note ${noteId}, skipping`);
+            return;
+          }
+
+          const generatedTags = await this.aiService.generateTags(note.content);
+          const updatedTags = mergeTags(note.metadata.tags, generatedTags);
+
+          // Only save if tags actually changed
+          const existingTags = note.metadata.tags || [];
+          const tagsChanged =
+            updatedTags.length !== existingTags.length ||
+            !updatedTags.every((t) => existingTags.includes(t));
+
+          if (tagsChanged) {
+            const updatedMetadata = {
+              ...note.metadata,
+              tags: updatedTags,
+            };
+
+            await this.storageService.saveNote(note.content, updatedMetadata);
+            console.log(`Worker: Updated tags for note ${noteId}: ${updatedTags.join(', ')}`);
+          } else {
+            console.log(`Worker: No new tags for note ${noteId}`);
           }
 
           console.log(`Worker: Completed job ${jobId}`);

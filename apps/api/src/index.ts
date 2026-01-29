@@ -10,12 +10,17 @@ import { events } from "./routes/events";
 import { QueueService } from "./services/queue.service";
 import { WorkerService } from "./services/worker.service";
 import { EventsService } from "./services/events.service";
+import { AIService } from "./services/ai.service";
+import { StorageService } from "./services/storage.service";
+import { SecretsService } from "./services/secrets.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 type Bindings = {};
 type Variables = {
   queueService: QueueService;
   eventsService: EventsService;
+  aiService: AIService;
+  storageService: StorageService;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -26,9 +31,16 @@ const __dirname = path.dirname(__filename);
 // apps/api/src/index.ts -> go up 3 levels to reach workspace root
 const workspaceRoot = path.resolve(__dirname, "../../..");
 
+const notesDir = path.isAbsolute(env.NOTES_DIR)
+  ? env.NOTES_DIR
+  : path.resolve(workspaceRoot, env.NOTES_DIR);
+
 // Initialize Core Services
 const queueService = new QueueService(workspaceRoot);
 const eventsService = new EventsService();
+const secretsService = new SecretsService(workspaceRoot);
+const aiService = new AIService(secretsService);
+const storageService = new StorageService(notesDir);
 
 // Recover stuck jobs
 const recoveredCount = queueService.resetProcessingJobs();
@@ -37,13 +49,20 @@ if (recoveredCount > 0) {
 }
 
 // Initialize and start Worker Service
-const workerService = new WorkerService(queueService, eventsService);
+const workerService = new WorkerService(
+  queueService,
+  eventsService,
+  aiService,
+  storageService
+);
 workerService.start();
 
 // Inject services into context for routes
 app.use("*", async (c, next) => {
   c.set("queueService", queueService);
   c.set("eventsService", eventsService);
+  c.set("aiService", aiService);
+  c.set("storageService", storageService);
   await next();
 });
 
