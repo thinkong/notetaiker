@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import type { ParsedNote } from "@notetaiker/api";
+import type { Note as ParsedNote } from "../../types";
 
 interface NoteCardProps {
   note: ParsedNote;
@@ -53,20 +53,18 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
         </button>
       ) : null}
 
-      {metadata.tags &&
-        Array.isArray(metadata.tags) &&
-        metadata.tags.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {metadata.tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="px-2 py-0.5 bg-nord-snow2 dark:bg-nord-polar3 text-nord-polar3 dark:text-nord-frost2 text-[10px] font-medium rounded-full"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
+      {metadata.tags && metadata.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {metadata.tags.map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-0.5 bg-nord-snow2 dark:bg-nord-polar3 text-nord-polar3 dark:text-nord-frost2 text-xs font-medium rounded-full"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
