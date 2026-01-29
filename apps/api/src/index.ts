@@ -13,6 +13,7 @@ import { EventsService } from "./services/events.service";
 import { AIService } from "./services/ai.service";
 import { StorageService } from "./services/storage.service";
 import { SecretsService } from "./services/secrets.service";
+import { IndexerService } from "./services/indexer.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 type Bindings = {};
@@ -21,6 +22,7 @@ type Variables = {
   eventsService: EventsService;
   aiService: AIService;
   storageService: StorageService;
+  indexerService: IndexerService;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -35,12 +37,27 @@ const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR
   : path.resolve(workspaceRoot, env.NOTES_DIR);
 
+try {
+  if (!fs.existsSync(notesDir)) {
+    fs.mkdirSync(notesDir, { recursive: true });
+    console.log("Created notes directory");
+  }
+} catch (error) {
+  console.error("Failed to create notes directory:", error);
+  process.exit(1);
+}
+
 // Initialize Core Services
 const queueService = new QueueService(workspaceRoot);
 const eventsService = new EventsService();
 const secretsService = new SecretsService(workspaceRoot);
 const aiService = new AIService(secretsService);
-const storageService = new StorageService(notesDir);
+const indexerService = new IndexerService(workspaceRoot, notesDir);
+const storageService = new StorageService(notesDir, indexerService);
+
+// Initial sync of notes
+console.log("Syncing notes index...");
+await indexerService.syncAll();
 
 // Recover stuck jobs
 const recoveredCount = queueService.resetProcessingJobs();
@@ -63,24 +80,11 @@ app.use("*", async (c, next) => {
   c.set("eventsService", eventsService);
   c.set("aiService", aiService);
   c.set("storageService", storageService);
+  c.set("indexerService", indexerService);
   await next();
 });
 
-const notesDir = path.isAbsolute(env.NOTES_DIR)
-  ? env.NOTES_DIR
-  : path.resolve(workspaceRoot, env.NOTES_DIR);
-
 console.log("Initializing notes directory at:", notesDir);
-
-try {
-  if (!fs.existsSync(notesDir)) {
-    fs.mkdirSync(notesDir, { recursive: true });
-    console.log("Created notes directory");
-  }
-} catch (error) {
-  console.error("Failed to create notes directory:", error);
-  process.exit(1);
-}
 
 // Validate environment variables on startup
 console.log("Starting server with environment:", env.NODE_ENV);

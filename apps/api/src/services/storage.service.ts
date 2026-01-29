@@ -5,18 +5,23 @@ import matter from 'gray-matter';
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import { parseMarkdown, type ParsedNote } from '../lib/markdown';
+import type { IndexerService } from './indexer.service';
 
 export interface NoteMetadata {
   id?: string;
   createdAt?: string;
   updatedAt?: string;
+  tags?: string[];
   [key: string]: any;
 }
 
 export class StorageService {
   private storagePath: string;
-  constructor(storagePath: string) {
+  private indexer: IndexerService;
+
+  constructor(storagePath: string, indexer: IndexerService) {
     this.storagePath = storagePath;
+    this.indexer = indexer;
   }
 
   async saveNote(content: string, metadata: NoteMetadata = {}): Promise<string> {
@@ -66,20 +71,17 @@ export class StorageService {
     await fs.mkdir(this.storagePath, { recursive: true });
     await writeFileAtomic(filePath, fileContent);
 
+    // Sync to index
+    this.indexer.syncNote(fileName, content, fullMetadata);
+
     return fileName;
   }
 
   async findFilePathById(id: string): Promise<string | null> {
     try {
-      const files = await fs.readdir(this.storagePath);
-      for (const file of files) {
-        if (!file.endsWith('.md')) continue;
-        const filePath = path.join(this.storagePath, file);
-        const content = await fs.readFile(filePath, 'utf-8');
-        const parsed = parseMarkdown(content);
-        if (parsed.metadata.id === id) {
-          return filePath;
-        }
+      const entry = this.indexer.getById(id);
+      if (entry) {
+        return path.join(this.storagePath, entry.filename);
       }
       return null;
     } catch {
@@ -91,17 +93,10 @@ export class StorageService {
     try {
       let fileName = idOrFilename;
       if (!fileName.endsWith('.md')) {
-        // Try to find by UUID
-        const files = await fs.readdir(this.storagePath);
-        for (const file of files) {
-          if (!file.endsWith('.md')) continue;
-          const content = await fs.readFile(path.join(this.storagePath, file), 'utf-8');
-          const parsed = parseMarkdown(content);
-          if (parsed.metadata.id === idOrFilename) {
-            return parsed;
-          }
-        }
-        return null;
+        // Try to find by UUID using the index
+        const entry = this.indexer.getById(idOrFilename);
+        if (!entry) return null;
+        fileName = entry.filename;
       }
 
       const filePath = path.join(this.storagePath, fileName);
@@ -114,33 +109,23 @@ export class StorageService {
 
   async listNotes(limit?: number, offset?: number): Promise<ParsedNote[]> {
     try {
-      const files = await fs.readdir(this.storagePath);
+      const entries = this.indexer.query({ limit, offset });
       const notes: ParsedNote[] = [];
 
-      for (const file of files) {
-        if (!file.endsWith('.md')) continue;
-        const content = await fs.readFile(path.join(this.storagePath, file), 'utf-8');
+      for (const entry of entries) {
         try {
+          const filePath = path.join(this.storagePath, entry.filename);
+          const content = await fs.readFile(filePath, 'utf-8');
           notes.push(parseMarkdown(content));
         } catch (err) {
-          console.error(`Failed to parse note ${file}:`, err);
+          console.error(`Failed to read note ${entry.filename} from index:`, err);
+          // If file is missing, we might want to trigger a sync or just skip
         }
       }
 
-      const sortedNotes = notes.sort((a, b) => {
-        const dateA = a.metadata.createdAt ? new Date(a.metadata.createdAt).getTime() : 0;
-        const dateB = b.metadata.createdAt ? new Date(b.metadata.createdAt).getTime() : 0;
-        return dateB - dateA;
-      });
-
-      if (limit !== undefined || offset !== undefined) {
-        const start = offset ?? 0;
-        const end = limit !== undefined ? start + limit : undefined;
-        return sortedNotes.slice(start, end);
-      }
-
-      return sortedNotes;
-    } catch {
+      return notes;
+    } catch (err) {
+      console.error('Failed to list notes from index:', err);
       return [];
     }
   }

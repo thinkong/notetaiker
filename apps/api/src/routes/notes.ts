@@ -15,11 +15,10 @@ const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR
   : path.resolve(workspaceRoot, env.NOTES_DIR);
 
-const storageService = new StorageService(notesDir);
-
 type Bindings = {};
 type Variables = {
   queueService: QueueService;
+  storageService: StorageService;
 };
 
 export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -34,6 +33,7 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     ),
     async (c) => {
       const { limit, offset } = c.req.valid('query');
+      const storageService = c.get('storageService');
       const allNotes = await storageService.listNotes(limit, offset);
       return c.json(allNotes);
     }
@@ -50,6 +50,7 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     ),
     async (c) => {
       const { content, id, metadata } = c.req.valid('json');
+      const storageService = c.get('storageService');
       const fullMetadata = { ...metadata, id };
       const fileName = await storageService.saveNote(content, fullMetadata);
       const savedNote = await storageService.getNote(fileName);
@@ -65,6 +66,7 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
   )
   .get('/:id', async (c) => {
     const id = c.req.param('id');
+    const storageService = c.get('storageService');
     const note = await storageService.getNote(id);
     if (!note) {
       return c.json({ error: 'Note not found' }, 404);

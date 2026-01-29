@@ -76,6 +76,10 @@ export class IndexerService {
     this.db.prepare('DELETE FROM notes_index WHERE id = ?').run(id);
   }
 
+  getById(id: string): IndexEntry | undefined {
+    return this.db.prepare('SELECT * FROM notes_index WHERE id = ?').get(id) as IndexEntry | undefined;
+  }
+
   async syncAll() {
     const files = await fs.promises.readdir(this.notesDir);
     const validFiles = files.filter(f => f.endsWith('.md'));
