@@ -125,9 +125,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Implement AIService for tag generation
-- [ ] 07-02-PLAN.md — Integrate tagging with Worker and Storage
-- [ ] 07-03-PLAN.md — Display tags in the Timeline UI
+- [x] 07-01-PLAN.md — Implement AIService for tag generation
+- [x] 07-02-PLAN.md — Integrate tagging with Worker and Storage
+- [x] 07-03-PLAN.md — Display tags in the Timeline UI
 
 ### Phase 8: V1 Polish
 **Goal**: Finalize performance and UX for the initial release.
@@ -156,5 +156,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Timeline UI | 0/2 | Not started | - |
 | 5. AI Configuration | 4/4 | Complete | 2026-01-28 |
 | 6. AI Processor | 3/3 | Complete | 2026-01-28 |
-| 7. Smart Tagging | 0/3 | Not started | - |
+| 7. Smart Tagging | 3/3 | Complete | 2026-01-29 |
 | 8. V1 Polish | 0/2 | Not started | - |
