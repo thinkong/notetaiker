@@ -18,9 +18,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.29",
+    "@ai-sdk/google": "^3.0.16",
+    "@ai-sdk/openai": "^3.0.21",
     "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.7.6",
     "@notetaiker/env": "workspace:*",
+    "ai": "^6.0.59",
     "better-sqlite3": "^12.6.2",
     "date-fns": "^4.0.0",
     "gray-matter": "^4.0.3",
