@@ -47,6 +47,35 @@ export function useDebouncedSave(delay = 1000) {
     };
   }, [delay]);
 
+  const saveImmediately = useCallback(async (content: string) => {
+    if (!content.trim()) return;
+
+    debouncedSaveRef.current?.cancel();
+    setStatus("saving");
+
+    try {
+      const res = await api.notes.$post({
+        json: {
+          content,
+          id: noteIdRef.current || undefined,
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && "metadata" in data && data.metadata.id) {
+          noteIdRef.current = data.metadata.id;
+        }
+        setStatus("saved");
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      setStatus("error");
+    }
+  }, []);
+
   const handleContentChange = useCallback((content: string) => {
     if (content.trim()) {
       setStatus("saving");
@@ -57,5 +86,6 @@ export function useDebouncedSave(delay = 1000) {
   return {
     status,
     save: handleContentChange,
+    forceSave: saveImmediately,
   };
 }

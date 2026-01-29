@@ -23,7 +23,10 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     : content.trim();
 
   return (
-    <div className="bg-nord-snow0 dark:bg-nord-polar1 rounded-lg border border-nord-snow2 dark:border-nord-polar3 p-5 transition-all duration-200 hover:shadow-md">
+    <div
+      id={`note-${metadata.id}`}
+      className="bg-nord-snow0 dark:bg-nord-polar1 rounded-lg border border-nord-snow2 dark:border-nord-polar3 p-5 transition-all duration-200 hover:shadow-md"
+    >
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-lg font-semibold text-nord-frost3 dark:text-nord-frost2 truncate flex-1">
           {title}
