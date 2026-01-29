@@ -12,18 +12,21 @@ export const SecretsSchema = z.object({
     .object({
       apiKey: z.string().optional(),
       baseUrl: z.string().optional(),
+      model: z.string().optional(),
     })
     .optional(),
   anthropic: z
     .object({
       apiKey: z.string().optional(),
       baseUrl: z.string().optional(),
+      model: z.string().optional(),
     })
     .optional(),
   gemini: z
     .object({
       apiKey: z.string().optional(),
       baseUrl: z.string().optional(),
+      model: z.string().optional(),
     })
     .optional(),
 });

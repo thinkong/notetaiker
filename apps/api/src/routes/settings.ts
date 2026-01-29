@@ -5,6 +5,7 @@ import { SecretsSchema } from "@notetaiker/env";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
+import { AIService } from "../services/ai.service";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // apps/api/src/routes/settings.ts -> go up 4 levels to reach workspace root: src, api, apps, root
@@ -35,12 +36,12 @@ export const settings = new Hono()
     try {
       let response: Response;
       if (provider === "openai") {
-        const url = `${baseUrl || "https://api.openai.com/v1"}/models`;
+        const url = `${baseUrl || AIService.DEFAULT_BASE_URLS.openai}/models`;
         response = await fetch(url, {
           headers: { Authorization: `Bearer ${apiKey}` },
         });
       } else if (provider === "anthropic") {
-        const url = `${baseUrl || "https://api.anthropic.com/v1"}/models`;
+        const url = `${baseUrl || AIService.DEFAULT_BASE_URLS.anthropic}/models`;
         response = await fetch(url, {
           headers: {
             "x-api-key": apiKey,
@@ -49,7 +50,7 @@ export const settings = new Hono()
         });
       } else {
         // gemini
-        const url = `${baseUrl || "https://generativelanguage.googleapis.com/v1beta"}/models?key=${apiKey}`;
+        const url = `${baseUrl || AIService.DEFAULT_BASE_URLS.gemini}/models?key=${apiKey}`;
         response = await fetch(url);
       }
 
