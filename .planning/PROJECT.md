@@ -12,19 +12,19 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ **CAPT-01**: User can open app and type within 100ms (Instant Capture) — v1.0
+- ✓ **CAPT-02**: User can edit notes in standard Markdown — v1.0
+- ✓ **CAPT-03**: Notes are saved automatically as timestamped atomic files — v1.0
+- ✓ **CAPT-04**: User can view recent notes in a reverse-chronological stream — v1.0
+- ✓ **AI-01**: New notes are automatically processed by AI in the background — v1.0
+- ✓ **AI-02**: AI generates tags based on note content — v1.0
+- ✓ **AI-03**: Tags are saved to the file's YAML frontmatter — v1.0
+- ✓ **AI-04**: User can configure Cloud API keys (OpenAI/Anthropic) — v1.0
+- ✓ **CONT-01**: User can capture plain text notes — v1.0
 
 ### Active
 
-- [ ] **Local Server**: TypeScript-based local backend to manage file operations and AI processing.
-- [ ] **Web Client (v1)**: Browser-based interface for quick capture and timeline viewing.
-- [ ] **Atomic Storage**: Save each note as a unique Markdown file (timestamp-based naming).
-- [ ] **Rich Content**: Support text, images, link previews, and code snippets.
-- [ ] **Background AI**: Process new notes asynchronously to generate tags.
-- [ ] **YAML Metadata**: Store AI-generated tags and metadata in file frontmatter.
-- [ ] **Configurable AI**: Allow users to select between Local LLMs (Ollama) or Cloud APIs.
-- [ ] **Timeline View**: View notes in a reverse-chronological stream.
-- [ ] **Search & Filter**: Find notes by content or AI-generated tags.
+(Use `/gsd:new-milestone` to define next requirements)
 
 ### Out of Scope
 
@@ -35,9 +35,9 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-- **Local-First Philosophy**: User owns the data (files on disk).
-- **AI as Augmentation**: AI doesn't write the note, it organizes it.
-- **Ecosystem**: Needs to run locally on user machines; stack chosen is Node/TS for ecosystem synergy.
+Shipped v1.0 MVP with ~3000 LOC TypeScript.
+Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6.
+Performance: <100ms TTI, <5ms note listing via SQLite index.
 
 ## Constraints
 
@@ -49,10 +49,13 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| **Local Server Architecture** | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | — Pending |
-| **Atomic Notes** | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes. | — Pending |
-| **YAML Frontmatter** | Standard, portable way to attach metadata without polluting body content. | — Pending |
-| **Web Client First** | Fastest path to validation; PWA capabilities can mimic desktop feel. | — Pending |
+| **Local Server Architecture** | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | ✓ Good (v1.0) |
+| **Atomic Notes** | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes. | ✓ Good (v1.0) |
+| **YAML Frontmatter** | Standard, portable way to attach metadata without polluting body content. | ✓ Good (v1.0) |
+| **Web Client First** | Fastest path to validation; PWA capabilities can mimic desktop feel. | ✓ Good (v1.0) |
+| **Local Mirror Pattern** | Store full note content in SQLite index for <5ms listing performance. | ✓ Good (v1.0) |
+| **Separate Index DB** | Placed metadata index in its own database (index.db) to decouple from the task queue. | ✓ Good (v1.0) |
+| **Immediate-feedback-save** | Bypass debounce for Cmd+Enter to ensure user data safety. | ✓ Good (v1.0) |
 
 ---
-*Last updated: 2026-01-26 after initialization*
+*Last updated: 2026-01-29 after v1.0 milestone*
