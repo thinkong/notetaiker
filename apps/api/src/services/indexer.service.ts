@@ -6,6 +6,7 @@ import { parseMarkdown } from '../lib/markdown';
 export interface IndexEntry {
   id: string;
   filename: string;
+  content: string;
   tags: string; // JSON string
   createdAt: string;
   updatedAt: string;
@@ -40,6 +41,7 @@ export class IndexerService {
       CREATE TABLE IF NOT EXISTS notes_index (
         id TEXT PRIMARY KEY,
         filename TEXT NOT NULL,
+        content TEXT,
         tags TEXT,
         createdAt DATETIME,
         updatedAt DATETIME
@@ -60,16 +62,17 @@ export class IndexerService {
     if (!id) return;
 
     const stmt = this.db.prepare(`
-      INSERT INTO notes_index (id, filename, tags, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO notes_index (id, filename, content, tags, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         filename = excluded.filename,
+        content = excluded.content,
         tags = excluded.tags,
         createdAt = excluded.createdAt,
         updatedAt = excluded.updatedAt
     `);
 
-    stmt.run(id, filename, tags, createdAt, updatedAt);
+    stmt.run(id, filename, content, tags, createdAt, updatedAt);
   }
 
   deleteNote(id: string) {

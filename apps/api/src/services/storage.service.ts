@@ -110,20 +110,15 @@ export class StorageService {
   async listNotes(limit?: number, offset?: number): Promise<ParsedNote[]> {
     try {
       const entries = this.indexer.query({ limit, offset });
-      const notes: ParsedNote[] = [];
-
-      for (const entry of entries) {
-        try {
-          const filePath = path.join(this.storagePath, entry.filename);
-          const content = await fs.readFile(filePath, 'utf-8');
-          notes.push(parseMarkdown(content));
-        } catch (err) {
-          console.error(`Failed to read note ${entry.filename} from index:`, err);
-          // If file is missing, we might want to trigger a sync or just skip
-        }
-      }
-
-      return notes;
+      return entries.map((entry) => ({
+        content: entry.content,
+        metadata: {
+          id: entry.id,
+          tags: JSON.parse(entry.tags),
+          createdAt: entry.createdAt,
+          updatedAt: entry.updatedAt,
+        },
+      }));
     } catch (err) {
       console.error('Failed to list notes from index:', err);
       return [];
