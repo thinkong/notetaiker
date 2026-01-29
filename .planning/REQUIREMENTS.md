@@ -6,7 +6,7 @@
 ## v1 Requirements
 
 ### Core Capture
-- [ ] **CAPT-01**: User can open app and type within 100ms (Instant Capture)
+- [x] **CAPT-01**: User can open app and type within 100ms (Instant Capture)
 - [ ] **CAPT-02**: User can edit notes in standard Markdown
 - [ ] **CAPT-03**: Notes are saved automatically as timestamped atomic files (e.g., `YYYYMMDD-HHMMSS.md`)
 - [x] **CAPT-04**: User can view recent notes in a reverse-chronological stream (Timeline)
@@ -47,7 +47,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAPT-01 | Phase 3, Phase 8 | Pending |
+| CAPT-01 | Phase 3, Phase 8 | Complete |
 | CAPT-02 | Phase 3 | Complete |
 | CAPT-03 | Phase 2 | Complete |
 | CAPT-04 | Phase 4 | Complete |
