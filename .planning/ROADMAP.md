@@ -62,7 +62,7 @@ Milestone v1.1 focuses on hardening the AI configuration defaults and polishing 
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01: Implement default Base URLs for AI providers
+- [ ] 09-01-PLAN.md — Implement default Base URLs and Model Selection
 
 #### Phase 10: Display & Control Polish
 **Goal**: Refine note rendering to hide technical metadata and provide universal save shortcuts.
