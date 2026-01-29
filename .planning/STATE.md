@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 7 of 8 (Smart Tagging)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-29 — Completed 07-01-PLAN.md
+Last activity: 2026-01-29 — Completed 07-02-PLAN.md
 
-Progress: [██████████████████░░] 88%
+Progress: [███████████████████░] 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
-- Average duration: 8.0 min
-- Total execution time: 3.0 hours
+- Total plans completed: 23
+- Average duration: 7.9 min
+- Total execution time: 3.1 hours
 
 **By Phase:**
 
@@ -33,10 +33,10 @@ Progress: [██████████████████░░] 88%
 | 4 | 3 | 3 | 2.5 min |
 | 5 | 4 | 4 | 6.0 min |
 | 6 | 3 | 3 | 13.3 min |
-| 7 | 1 | 3 | 2.0 min |
+| 7 | 2 | 3 | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: [10 min, 15 min, 15 min, 15 min, 2 min]
+- Last 5 plans: [15 min, 15 min, 15 min, 2 min, 5 min]
 - Trend: Stabilizing (infrastructure phase transition to feature implementation)
 
 *Updated after each plan completion*
@@ -55,6 +55,8 @@ Recent decisions affecting current work:
 - [06-03]: Automatic Cache Invalidation—Integrated useSSE with TanStack Query to refresh note data automatically.
 - [07-01]: Multi-provider Support—Implemented dynamic switching between OpenAI, Anthropic, and Gemini based on key availability.
 - [07-01]: Structured Output—Used Vercel AI SDK's generateObject to ensure consistent 3-5 tag output in Title Case.
+- [07-02]: Title Case Tags—Enforced Title Case in mergeTags to ensure UI consistency regardless of LLM output.
+- [07-02]: Preservation over Replacement—StorageService now merges metadata to prevent AI tagging from wiping manual fields (like 'ai: false').
 
 ### Pending Todos
 
@@ -67,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-29 03:00
-Stopped at: Completed 07-01-PLAN.md
-Resume file: .planning/phases/07-smart-tagging/07-02-PLAN.md
+Stopped at: Completed 07-02-PLAN.md
+Resume file: .planning/phases/07-smart-tagging/07-03-PLAN.md
