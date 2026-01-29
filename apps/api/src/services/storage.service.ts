@@ -21,25 +21,29 @@ export class StorageService {
 
   async saveNote(content: string, metadata: NoteMetadata = {}): Promise<string> {
     const now = new Date();
-    const id = metadata.id || uuidv4();
-    const createdAt = metadata.createdAt || now.toISOString();
+    let id = metadata.id || uuidv4();
+    let createdAt = metadata.createdAt || now.toISOString();
     const updatedAt = now.toISOString();
-
-    const fullMetadata = {
-      ...metadata,
-      id,
-      createdAt,
-      updatedAt,
-    };
 
     let filePath: string;
     let fileName: string;
+    let existingMetadata: NoteMetadata = {};
 
     if (metadata.id) {
       const existingFilePath = await this.findFilePathById(metadata.id);
       if (existingFilePath) {
         filePath = existingFilePath;
         fileName = path.basename(existingFilePath);
+
+        try {
+          const fileContent = await fs.readFile(filePath, 'utf-8');
+          const parsed = parseMarkdown(fileContent);
+          existingMetadata = parsed.metadata;
+          id = existingMetadata.id || id;
+          createdAt = existingMetadata.createdAt || createdAt;
+        } catch (err) {
+          console.warn(`Failed to read existing metadata for ${metadata.id}, proceeding with provided metadata`, err);
+        }
       } else {
         fileName = await this.generateUniqueFileName(now);
         filePath = path.join(this.storagePath, fileName);
@@ -48,6 +52,14 @@ export class StorageService {
       fileName = await this.generateUniqueFileName(now);
       filePath = path.join(this.storagePath, fileName);
     }
+
+    const fullMetadata = {
+      ...existingMetadata,
+      ...metadata,
+      id,
+      createdAt,
+      updatedAt,
+    };
 
     const fileContent = matter.stringify(content, fullMetadata);
 

@@ -59,6 +59,29 @@ describe('StorageService', () => {
       expect(matter(file1Content).content.trim()).toBe(content1);
       expect(matter(file2Content).content.trim()).toBe(content2);
     });
+
+    it('should update an existing note and preserve metadata', async () => {
+      const uuid = '550e8400-e29b-41d4-a716-446655440000';
+      const content = 'Original content';
+      const metadata = { id: uuid, title: 'Original Title', custom: 'value' };
+      const fileName = await storageService.saveNote(content, metadata);
+
+      // Wait a bit to ensure updatedAt would change
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const updatedContent = 'Updated content';
+      const updatedMetadata = { id: uuid, title: 'Updated Title' };
+      await storageService.saveNote(updatedContent, updatedMetadata);
+
+      const note = await storageService.getNote(uuid);
+      expect(note).not.toBeNull();
+      expect(note?.content.trim()).toBe(updatedContent);
+      expect(note?.metadata.title).toBe('Updated Title');
+      expect(note?.metadata.custom).toBe('value'); // Should be preserved
+      expect(new Date(note?.metadata.updatedAt as string).getTime()).toBeGreaterThan(
+        new Date(note?.metadata.createdAt as string).getTime()
+      );
+    });
   });
 
   describe('getNote', () => {
