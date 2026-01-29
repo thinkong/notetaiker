@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Phase 7: Smart Tagging (Complete)
+**Current focus:** Phase 8: V1 Polish (In progress)
 
 ## Current Position
 
-Phase: 7 of 8 (Smart Tagging)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-29 — Completed 07-03-PLAN.md
+Phase: 8 of 8 (V1 Polish)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-29 — Completed 08-01-PLAN.md
 
-Progress: [████████████████████] 100% (of defined plans)
+Progress: [███████████████████░] 96% (of defined plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
-- Average duration: 7.7 min
-- Total execution time: 3.1 hours
+- Total plans completed: 25
+- Average duration: 7.6 min
+- Total execution time: 3.2 hours
 
 **By Phase:**
 
@@ -34,10 +34,11 @@ Progress: [████████████████████] 100% (o
 | 5 | 4 | 4 | 6.0 min |
 | 6 | 3 | 3 | 13.3 min |
 | 7 | 3 | 3 | 3.5 min |
+| 8 | 1 | 2 | 5.0 min |
 
 **Recent Trend:**
-- Last 5 plans: [15 min, 2 min, 5 min, 2 min, 3.4 min]
-- Trend: Highly efficient feature delivery
+- Last 5 plans: [5 min, 2 min, 3.4 min, 5 min, 5 min]
+- Trend: Maintaining high velocity with infrastructure optimizations
 
 *Updated after each plan completion*
 
@@ -48,15 +49,9 @@ Progress: [████████████████████] 100% (o
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [06-01]: SQLite for Queue—Used better-sqlite3 for local, zero-config persistence of AI jobs.
-- [06-01]: Startup Recovery—Jobs stuck in 'processing' are automatically reset to 'queued' on API boot.
-- [06-02]: Concurrency Limit—Set to 2 to prevent overloading local resources or hitting LLM rate limits.
-- [06-03]: SSE for Real-time—Chose Server-Sent Events over WebSockets for simplicity and unidirectional updates.
-- [06-03]: Automatic Cache Invalidation—Integrated useSSE with TanStack Query to refresh note data automatically.
-- [07-01]: Multi-provider Support—Implemented dynamic switching between OpenAI, Anthropic, and Gemini based on key availability.
-- [07-01]: Structured Output—Used Vercel AI SDK's generateObject to ensure consistent 3-5 tag output in Title Case.
-- [07-02]: Title Case Tags—Enforced Title Case in mergeTags to ensure UI consistency regardless of LLM output.
-- [07-02]: Preservation over Replacement—StorageService now merges metadata to prevent AI tagging from wiping manual fields (like 'ai: false').
+- [07-02]: Preservation over Replacement—StorageService now merges metadata to prevent AI tagging from wiping manual fields.
+- [08-01]: Local Mirror Pattern—Store full note content in SQLite index for <5ms listing performance.
+- [08-01]: Separate Index DB—Placed metadata index in its own database (index.db) to decouple from the task queue.
 
 ### Pending Todos
 
@@ -68,6 +63,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-29 03:15
-Stopped at: Completed 07-03-PLAN.md
-Resume file: .planning/phases/08-refinement/08-01-PLAN.md (Pending creation)
+Last session: 2026-01-29 06:30
+Stopped at: Completed 08-01-PLAN.md
+Resume file: .planning/phases/08-v1-polish/08-02-PLAN.md
