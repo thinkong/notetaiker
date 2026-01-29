@@ -8,6 +8,14 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
+## Current Milestone: v1.1 Fixes & Polish
+
+**Goal:** robustify configuration and refine presentation to ensure a polished v1 experience.
+
+**Target features:**
+- **Robust AI Config:** Default to standard Base URLs if unspecified (don't fail on empty).
+- **Clean Note Rendering:** Hide/parse YAML frontmatter in note views (don't render as body text).
+
 ## Requirements
 
 ### Validated
@@ -24,7 +32,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ### Active
 
-(Use `/gsd:new-milestone` to define next requirements)
+- [ ] **AI-FIX-01**: System uses default provider Base URL when user leaves it empty
+- [ ] **UI-FIX-01**: Note view parses frontmatter and excludes it from body rendering
 
 ### Out of Scope
 
@@ -59,4 +68,4 @@ Performance: <100ms TTI, <5ms note listing via SQLite index.
 
 ---
 
-_Last updated: 2026-01-29 after v1.0 milestone_
+_Last updated: 2026-01-29 after v1.0 milestone (started v1.1)_
