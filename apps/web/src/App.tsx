@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -20,6 +20,7 @@ import { useUnsavedChanges } from "./hooks/useUnsavedChanges";
 import { Toast } from "./components/common/Toast";
 import { ConfirmDialog } from "./components/common/ConfirmDialog";
 import { NotePreviewOverlay } from "./components/preview/NotePreviewOverlay";
+import { useTimeline } from "./hooks/useTimeline";
 import { api } from "./lib/api";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,19 @@ const queryClient = new QueryClient();
 function MainCapture() {
   const editorRef = useRef<EditorHandle>(null);
   const queryClient = useQueryClient();
+
+  const { data: timelineData } = useTimeline();
+
+  const availableTags = useMemo(() => {
+    const tags = new Set<string>();
+    timelineData?.pages.forEach((page) => {
+      page.forEach((note) => {
+        note.metadata.tags?.forEach((tag: string) => tags.add(tag));
+        note.metadata.ai_tags?.forEach((tag: string) => tags.add(tag));
+      });
+    });
+    return Array.from(tags).sort();
+  }, [timelineData]);
 
   const { draft, setDraft, clearDraft } = useDraftPersistence();
   const [content, setContent] = useState<string>(() => {
@@ -233,6 +247,7 @@ function MainCapture() {
               onChange={handleContentChange}
               onSave={handleSave}
               placeholder="Capture your thoughts..."
+              availableTags={availableTags}
             />
           </div>
         </div>

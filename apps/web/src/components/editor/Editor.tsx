@@ -21,6 +21,7 @@ import { Prec } from "@codemirror/state";
 import { nordDark, nordLight } from "./theme";
 import { markdownStyleExtension } from "./extensions/markdownStyle";
 import { linkHandler } from "./extensions/links";
+import { hashtagExtensions } from "./extensions/hashtags";
 
 export interface EditorProps {
   value: string;
@@ -29,6 +30,7 @@ export interface EditorProps {
   theme?: "light" | "dark";
   placeholder?: string;
   className?: string;
+  availableTags?: string[];
 }
 
 export interface EditorHandle {
@@ -44,6 +46,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
       theme: controlledTheme,
       placeholder = "Start typing...",
       className = "",
+      availableTags = [],
     },
     ref,
   ) => {
@@ -82,6 +85,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
         markdown({ base: markdownLanguage, codeLanguages: languages }),
         markdownStyleExtension,
         linkHandler,
+        ...hashtagExtensions(() => availableTags),
         history(),
         bracketMatching(),
         keymap.of([{ key: "Enter", run: insertNewlineContinueMarkup }]),
@@ -100,7 +104,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
           ]),
         ),
       ],
-      [onSave],
+      [onSave, availableTags],
     );
 
     const handleChange = useCallback(

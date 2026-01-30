@@ -6,6 +6,7 @@ import { env } from "@notetaiker/env";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { QueueService } from "../services/queue.service";
+import { extractHashtags, mergeTags } from "../lib/markdown";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,7 +64,17 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     async (c) => {
       const { content, id, metadata } = c.req.valid("json");
       const storageService = c.get("storageService");
-      const fullMetadata = { ...metadata, id };
+
+      // Extract hashtags from content and merge with existing tags
+      const bodyTags = extractHashtags(content);
+      const updatedTags = mergeTags(metadata?.tags, bodyTags);
+
+      const fullMetadata = {
+        ...metadata,
+        id,
+        tags: updatedTags,
+      };
+
       const fileName = await storageService.saveNote(content, fullMetadata);
       const savedNote = await storageService.getNote(fileName);
 
