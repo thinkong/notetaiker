@@ -1,6 +1,5 @@
-import React from "react";
 import { X, Tag, Calendar } from "lucide-react";
-import { GraphNode } from "../../hooks/useGraphData";
+import { type GraphNode } from "../../hooks/useGraphData";
 import { Markdown } from "../common/Markdown";
 
 interface NoteSidePanelProps {

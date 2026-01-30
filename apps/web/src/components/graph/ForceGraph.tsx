@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import ForceGraph2D, { ForceGraphMethods } from "react-force-graph-2d";
-import { GraphData, GraphNode, NodeType } from "../../hooks/useGraphData";
+import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
+import {
+  type GraphData,
+  type GraphNode,
+  type NodeType,
+} from "../../hooks/useGraphData";
 
 interface ForceGraphProps {
   data: GraphData;
