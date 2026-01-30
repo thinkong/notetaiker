@@ -1,6 +1,6 @@
-# NoteTaiker
+# notetAIker
 
-NoteTaiker is a local-first, AI-enhanced note-taking system designed for zero-friction capture. It allows you to input anything into a stream of atomic Markdown files, while a background AI agent automatically organizes content by generating relevant tags.
+notetAIker is a local-first, AI-enhanced note-taking system designed for zero-friction capture. It allows you to input anything into a stream of atomic Markdown files, while a background AI agent automatically organizes content by generating relevant tags.
 
 ## Features
 
@@ -55,7 +55,7 @@ NoteTaiker is a local-first, AI-enhanced note-taking system designed for zero-fr
 
 ## Architecture
 
-NoteTaiker is a monorepo built with:
+notetAIker is a monorepo built with:
 
 - **Frontend**: React 19, Tailwind CSS v4, Vite, TanStack Query, CodeMirror 6.
 - **Backend**: Hono (Node.js), SQLite (for indexing/queues), Server-Sent Events (SSE).

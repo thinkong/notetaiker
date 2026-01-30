@@ -99,10 +99,10 @@ export class IndexerService {
       try {
         const filePath = path.join(this.notesDir, filename);
         const content = await fs.promises.readFile(filePath, "utf-8");
-        const { metadata } = parseMarkdown(content);
+        const { content: parsedContent, metadata } = parseMarkdown(content);
 
         if (metadata.id) {
-          this.syncNote(filename, content, metadata);
+          this.syncNote(filename, parsedContent, metadata);
           seenIds.add(metadata.id);
         }
       } catch (err) {

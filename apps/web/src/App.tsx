@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { Settings, Save } from "lucide-react";
+import { Settings, Save, Search } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor } from "./components/editor/Editor";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 
 function MainCapture() {
   const [content, setContent] = useState<string>(
-    "# Welcome to NoteTaiker\n\nStart typing your thoughts here...",
+    "# Welcome to notetAIker\n\nStart typing your thoughts here...",
   );
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ function MainCapture() {
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-nord-frost3 tracking-tight">
-            NoteTaiker
+            notetAIker
           </h1>
           <p className="text-nord-polar3 dark:text-nord-snow1 mt-2">
             Focused, distraction-free capturing.
@@ -66,26 +66,23 @@ function MainCapture() {
         <div className="flex gap-2">
           <button
             onClick={() => forceSave(content)}
-            className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-full hover:bg-nord-frost2 transition-colors font-medium shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-full hover:bg-nord-frost2 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
             title="Save (Ctrl + Enter)"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-5 h-5" />
             <span className="hidden sm:inline">Save</span>
           </button>
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-colors rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2"
+            className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-all rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2 active:scale-95"
             aria-label="Search (Cmd+K)"
             title="Search (Cmd+K)"
           >
-            <span className="sr-only">Search</span>
-            <kbd className="hidden sm:inline-block px-2 py-1 text-[10px] font-sans font-semibold text-nord-polar3 bg-nord-snow1 dark:bg-nord-polar2 border border-nord-snow0 dark:border-nord-polar3 rounded mr-2 uppercase tracking-tighter">
-              ⌘K
-            </kbd>
+            <Search className="w-6 h-6" />
           </button>
           <button
             onClick={() => navigate("/settings")}
-            className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-colors rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2"
+            className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-all rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2 active:scale-95"
             aria-label="Settings"
           >
             <Settings className="w-6 h-6" />
