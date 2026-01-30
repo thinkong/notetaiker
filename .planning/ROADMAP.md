@@ -42,11 +42,11 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 🚧 v1.3 UX Polish & Flow (In Progress)
+### ✅ v1.3 UX Polish & Flow (In Progress)
 
 **Milestone Goal:** Improve user experience with better navigation, manual controls, and smoother editing flow.
 
-#### Phase 12: UX Flow Improvements
+#### ✅ Phase 12: UX Flow Improvements
 **Goal**: Seamless navigation and editing session management
 **Depends on**: Phase 11
 **Requirements**: UX-01, UX-02, UX-03
@@ -64,7 +64,7 @@ Plans:
 - [x] 12-03-PLAN.md — Save-and-reset flow integration with draft management
 - [x] 12-04-PLAN.md — Complete note navigation with human verification
 
-#### Phase 13: Manual Tag Control
+#### 🚧 Phase 13: Manual Tag Control
 **Goal**: User control over tags with intelligent AI preservation
 **Depends on**: Phase 12
 **Requirements**: TAG-01, TAG-02, TAG-03
