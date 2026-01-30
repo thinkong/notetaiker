@@ -76,14 +76,16 @@ const workerService = new WorkerService(
 workerService.start();
 
 // Inject services into context for routes
-app.use("*", async (c, next) => {
-  c.set("queueService", queueService);
-  c.set("eventsService", eventsService);
-  c.set("aiService", aiService);
-  c.set("storageService", storageService);
-  c.set("indexerService", indexerService);
-  await next();
-}).use("*", cors());
+app
+  .use("*", async (c, next) => {
+    c.set("queueService", queueService);
+    c.set("eventsService", eventsService);
+    c.set("aiService", aiService);
+    c.set("storageService", storageService);
+    c.set("indexerService", indexerService);
+    await next();
+  })
+  .use("*", cors());
 
 console.log("Initializing notes directory at:", notesDir);
 
