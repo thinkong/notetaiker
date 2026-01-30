@@ -59,10 +59,10 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 **Plans**: 4 plans
 
 Plans:
-- [ ] 12-01-PLAN.md — Foundation hooks and UI components (draft persistence, unsaved changes, toast, confirm dialog)
-- [ ] 12-02-PLAN.md — Note preview overlay and editor focus control
-- [ ] 12-03-PLAN.md — Save-and-reset flow integration with draft management
-- [ ] 12-04-PLAN.md — Complete note navigation with human verification
+- [x] 12-01-PLAN.md — Foundation hooks and UI components (draft persistence, unsaved changes, toast, confirm dialog)
+- [x] 12-02-PLAN.md — Note preview overlay and editor focus control
+- [x] 12-03-PLAN.md — Save-and-reset flow integration with draft management
+- [x] 12-04-PLAN.md — Complete note navigation with human verification
 
 #### Phase 13: Manual Tag Control
 **Goal**: User control over tags with intelligent AI preservation
@@ -86,5 +86,5 @@ Plans:
 | 1-8 | v1.0 | 26/26 | Complete | 2026-01-29 |
 | 9-10 | v1.1 | 3/3 | Complete | 2026-01-30 |
 | 11 | v1.2 | 3/3 | Complete | 2026-01-30 |
-| 12. UX Flow Improvements | v1.3 | 0/4 | Ready to execute | - |
+| 12. UX Flow Improvements | v1.3 | 4/4 | Complete | 2026-01-30 |
 | 13. Manual Tag Control | v1.3 | 0/? | Not started | - |
