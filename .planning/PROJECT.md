@@ -8,13 +8,9 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.2 Graph View (Complete)
+## Current Milestone: v1.3 (Planning)
 
-**Goal:** Provide visual exploration of notes via a force-directed graph.
-
-**Target features:**
-- **Graph Visualization:** Interactive 2D graph of notes and tags.
-- **Node Navigation:** Click nodes to view content in a side panel.
+**Goal:** Next milestone planning (Requirements & Roadmap).
 
 ## Requirements
 
@@ -37,7 +33,7 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ### Active
 
-- None (Milestone complete)
+(To be defined in next milestone)
 
 ### Out of Scope
 
@@ -47,8 +43,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.0 MVP with ~3000 LOC TypeScript.
-Completed v1.1 (Fixes) and v1.2 (Graph View).
+Shipped v1.0 MVP, v1.1 Polish, and v1.2 Graph View.
+System is stable with ~3000 LOC TypeScript.
 Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph.
 
 ## Constraints
@@ -59,17 +55,19 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ## Key Decisions
 
-| Decision                      | Rationale                                                                                                  | Outcome       |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- |
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
 | **Local Server Architecture** | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | ✓ Good (v1.0) |
-| **Atomic Notes**              | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes.          | ✓ Good (v1.0) |
-| **YAML Frontmatter**          | Standard, portable way to attach metadata without polluting body content.                                  | ✓ Good (v1.0) |
-| **Web Client First**          | Fastest path to validation; PWA capabilities can mimic desktop feel.                                       | ✓ Good (v1.0) |
-| **Local Mirror Pattern**      | Store full note content in SQLite index for <5ms listing performance.                                      | ✓ Good (v1.0) |
-| **Separate Index DB**         | Placed metadata index in its own database (index.db) to decouple from the task queue.                      | ✓ Good (v1.0) |
-| **Immediate-feedback-save**   | Bypass debounce for Cmd+Enter to ensure user data safety.                                                  | ✓ Good (v1.0) |
-| **Graph Visualization**       | Used `react-force-graph-2d` for performance and Canvas rendering for scalability.                         | ✓ Good (v1.2) |
+| **Atomic Notes** | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes. | ✓ Good (v1.0) |
+| **YAML Frontmatter** | Standard, portable way to attach metadata without polluting body content. | ✓ Good (v1.0) |
+| **Web Client First** | Fastest path to validation; PWA capabilities can mimic desktop feel. | ✓ Good (v1.0) |
+| **Local Mirror Pattern** | Store full note content in SQLite index for <5ms listing performance. | ✓ Good (v1.0) |
+| **Separate Index DB** | Placed metadata index in its own database (index.db) to decouple from the task queue. | ✓ Good (v1.0) |
+| **Immediate-feedback-save** | Bypass debounce for Cmd+Enter to ensure user data safety. | ✓ Good (v1.0) |
+| **Graph Visualization** | Used `react-force-graph-2d` for performance and Canvas rendering for scalability. | ✓ Good (v1.2) |
+| **Tag Hub Structure** | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering. | ✓ Good (v1.2) |
+| **Side Panel Nav** | Absolute-positioned panel avoids reflowing graph canvas on interaction. | ✓ Good (v1.2) |
 
 ---
 
-_Last updated: 2026-01-30 after v1.2 milestone (Graph View)_
+_Last updated: 2026-01-30 after v1.2 milestone completion_
