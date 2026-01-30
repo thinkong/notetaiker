@@ -9,12 +9,14 @@ interface NotePreviewOverlayProps {
   noteId: string | null;
   open: boolean;
   onClose: () => void;
+  onEdit?: (noteId: string) => void;
 }
 
 export function NotePreviewOverlay({
   noteId,
   open,
   onClose,
+  onEdit,
 }: NotePreviewOverlayProps) {
   // Fetch note data
   const {
@@ -112,8 +114,11 @@ export function NotePreviewOverlay({
           <div className="border-t border-nord-snow0 dark:border-nord-polar2 px-6 py-4 bg-nord-snow1/50 dark:bg-nord-polar0/50">
             <button
               onClick={() => {
-                console.log("Edit clicked");
-                onClose();
+                if (onEdit && noteId) {
+                  onEdit(noteId);
+                } else {
+                  onClose();
+                }
               }}
               className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-lg hover:bg-nord-frost2 transition-colors font-medium"
             >

@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useRef } from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { Settings, Save, Search, Share2 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Editor } from "./components/editor/Editor";
+import { Editor, type EditorHandle } from "./components/editor/Editor";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
 import { StatusIndicator } from "./components/layout/StatusIndicator";
 import { SettingsPage } from "./components/settings/SettingsPage";
@@ -11,13 +15,33 @@ import { SearchPalette } from "./components/search/SearchPalette";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { SidebarTimeline } from "./components/sidebar/SidebarTimeline";
 import { GraphView } from "./components/graph/GraphView";
+import { useDraftPersistence } from "./hooks/useDraftPersistence";
+import { useUnsavedChanges } from "./hooks/useUnsavedChanges";
+import { Toast } from "./components/common/Toast";
+import { ConfirmDialog } from "./components/common/ConfirmDialog";
+import { NotePreviewOverlay } from "./components/preview/NotePreviewOverlay";
+import { api } from "./lib/api";
 
 const queryClient = new QueryClient();
 
 function MainCapture() {
-  const [content, setContent] = useState<string>(
-    "# Welcome to notetAIker\n\nStart typing your thoughts here...",
-  );
+  const editorRef = useRef<EditorHandle>(null);
+  const queryClient = useQueryClient();
+
+  const { draft, setDraft, clearDraft } = useDraftPersistence();
+  const [content, setContent] = useState<string>(() => {
+    // If draft exists, use it; otherwise default welcome text
+    return (
+      draft || "# Welcome to notetAIker\n\nStart typing your thoughts here..."
+    );
+  });
+
+  const { markDirty, markClean, showDialog, confirmDiscard, cancelAction } =
+    useUnsavedChanges();
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
@@ -26,6 +50,66 @@ function MainCapture() {
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
+    setDraft(newContent); // Auto-save to localStorage
+    if (newContent.trim()) {
+      markDirty();
+    }
+  };
+
+  const handleSave = async () => {
+    if (!content.trim()) return;
+
+    try {
+      await forceSave(content);
+
+      // Clear editor and draft
+      setContent("");
+      clearDraft();
+      markClean();
+
+      // Invalidate notes query to refresh sidebar
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      // Show success toast
+      setToastMessage("Note saved");
+      setShowToast(true);
+
+      // Return focus to editor
+      setTimeout(() => editorRef.current?.focus(), 50);
+    } catch (error) {
+      console.error("Save failed:", error);
+      setToastMessage("Save failed");
+      setShowToast(true);
+    }
+  };
+
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewNoteId, setPreviewNoteId] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleNoteClick = (noteId: string) => {
+    setPreviewNoteId(noteId);
+    setShowPreview(true);
+  };
+
+  const handleEditNote = async (noteId: string) => {
+    // Close preview
+    setShowPreview(false);
+    setPreviewNoteId(null);
+
+    // Fetch note content
+    try {
+      const res = await api.notes[":id"].$get({ param: { id: noteId } });
+      if (res.ok) {
+        const note = await res.json();
+        setContent(note.content);
+        setDraft(note.content);
+        markDirty(); // Mark as having content
+        editorRef.current?.focus();
+      }
+    } catch (error) {
+      console.error("Failed to load note:", error);
+    }
   };
 
   const handleSelectNote = (noteId: string) => {
@@ -68,10 +152,10 @@ function MainCapture() {
     "mod+enter",
     (e) => {
       e.preventDefault();
-      forceSave(content);
+      handleSave();
     },
     { enableOnFormTags: true },
-    [content, forceSave],
+    [handleSave],
   );
 
   return (
@@ -102,7 +186,7 @@ function MainCapture() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => forceSave(content)}
+                onClick={handleSave}
                 className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-full hover:bg-nord-frost2 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
                 title="Save (Ctrl + Enter)"
               >
@@ -137,9 +221,10 @@ function MainCapture() {
 
           <div className="min-h-[60vh]">
             <Editor
+              ref={editorRef}
               value={content}
               onChange={handleContentChange}
-              onSave={forceSave}
+              onSave={handleSave}
               placeholder="Capture your thoughts..."
             />
           </div>
@@ -152,6 +237,32 @@ function MainCapture() {
         open={isSearchOpen}
         onOpenChange={setIsSearchOpen}
         onSelectNote={handleSelectNote}
+      />
+
+      {showDialog && (
+        <ConfirmDialog
+          open={showDialog}
+          onSave={async () => {
+            await handleSave();
+            confirmDiscard();
+          }}
+          onDiscard={confirmDiscard}
+          onCancel={cancelAction}
+        />
+      )}
+
+      {showToast && (
+        <Toast message={toastMessage} onDismiss={() => setShowToast(false)} />
+      )}
+
+      <NotePreviewOverlay
+        noteId={previewNoteId}
+        open={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          setPreviewNoteId(null);
+        }}
+        onEdit={handleEditNote}
       />
     </>
   );

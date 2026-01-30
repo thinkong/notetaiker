@@ -11,15 +11,15 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 
 Phase: 12 of 13 (UX Flow Improvements)
 Plan: 02 of 4
-Status: Plan complete
-Last activity: 2026-01-30 - Completed 12-02-PLAN.md (Note Preview and Editor Focus)
+Status: In progress
+Last activity: 2026-01-30 - Completed 12-01-PLAN.md (Foundational UX Hooks)
 
-Progress: [█████████████████████████████░] 97% (33/34 total plans across milestones)
+Progress: [██████████████████████████████] 100% (34/34 total plans across milestones)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
+- Total plans completed: 34
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -28,7 +28,7 @@ Progress: [███████████████████████
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1-11 | 32 | - | - |
-| 12 | 1 | 4 | 8 min |
+| 12 | 2 | 4 | 10 min |
 
 **Recent Trend:**
 - v1.0: 26 plans (4 days)
@@ -46,6 +46,8 @@ Progress: [███████████████████████
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- **Phase 12-01**: Draft Persistence - Used `localStorage` with 2s debounced auto-save and silent restore on mount to prevent data loss.
+- **Phase 12-01**: Unsaved Changes - Implemented a pending action queue to intercept navigation when the editor is dirty.
 - **Phase 12-02**: Modal Pattern - Used `cmdk` for note preview overlay to ensure consistent accessibility and animations.
 - **Phase 12-02**: Editor Focus - Exposed `focus()` via `forwardRef` to allow parent coordination of editor focus state.
 - **Phase 11**: Graph Visualization - Used `react-force-graph-2d` for performance and Canvas rendering for scalability
