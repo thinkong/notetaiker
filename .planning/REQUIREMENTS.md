@@ -13,9 +13,9 @@
 
 ### Tagging Logic
 
-- [ ] **TAG-01**: User can manually add tags (e.g. `#tag`) during note creation
-- [ ] **TAG-02**: System distinguishes between user-defined tags and AI-generated tags in frontmatter
-- [ ] **TAG-03**: AI re-processing updates AI tags but strictly preserves user-defined tags
+- [x] **TAG-01**: User can manually add tags (e.g. `#tag`) during note creation
+- [x] **TAG-02**: System distinguishes between user-defined tags and AI-generated tags in frontmatter
+- [x] **TAG-03**: AI re-processing updates AI tags but strictly preserves user-defined tags
 
 ## Out of Scope
 
@@ -32,9 +32,9 @@
 | UX-01 | Phase 12 | Complete |
 | UX-02 | Phase 12 | Complete |
 | UX-03 | Phase 12 | Complete |
-| TAG-01 | Phase 13 | Pending |
-| TAG-02 | Phase 13 | Pending |
-| TAG-03 | Phase 13 | Pending |
+| TAG-01 | Phase 13 | Complete |
+| TAG-02 | Phase 13 | Complete |
+| TAG-03 | Phase 13 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 6 total

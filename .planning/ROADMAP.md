@@ -42,7 +42,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### ✅ v1.3 UX Polish & Flow (In Progress)
+### ✅ v1.3 UX Polish & Flow (Completed)
 
 **Milestone Goal:** Improve user experience with better navigation, manual controls, and smoother editing flow.
 
@@ -64,7 +64,7 @@ Plans:
 - [x] 12-03-PLAN.md — Save-and-reset flow integration with draft management
 - [x] 12-04-PLAN.md — Complete note navigation with human verification
 
-#### 🚧 Phase 13: Manual Tag Control
+#### ✅ Phase 13: Manual Tag Control
 **Goal**: User control over tags with intelligent AI preservation
 **Depends on**: Phase 12
 **Requirements**: TAG-01, TAG-02, TAG-03
@@ -77,9 +77,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — Schema and API Updates
-- [ ] 13-02-PLAN.md — Editor Enhancements (Hashtags)
-- [ ] 13-03-PLAN.md — UI Polish and Tag Distinction
+- [x] 13-01-PLAN.md — Schema and API Updates
+- [x] 13-02-PLAN.md — Editor Enhancements (Hashtags)
+- [x] 13-03-PLAN.md — UI Polish and Tag Distinction
 
 ## Progress
 
@@ -89,4 +89,4 @@ Plans:
 | 9-10 | v1.1 | 3/3 | Complete | 2026-01-30 |
 | 11 | v1.2 | 3/3 | Complete | 2026-01-30 |
 | 12. UX Flow Improvements | v1.3 | 4/4 | Complete | 2026-01-30 |
-| 13. Manual Tag Control | v1.3 | 0/? | Not started | - |
+| 13. Manual Tag Control | v1.3 | 3/3 | Complete | 2026-01-30 |
