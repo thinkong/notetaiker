@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { Note } from "../../types";
 import { Markdown } from "../common/Markdown";
+import { Tag } from "../common/Tag";
 
 interface SidebarNoteCardProps {
   note: Note;
@@ -30,6 +31,13 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
     ? lines.slice(1).join("\n").trim()
     : content.trim();
 
+  const manualTags = (metadata.tags || []) as string[];
+  const aiTags = (metadata.ai_tags || []) as string[];
+  const allTags = [
+    ...manualTags.map((t) => ({ label: t, variant: "manual" as const })),
+    ...aiTags.map((t) => ({ label: t, variant: "ai" as const })),
+  ];
+
   return (
     <div
       id={`note-${metadata.id}`}
@@ -54,19 +62,19 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
               {formatDistanceToNow(createdAt, { addSuffix: true })}
             </time>
           </div>
-          {metadata.tags && metadata.tags.length > 0 && (
-            <div className="flex wrap gap-1 mt-2">
-              {metadata.tags.slice(0, 3).map((tag: string) => (
-                <span
-                  key={tag}
-                  className="px-1.5 py-0.5 bg-nord-frost3/10 text-nord-frost3 dark:text-nord-frost1 text-[10px] font-medium rounded"
-                >
-                  #{tag}
-                </span>
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {allTags.slice(0, 3).map((tag, idx) => (
+                <Tag
+                  key={`${tag.variant}-${tag.label}-${idx}`}
+                  label={tag.label}
+                  variant={tag.variant}
+                  className="!px-1 !py-0 !text-[9px]"
+                />
               ))}
-              {metadata.tags.length > 3 && (
+              {allTags.length > 3 && (
                 <span className="text-[10px] text-nord-polar3 dark:text-nord-snow1 opacity-60">
-                  +{metadata.tags.length - 3}
+                  +{allTags.length - 3}
                 </span>
               )}
             </div>

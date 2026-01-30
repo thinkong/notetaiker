@@ -1,6 +1,7 @@
-import { X, Tag, Calendar } from "lucide-react";
+import { X, Tag as TagIcon, Calendar } from "lucide-react";
 import { type GraphNode } from "../../hooks/useGraphData";
 import { Markdown } from "../common/Markdown";
+import { Tag } from "../common/Tag";
 
 interface NoteSidePanelProps {
   node: GraphNode;
@@ -8,6 +9,9 @@ interface NoteSidePanelProps {
 }
 
 export function NoteSidePanel({ node, onClose }: NoteSidePanelProps) {
+  const manualTags = node.tags || [];
+  const aiTags = node.ai_tags || [];
+
   return (
     <div className="absolute top-0 right-0 w-96 h-full bg-nord-snow2 dark:bg-nord-polar0 border-l border-nord-snow0 dark:border-nord-polar1 shadow-xl flex flex-col z-20 animate-in slide-in-from-right duration-300">
       <header className="p-4 flex items-center justify-between border-b border-nord-snow0 dark:border-nord-polar1 bg-nord-snow2/80 dark:bg-nord-polar0/80 backdrop-blur-sm">
@@ -26,11 +30,21 @@ export function NoteSidePanel({ node, onClose }: NoteSidePanelProps) {
       <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
         {node.type === "note" ? (
           <div className="space-y-6">
+            {(manualTags.length > 0 || aiTags.length > 0) && (
+              <div className="flex flex-wrap gap-2">
+                {manualTags.map((tag) => (
+                  <Tag key={`manual-${tag}`} label={tag} variant="manual" />
+                ))}
+                {aiTags.map((tag) => (
+                  <Tag key={`ai-${tag}`} label={tag} variant="ai" />
+                ))}
+              </div>
+            )}
             <Markdown content={node.content || ""} />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-nord-polar3 dark:text-nord-snow1 space-y-4">
-            <Tag className="w-12 h-12 opacity-20" />
+            <TagIcon className="w-12 h-12 opacity-20" />
             <p className="text-center px-8">
               This is a tag hub for{" "}
               <span className="font-semibold text-nord-frost2">
@@ -51,7 +65,7 @@ export function NoteSidePanel({ node, onClose }: NoteSidePanelProps) {
             </>
           ) : (
             <>
-              <Tag className="w-3.5 h-3.5" />
+              <TagIcon className="w-3.5 h-3.5" />
               <span>Global Tag Hub</span>
             </>
           )}

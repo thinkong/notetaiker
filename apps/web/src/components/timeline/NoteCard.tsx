@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Info } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Note as ParsedNote } from "../../types";
 import { Markdown } from "../common/Markdown";
+import { Tag } from "../common/Tag";
+import { api } from "../../lib/api";
 
 interface NoteCardProps {
   note: ParsedNote;
@@ -11,6 +14,8 @@ interface NoteCardProps {
 export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showMetadata, setShowMetadata] = useState(false);
+  const queryClient = useQueryClient();
+
   const { content, metadata } = note;
   const createdAt = metadata.createdAt
     ? new Date(metadata.createdAt)
@@ -29,6 +34,38 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
   const displayMetadata = Object.fromEntries(
     Object.entries(metadata).filter(([key]) => key !== "content"),
   );
+
+  const handleDismissTag = async (tagToDismiss: string) => {
+    const updatedAiTags = (metadata.ai_tags || []).filter(
+      (t) => t !== tagToDismiss,
+    );
+    const updatedIgnoredTags = Array.from(
+      new Set([...(metadata.ignored_tags || []), tagToDismiss]),
+    );
+
+    try {
+      const res = await api.notes.$post({
+        json: {
+          content,
+          id: metadata.id,
+          metadata: {
+            ...metadata,
+            ai_tags: updatedAiTags,
+            ignored_tags: updatedIgnoredTags,
+          },
+        },
+      });
+
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
+      }
+    } catch (error) {
+      console.error("Failed to dismiss tag:", error);
+    }
+  };
+
+  const manualTags = metadata.tags || [];
+  const aiTags = metadata.ai_tags || [];
 
   return (
     <div
@@ -83,15 +120,18 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
         </button>
       ) : null}
 
-      {metadata.tags && metadata.tags.length > 0 && (
+      {(manualTags.length > 0 || aiTags.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {metadata.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-nord-snow2 dark:bg-nord-polar3 text-nord-polar3 dark:text-nord-frost2 text-xs font-medium rounded-full"
-            >
-              #{tag}
-            </span>
+          {manualTags.map((tag) => (
+            <Tag key={`manual-${tag}`} label={tag} variant="manual" />
+          ))}
+          {aiTags.map((tag) => (
+            <Tag
+              key={`ai-${tag}`}
+              label={tag}
+              variant="ai"
+              onDismiss={() => handleDismissTag(tag)}
+            />
           ))}
         </div>
       )}

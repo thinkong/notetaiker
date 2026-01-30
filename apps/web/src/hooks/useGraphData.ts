@@ -8,6 +8,8 @@ export interface GraphNode {
   name: string;
   type: NodeType;
   content?: string;
+  tags?: string[];
+  ai_tags?: string[];
 }
 
 export interface GraphLink {
@@ -56,11 +58,16 @@ export function useGraphData() {
               .substring(0, 40) ||
             "Untitled",
           content: note.content,
+          tags: note.metadata.tags || [],
+          ai_tags: note.metadata.ai_tags || [],
         });
 
         // 2. Process Tags
-        const tags = note.metadata.tags || [];
-        tags.forEach((tag: string) => {
+        const allTags = [
+          ...(note.metadata.tags || []),
+          ...(note.metadata.ai_tags || []),
+        ];
+        allTags.forEach((tag: string) => {
           const tagId = `tag-${tag}`;
 
           // Add Tag Node if it doesn't exist yet

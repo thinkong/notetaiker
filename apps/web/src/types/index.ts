@@ -4,6 +4,8 @@ export interface NoteMetadata {
   createdAt: string;
   updatedAt: string;
   tags?: string[];
+  ai_tags?: string[];
+  ignored_tags?: string[];
   ai?: boolean;
   [key: string]: unknown;
 }
