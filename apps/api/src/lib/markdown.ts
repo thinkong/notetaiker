@@ -8,6 +8,8 @@ export const NoteFrontmatterSchema = z
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     tags: z.array(z.string()).optional(),
+    ai_tags: z.array(z.string()).optional(),
+    ignored_tags: z.array(z.string()).optional(),
     ai: z.boolean().optional(),
   })
   .catchall(z.any());
@@ -30,6 +32,20 @@ export function parseMarkdown(fileContent: string): ParsedNote {
   };
 }
 
+export function toTitleCase(str: string): string {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+export function extractHashtags(content: string): string[] {
+  const hashtagRegex = /#(\w+)/g;
+  const matches = content.matchAll(hashtagRegex);
+  const tags = Array.from(matches).map((match) => toTitleCase(match[1]));
+  return Array.from(new Set(tags));
+}
+
 export function mergeTags(
   existing: string[] | string | undefined,
   newTags: string[],
@@ -39,12 +55,6 @@ export function mergeTags(
     : typeof existing === "string"
       ? existing.split(",").map((t) => t.trim())
       : [];
-
-  const toTitleCase = (str: string) =>
-    str
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
 
   const combined = [...existingArray, ...newTags].map((t) => toTitleCase(t));
   return Array.from(new Set(combined));

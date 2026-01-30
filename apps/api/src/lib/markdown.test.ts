@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { NoteFrontmatterSchema, mergeTags } from "./markdown";
+import {
+  NoteFrontmatterSchema,
+  mergeTags,
+  extractHashtags,
+} from "./markdown";
 
 describe("NoteFrontmatterSchema", () => {
   it("should parse valid frontmatter with tags", () => {
@@ -9,10 +13,14 @@ describe("NoteFrontmatterSchema", () => {
       createdAt: "2026-01-29T00:00:00Z",
       updatedAt: "2026-01-29T00:00:00Z",
       tags: ["Tag1", "Tag2"],
+      ai_tags: ["Ai1"],
+      ignored_tags: ["Ignored1"],
       ai: true,
     };
     const parsed = NoteFrontmatterSchema.parse(data);
     expect(parsed.tags).toEqual(["Tag1", "Tag2"]);
+    expect(parsed.ai_tags).toEqual(["Ai1"]);
+    expect(parsed.ignored_tags).toEqual(["Ignored1"]);
     expect(parsed.ai).toBe(true);
   });
 
@@ -55,5 +63,25 @@ describe("mergeTags", () => {
     // Note: my current toTitleCase is simple, it might not handle hyphens perfectly but let's check current implementation
     // str.split(' ').map(...)
     expect(result).toEqual(["Ai-assisted", "React Hooks"]);
+  });
+});
+
+describe("extractHashtags", () => {
+  it("should extract hashtags and normalize to title case", () => {
+    const content = "This is a note with #react and #TYPESCRIPT and #node_js tags.";
+    const tags = extractHashtags(content);
+    expect(tags).toEqual(["React", "Typescript", "Node_js"]);
+  });
+
+  it("should deduplicate hashtags", () => {
+    const content = "#react #REACT #react";
+    const tags = extractHashtags(content);
+    expect(tags).toEqual(["React"]);
+  });
+
+  it("should return empty array if no hashtags found", () => {
+    const content = "This is a note with no hashtags.";
+    const tags = extractHashtags(content);
+    expect(tags).toEqual([]);
   });
 });
