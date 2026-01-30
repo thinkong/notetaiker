@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { env } from "@notetaiker/env";
 import fs from "node:fs";
 import path from "node:path";
@@ -82,7 +83,7 @@ app.use("*", async (c, next) => {
   c.set("storageService", storageService);
   c.set("indexerService", indexerService);
   await next();
-});
+}).use("*", cors());
 
 console.log("Initializing notes directory at:", notesDir);
 
