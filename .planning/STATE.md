@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Phase 12 - UX Flow Improvements
+**Current focus:** Phase 13 - Manual Tag Control
 
 ## Current Position
 
-Phase: 12 Complete
-Next: Phase 13 (Manual Tag Control)
-Status: Ready for next phase
-Last activity: 2026-01-30 - Phase 12 complete
+Phase: 13 (Manual Tag Control)
+Plan: 01 of 03
+Status: In progress - Completed 13-01-PLAN.md
+Last activity: 2026-01-30 - Separated AI tags from manual tags
 
-Progress: [██████████████████████████████] 100% (36/36 total plans across milestones)
+Progress: [████████████████████████████░░] 95% (37/39 total plans across milestones)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 36
+- Total plans completed: 37
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -29,12 +29,14 @@ Progress: [███████████████████████
 |-------|-------|-------|----------|
 | 1-11 | 32 | - | - |
 | 12 | 4 | 4 | 11 min |
+| 13 | 1 | 3 | 6 min |
 
 **Recent Trend:**
 - v1.0: 26 plans (4 days)
 - v1.1: 3 plans
 - v1.2: 3 plans
 - v1.3: 4 plans (Phase 12 complete)
+- Phase 13: 1 plan complete
 - Trend: Stable velocity
 
 *Updated after each plan completion*
@@ -46,6 +48,7 @@ Progress: [███████████████████████
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- **Phase 13-01**: AI Isolation - Stored AI suggestions in `ai_tags` and respected `ignored_tags` to prevent overwriting user intent.
 - **Phase 12**: UX Flow - Implemented localStorage draft persistence and unsaved changes protection
 - **Phase 12-01**: Draft Persistence - Used `localStorage` with 2s debounced auto-save and silent restore on mount to prevent data loss.
 - **Phase 12-01**: Unsaved Changes - Implemented a pending action queue to intercept navigation when the editor is dirty.
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 12-04-PLAN.md
+Stopped at: Completed 13-01-PLAN.md
 Resume file: None
