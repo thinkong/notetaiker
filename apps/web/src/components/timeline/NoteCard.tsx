@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import type { Note as ParsedNote } from "../../types";
+import { Markdown } from "../common/Markdown";
 
 interface NoteCardProps {
   note: ParsedNote;
@@ -40,11 +41,11 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
       </div>
 
       <div
-        className={`text-nord-polar1 dark:text-nord-snow2 text-sm leading-relaxed overflow-hidden transition-all duration-300 ${
+        className={`text-sm overflow-hidden transition-all duration-300 ${
           isExpanded ? "max-h-full" : "max-h-24 line-clamp-3"
         }`}
       >
-        <div className="whitespace-pre-wrap">{bodyContent}</div>
+        <Markdown content={bodyContent} />
       </div>
 
       {bodyContent.split("\n").length > 3 || bodyContent.length > 200 ? (
