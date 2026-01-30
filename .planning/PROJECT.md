@@ -44,7 +44,7 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 ## Context
 
 Shipped v1.0 MVP, v1.1 Polish, and v1.2 Graph View.
-System is stable with ~3000 LOC TypeScript.
+System is stable with ~4250 LOC TypeScript.
 Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph.
 
 ## Constraints

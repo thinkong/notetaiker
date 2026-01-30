@@ -1,8 +1,8 @@
-# Roadmap: NoteTaiker
+# Roadmap: notetAIker
 
 ## Overview
 
-Milestone v1.2 focuses on visual exploration of notes via a force-directed graph.
+notetAIker will be built as a local-first, AI-enhanced note-taking system. The journey starts with establishing a rock-solid filesystem-based storage engine (Atomic Notes), followed by a high-performance capture interface (sub-100ms readiness). Once core capture and display are stable, we will integrate a background AI worker that enriches notes with automated tags and YAML metadata, finally polishing the system for a seamless v1 release.
 
 ## Milestones
 
@@ -40,6 +40,11 @@ Milestone v1.2 focuses on visual exploration of notes via a force-directed graph
 - [x] Phase 11: Graph View (3/3 plans)
 
 </details>
+
+### 🚧 v1.3 [Next Milestone] (Planning)
+
+- [ ] Phase 12: [TBD]
+- [ ] Phase 13: [TBD]
 
 ## Progress
 
