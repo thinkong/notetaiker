@@ -9,6 +9,7 @@ import { languages } from "@codemirror/language-data";
 import { history } from "@codemirror/commands";
 import { bracketMatching } from "@codemirror/language";
 import { keymap } from "@codemirror/view";
+import { Prec } from "@codemirror/state";
 import { nordDark, nordLight } from "./theme";
 import { markdownStyleExtension } from "./extensions/markdownStyle";
 import { linkHandler } from "./extensions/links";
@@ -16,6 +17,7 @@ import { linkHandler } from "./extensions/links";
 export interface EditorProps {
   value: string;
   onChange: (value: string) => void;
+  onSave?: (value: string) => void;
   theme?: "light" | "dark";
   placeholder?: string;
   className?: string;
@@ -24,6 +26,7 @@ export interface EditorProps {
 export const Editor: React.FC<EditorProps> = ({
   value,
   onChange,
+  onSave,
   theme: controlledTheme,
   placeholder = "Start typing...",
   className = "",
@@ -58,8 +61,22 @@ export const Editor: React.FC<EditorProps> = ({
       history(),
       bracketMatching(),
       keymap.of([{ key: "Enter", run: insertNewlineContinueMarkup }]),
+      Prec.highest(
+        keymap.of([
+          {
+            key: "Mod-Enter",
+            run: (view) => {
+              if (onSave) {
+                onSave(view.state.doc.toString());
+                return true;
+              }
+              return false;
+            },
+          },
+        ]),
+      ),
     ],
-    [],
+    [onSave],
   );
 
   const handleChange = useCallback(

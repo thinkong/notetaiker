@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { Settings } from "lucide-react";
+import { Settings, Save } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor } from "./components/editor/Editor";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
@@ -19,11 +19,10 @@ function MainCapture() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { status, save, forceSave } = useDebouncedSave();
+  const { status, forceSave } = useDebouncedSave();
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
-    save(newContent);
   };
 
   const handleSelectNote = (noteId: string) => {
@@ -50,6 +49,7 @@ function MainCapture() {
       forceSave(content);
     },
     { enableOnFormTags: true },
+    [content, forceSave],
   );
 
   return (
@@ -64,6 +64,14 @@ function MainCapture() {
           </p>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => forceSave(content)}
+            className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-full hover:bg-nord-frost2 transition-colors font-medium shadow-sm hover:shadow-md"
+            title="Save (Ctrl + Enter)"
+          >
+            <Save className="w-4 h-4" />
+            <span className="hidden sm:inline">Save</span>
+          </button>
           <button
             onClick={() => setIsSearchOpen(true)}
             className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-colors rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2"
@@ -89,6 +97,7 @@ function MainCapture() {
         <Editor
           value={content}
           onChange={handleContentChange}
+          onSave={forceSave}
           placeholder="Capture your thoughts..."
         />
       </div>
