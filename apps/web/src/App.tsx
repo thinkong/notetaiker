@@ -36,8 +36,14 @@ function MainCapture() {
     );
   });
 
-  const { markDirty, markClean, showDialog, confirmDiscard, cancelAction } =
-    useUnsavedChanges();
+  const {
+    markDirty,
+    markClean,
+    requestAction,
+    showDialog,
+    confirmDiscard,
+    cancelAction,
+  } = useUnsavedChanges();
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -86,10 +92,11 @@ function MainCapture() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewNoteId, setPreviewNoteId] = useState<string | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleNoteClick = (noteId: string) => {
-    setPreviewNoteId(noteId);
-    setShowPreview(true);
+    requestAction(() => {
+      setPreviewNoteId(noteId);
+      setShowPreview(true);
+    });
   };
 
   const handleEditNote = async (noteId: string) => {
@@ -165,7 +172,7 @@ function MainCapture() {
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       >
-        <SidebarTimeline />
+        <SidebarTimeline onNoteClick={handleNoteClick} />
       </Sidebar>
 
       {/* Main Content */}

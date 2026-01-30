@@ -4,7 +4,13 @@ import { useTimeline } from "../../hooks/useTimeline";
 import { SidebarNoteCard } from "./SidebarNoteCard";
 import { FileText } from "lucide-react";
 
-export const SidebarTimeline: React.FC = () => {
+interface SidebarTimelineProps {
+  onNoteClick?: (noteId: string) => void;
+}
+
+export const SidebarTimeline: React.FC<SidebarTimelineProps> = ({
+  onNoteClick,
+}) => {
   const {
     data,
     fetchNextPage,
@@ -75,7 +81,11 @@ export const SidebarTimeline: React.FC = () => {
   return (
     <div className="p-3 space-y-2">
       {allNotes.map((note) => (
-        <SidebarNoteCard key={note.metadata.id} note={note} />
+        <SidebarNoteCard
+          key={note.metadata.id}
+          note={note}
+          onClick={onNoteClick}
+        />
       ))}
 
       {/* Sentinel element for infinite scroll */}

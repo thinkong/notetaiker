@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
-import type { Note as ParsedNote } from "../../types";
+import type { ParsedNote } from "../../types";
 import { Markdown } from "../common/Markdown";
 
 interface SidebarNoteCardProps {
   note: ParsedNote;
+  onClick?: (noteId: string) => void;
 }
 
-export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({ note }) => {
+export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
+  note,
+  onClick,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { content, metadata } = note;
   const createdAt = metadata.createdAt
@@ -29,12 +33,14 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({ note }) => {
   return (
     <div
       id={`note-${metadata.id}`}
-      className="bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border border-transparent hover:border-nord-frost3/30 transition-all duration-200 overflow-hidden group"
+      className="bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border border-transparent hover:border-nord-frost3/30 transition-all duration-200 overflow-hidden group cursor-pointer"
+      onClick={() => {
+        if (onClick && metadata.id) {
+          onClick(metadata.id);
+        }
+      }}
     >
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-3 text-left flex items-start gap-2"
-      >
+      <div className="w-full p-3 text-left flex items-start gap-2">
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-nord-polar1 dark:text-nord-snow2 truncate">
             {title || "Untitled Note"}
@@ -49,7 +55,7 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({ note }) => {
             </time>
           </div>
           {metadata.tags && metadata.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="flex wrap gap-1 mt-2">
               {metadata.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
@@ -66,14 +72,21 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({ note }) => {
             </div>
           )}
         </div>
-        <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent triggering card onClick
+            setIsExpanded(!isExpanded);
+          }}
+          className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-nord-snow0 dark:hover:bg-nord-polar1 rounded"
+          aria-label={isExpanded ? "Collapse" : "Expand"}
+        >
           {isExpanded ? (
             <ChevronUp className="w-4 h-4 text-nord-polar3 dark:text-nord-snow1" />
           ) : (
             <ChevronDown className="w-4 h-4 text-nord-polar3 dark:text-nord-snow1" />
           )}
-        </div>
-      </button>
+        </button>
+      </div>
 
       {/* Expanded content */}
       <div
