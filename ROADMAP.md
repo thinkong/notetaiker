@@ -11,14 +11,17 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation** - Project scaffolding and architecture setup.
+- [x] **Phase 1: Foundation** - Project scaffolding and architecture setup.
 - [x] **Phase 2: Storage Engine** - Atomic Markdown file operations and filesystem management.
-- [ ] **Phase 3: Editor Core** - Instant-capture web interface with Markdown support.
-- [ ] **Phase 4: Timeline UI** - Reverse-chronological note stream and basic navigation.
-- [ ] **Phase 5: AI Configuration** - Cloud API key management and settings.
-- [ ] **Phase 6: AI Processor** - Background worker orchestration for note processing.
-- [ ] **Phase 7: Smart Tagging** - Automated tag generation and YAML frontmatter injection.
-- [ ] **Phase 8: V1 Polish** - Performance optimization and final validation.
+- [x] **Phase 3: Editor Core** - Instant-capture web interface with Markdown support.
+- [x] **Phase 4: Timeline UI** - Reverse-chronological note stream and basic navigation.
+- [x] **Phase 5: AI Configuration** - Cloud API key management and settings.
+- [x] **Phase 6: AI Processor** - Background worker orchestration for note processing.
+- [x] **Phase 7: Smart Tagging** - Automated tag generation and YAML frontmatter injection.
+- [x] **Phase 8: V1 Polish** - Performance optimization and final validation.
+- [x] **Phase 9: AI Provider Resilience** - Graceful fallbacks for AI configuration.
+- [x] **Phase 10: Display & Control Polish** - UI refinements and standardized controls.
+- [x] **Phase 11: Graph View** - Visual exploration of notes.
 
 ## Phase Details
 
@@ -110,10 +113,10 @@ Plans:
 
 Plans:
 
-- [ ] 05-01-PLAN.md — Implement backend secrets service and settings routes
-- [ ] 05-02-PLAN.md — Implement AI credential validation endpoints
-- [ ] 05-03-PLAN.md — Create Settings UI shell and provider forms
-- [ ] 05-04-PLAN.md — Integrate Settings UI with backend (save/test)
+- [x] 05-01-PLAN.md — Implement backend secrets service and settings routes
+- [x] 05-02-PLAN.md — Implement AI credential validation endpoints
+- [x] 05-03-PLAN.md — Create Settings UI shell and provider forms
+- [x] 05-04-PLAN.md — Integrate Settings UI with backend (save/test)
 
 ### Phase 6: AI Processor
 
@@ -125,12 +128,13 @@ Plans:
 1. New notes trigger a background processing job without blocking the UI.
 2. Processing status (queued, working, complete) is tracked by the system.
 3. The worker handles failures and retries gracefully.
-   **Plans**: TBD
+   **Plans**: 3 plans
 
 Plans:
 
-- [ ] 06-01-PLAN.md: Implement background job queue/worker
-- [ ] 06-02-PLAN.md: Link file creation events to AI worker
+- [x] 06-01-PLAN.md: Implement background job queue/worker
+- [x] 06-02-PLAN.md: Link file creation events to AI worker
+- [x] 06-03-PLAN.md: Implement real-time SSE updates
 
 ### Phase 7: Smart Tagging
 
@@ -142,12 +146,13 @@ Plans:
 1. AI successfully generates 2-5 relevant tags for a given note's content.
 2. Generated tags are injected into the file's YAML frontmatter.
 3. Note files maintain standard Markdown compatibility after metadata injection.
-   **Plans**: TBD
+   **Plans**: 3 plans
 
 Plans:
 
-- [ ] 07-01-PLAN.md: Integrate LLM prompts for tag generation
-- [ ] 07-02-PLAN.md: Implement YAML frontmatter parser/injector
+- [x] 07-01-PLAN.md: Integrate LLM prompts for tag generation
+- [x] 07-02-PLAN.md: Implement YAML frontmatter parser/injector
+- [x] 07-03-PLAN.md: Display tags in NoteCard UI
 
 ### Phase 8: V1 Polish
 
@@ -159,25 +164,76 @@ Plans:
 1. Cold start to typing readiness consistently meets the 100ms target.
 2. User can search/filter notes by the newly generated tags.
 3. End-to-end "Capture -> Tag -> View" workflow is seamless.
-   **Plans**: TBD
+   **Plans**: 2 plans
 
 Plans:
 
-- [ ] 08-01-PLAN.md: Performance profiling and optimization
-- [ ] 08-02-PLAN.md: UI/UX refinement and final bug fixes
+- [x] 08-01-PLAN.md: Performance profiling and optimization (Indexer)
+- [x] 08-02-PLAN.md: UI/UX refinement (Command Palette)
+
+### Phase 9: AI Provider Resilience
+
+**Goal**: Ensure AI features fail gracefully when providers are misconfigured.
+**Depends on**: Phase 5
+**Requirements**: [AI-FIX-01]
+**Success Criteria**:
+
+1. System uses default provider Base URL when user leaves it empty.
+2. Settings UI shows default URLs as placeholders.
+   **Plans**: 1 plan
+
+Plans:
+
+- [x] 09-01-PLAN.md: Implement resilient configuration defaults
+
+### Phase 10: Display & Control Polish
+
+**Goal**: Refine note rendering and standardize controls.
+**Depends on**: Phase 8
+**Requirements**: [UI-FIX-01, UI-FIX-02]
+**Success Criteria**:
+
+1. Note view parses frontmatter and excludes it from body rendering.
+2. User can save note using `Ctrl+Enter` shortcut.
+   **Plans**: 2 plans
+
+Plans:
+
+- [x] 10-01-PLAN.md: Implement metadata toggle and frontmatter stripping
+- [x] 10-02-PLAN.md: Standardize save shortcut
+
+### Phase 11: Graph View
+
+**Goal**: Visual exploration of notes via a force-directed graph based on tags and links.
+**Depends on**: Phase 10
+**Requirements**: [GRAPH-01, GRAPH-02]
+**Success Criteria**:
+
+1. User can view a graph visualization of their notes.
+2. Nodes represent notes; edges represent shared tags.
+   **Plans**: 3 plans
+
+Plans:
+
+- [x] 11-01-PLAN.md: Setup Infrastructure and Data Transformation
+- [x] 11-02-PLAN.md: Core Graph Visualization
+- [x] 11-03-PLAN.md: Note Side Panel and Navigation
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> ... -> 11
 
-| Phase               | Plans Complete | Status      | Completed  |
+| Phase | Plans Complete | Status | Completed |
 | ------------------- | -------------- | ----------- | ---------- |
-| 1. Foundation       | 4/4            | Complete    | 2026-01-26 |
-| 2. Storage Engine   | 3/3            | Complete    | 2026-01-27 |
-| 3. Editor Core      | 4/4            | Complete    | 2026-01-27 |
-| 4. Timeline UI      | 3/3            | Complete    | 2026-01-27 |
-| 5. AI Configuration | 0/2            | Not started | -          |
-| 6. AI Processor     | 0/2            | Not started | -          |
-| 7. Smart Tagging    | 0/2            | Not started | -          |
-| 8. V1 Polish        | 0/2            | Not started | -          |
+| 1. Foundation | 4/4 | Complete | 2026-01-26 |
+| 2. Storage Engine | 3/3 | Complete | 2026-01-27 |
+| 3. Editor Core | 4/4 | Complete | 2026-01-27 |
+| 4. Timeline UI | 3/3 | Complete | 2026-01-27 |
+| 5. AI Configuration | 4/4 | Complete | 2026-01-28 |
+| 6. AI Processor | 3/3 | Complete | 2026-01-28 |
+| 7. Smart Tagging | 3/3 | Complete | 2026-01-29 |
+| 8. V1 Polish | 2/2 | Complete | 2026-01-29 |
+| 9. AI Resilience | 1/1 | Complete | 2026-01-29 |
+| 10. Display Polish | 2/2 | Complete | 2026-01-30 |
+| 11. Graph View | 3/3 | Complete | 2026-01-30 |
