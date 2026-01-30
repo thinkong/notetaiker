@@ -1,11 +1,19 @@
+import { useState, useMemo } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGraphData } from "../../hooks/useGraphData";
 import { ForceGraph } from "./ForceGraph";
+import { NoteSidePanel } from "./NoteSidePanel";
 
 export function GraphView() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useGraphData();
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
+  const selectedNode = useMemo(() => {
+    if (!selectedNodeId || !data) return null;
+    return data.nodes.find((n) => n.id === selectedNodeId) || null;
+  }, [selectedNodeId, data]);
 
   return (
     <div className="flex flex-col h-screen bg-nord-snow2 dark:bg-nord-polar0 overflow-hidden">
@@ -21,33 +29,40 @@ export function GraphView() {
           Graph View
         </h1>
       </header>
-      <main className="flex-1 relative">
-        {isLoading ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-nord-frost2" />
-            <p className="text-nord-polar3 dark:text-nord-snow1">
-              Loading knowledge graph...
-            </p>
-          </div>
-        ) : error ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-nord-aurora0">Error loading graph data.</p>
-          </div>
-        ) : data ? (
-          <ForceGraph
-            data={data}
-            onNodeClick={(node) => {
-              if (node.type === "note") {
-                navigate(`/?id=${node.id}`);
-              }
-            }}
+      <main className="flex-1 relative flex">
+        <div className="flex-1 relative">
+          {isLoading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="w-8 h-8 animate-spin text-nord-frost2" />
+              <p className="text-nord-polar3 dark:text-nord-snow1">
+                Loading knowledge graph...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-nord-aurora0">Error loading graph data.</p>
+            </div>
+          ) : data ? (
+            <ForceGraph
+              data={data}
+              onNodeClick={(node) => {
+                setSelectedNodeId(node.id);
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-nord-polar3 dark:text-nord-snow1">
+                No data available.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {selectedNode && (
+          <NoteSidePanel
+            node={selectedNode}
+            onClose={() => setSelectedNodeId(null)}
           />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-nord-polar3 dark:text-nord-snow1">
-              No data available.
-            </p>
-          </div>
         )}
       </main>
     </div>
