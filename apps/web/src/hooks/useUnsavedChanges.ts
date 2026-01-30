@@ -19,7 +19,7 @@ export function useUnsavedChanges() {
         return true;
       }
     },
-    [hasUnsavedChanges]
+    [hasUnsavedChanges],
   );
 
   const confirmDiscard = useCallback(() => {

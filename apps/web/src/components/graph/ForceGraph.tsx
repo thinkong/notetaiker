@@ -47,7 +47,7 @@ const NODE_R = {
 const LABEL_THRESHOLD = 3; // Zoom level to start showing labels
 
 export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
-  const fgRef = useRef<ForceGraphMethods>();
+  const fgRef = useRef<ForceGraphMethods | null>(null);
   const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
   const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
   const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
@@ -165,7 +165,8 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
 
   return (
     <ForceGraph2D
-      ref={fgRef}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={fgRef as any}
       graphData={data}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       nodeCanvasObject={paintNode as any}
