@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
-import type { ParsedNote } from "../../types";
+import type { Note } from "../../types";
 import { Markdown } from "../common/Markdown";
 
 interface SidebarNoteCardProps {
-  note: ParsedNote;
+  note: Note;
   onClick?: (noteId: string) => void;
 }
 
@@ -56,7 +56,7 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
           </div>
           {metadata.tags && metadata.tags.length > 0 && (
             <div className="flex wrap gap-1 mt-2">
-              {metadata.tags.slice(0, 3).map((tag) => (
+              {metadata.tags.slice(0, 3).map((tag: string) => (
                 <span
                   key={tag}
                   className="px-1.5 py-0.5 bg-nord-frost3/10 text-nord-frost3 dark:text-nord-frost1 text-[10px] font-medium rounded"

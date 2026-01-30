@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useMemo,
   useEffect,
@@ -7,7 +7,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react";
-import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
+import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
   markdown,
   markdownLanguage,
