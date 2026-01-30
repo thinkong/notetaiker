@@ -1,5 +1,13 @@
-import React, { useCallback, useMemo, useEffect, useState } from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import React, {
+  useCallback,
+  useMemo,
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
   markdown,
   markdownLanguage,
@@ -23,99 +31,117 @@ export interface EditorProps {
   className?: string;
 }
 
-export const Editor: React.FC<EditorProps> = ({
-  value,
-  onChange,
-  onSave,
-  theme: controlledTheme,
-  placeholder = "Start typing...",
-  className = "",
-}) => {
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(
-    typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
-  );
+export interface EditorHandle {
+  focus: () => void;
+}
 
-  useEffect(() => {
-    if (controlledTheme) return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? "dark" : "light");
-    };
-
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, [controlledTheme]);
-
-  const activeTheme = controlledTheme || systemTheme;
-  const cmTheme = activeTheme === "dark" ? nordDark : nordLight;
-
-  const extensions = useMemo(
-    () => [
-      markdown({ base: markdownLanguage, codeLanguages: languages }),
-      markdownStyleExtension,
-      linkHandler,
-      history(),
-      bracketMatching(),
-      keymap.of([{ key: "Enter", run: insertNewlineContinueMarkup }]),
-      Prec.highest(
-        keymap.of([
-          {
-            key: "Mod-Enter",
-            run: (view) => {
-              if (onSave) {
-                onSave(view.state.doc.toString());
-                return true;
-              }
-              return false;
-            },
-          },
-        ]),
-      ),
-    ],
-    [onSave],
-  );
-
-  const handleChange = useCallback(
-    (val: string) => {
-      onChange(val);
+export const Editor = forwardRef<EditorHandle, EditorProps>(
+  (
+    {
+      value,
+      onChange,
+      onSave,
+      theme: controlledTheme,
+      placeholder = "Start typing...",
+      className = "",
     },
-    [onChange],
-  );
+    ref,
+  ) => {
+    const cmRef = useRef<ReactCodeMirrorRef>(null);
 
-  return (
-    <div className={`w-full h-full ${className}`}>
-      <CodeMirror
-        value={value}
-        height="100%"
-        theme={cmTheme}
-        extensions={extensions}
-        onChange={handleChange}
-        autoFocus
-        basicSetup={{
-          lineNumbers: false,
-          foldGutter: false,
-          highlightActiveLine: false,
-          highlightActiveLineGutter: false,
-          dropCursor: true,
-          allowMultipleSelections: true,
-          indentOnInput: true,
-          syntaxHighlighting: true,
-          bracketMatching: true,
-          closeBrackets: true,
-          autocompletion: true,
-          rectangularSelection: true,
-          crosshairCursor: true,
-          highlightSelectionMatches: true,
-          tabSize: 2,
-        }}
-        placeholder={placeholder}
-      />
-    </div>
-  );
-};
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        cmRef.current?.view?.focus();
+      },
+    }));
+
+    const [systemTheme, setSystemTheme] = useState<"light" | "dark">(
+      typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light",
+    );
+
+    useEffect(() => {
+      if (controlledTheme) return;
+
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = (e: MediaQueryListEvent) => {
+        setSystemTheme(e.matches ? "dark" : "light");
+      };
+
+      mediaQuery.addEventListener("change", handler);
+      return () => mediaQuery.removeEventListener("change", handler);
+    }, [controlledTheme]);
+
+    const activeTheme = controlledTheme || systemTheme;
+    const cmTheme = activeTheme === "dark" ? nordDark : nordLight;
+
+    const extensions = useMemo(
+      () => [
+        markdown({ base: markdownLanguage, codeLanguages: languages }),
+        markdownStyleExtension,
+        linkHandler,
+        history(),
+        bracketMatching(),
+        keymap.of([{ key: "Enter", run: insertNewlineContinueMarkup }]),
+        Prec.highest(
+          keymap.of([
+            {
+              key: "Mod-Enter",
+              run: (view) => {
+                if (onSave) {
+                  onSave(view.state.doc.toString());
+                  return true;
+                }
+                return false;
+              },
+            },
+          ]),
+        ),
+      ],
+      [onSave],
+    );
+
+    const handleChange = useCallback(
+      (val: string) => {
+        onChange(val);
+      },
+      [onChange],
+    );
+
+    return (
+      <div className={`w-full h-full ${className}`}>
+        <CodeMirror
+          ref={cmRef}
+          value={value}
+          height="100%"
+          theme={cmTheme}
+          extensions={extensions}
+          onChange={handleChange}
+          autoFocus
+          basicSetup={{
+            lineNumbers: false,
+            foldGutter: false,
+            highlightActiveLine: false,
+            highlightActiveLineGutter: false,
+            dropCursor: true,
+            allowMultipleSelections: true,
+            indentOnInput: true,
+            syntaxHighlighting: true,
+            bracketMatching: true,
+            closeBrackets: true,
+            autocompletion: true,
+            rectangularSelection: true,
+            crosshairCursor: true,
+            highlightSelectionMatches: true,
+            tabSize: 2,
+          }}
+          placeholder={placeholder}
+        />
+      </div>
+    );
+  },
+);
 
 export default Editor;
