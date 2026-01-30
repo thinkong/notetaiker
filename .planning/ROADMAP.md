@@ -77,6 +77,21 @@ Plans:
 - [ ] 10-01-PLAN.md — Metadata Toggle and Frontmatter Polish
 - [ ] 10-02-PLAN.md — Universal Save Shortcut and Save Feedback
 
+#### Phase 11: Graph View
+**Goal**: Visual exploration of notes via a force-directed graph based on tags and links.
+**Depends on**: Phase 10
+**Requirements**: [GRAPH-01, GRAPH-02]
+**Success Criteria**:
+  1. User can view a graph visualization of their notes.
+  2. Nodes represent notes; edges represent shared tags or internal links.
+  3. Clicking a node navigates to the note.
+**Plans**: 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Setup Infrastructure and Data Transformation
+- [ ] 11-02-PLAN.md — Core Graph Visualization
+- [ ] 11-03-PLAN.md — Note Side Panel and Navigation
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -84,3 +99,4 @@ Plans:
 | 1-8 | v1.0 | 26/26 | Complete | 2026-01-29 |
 | 9 | v1.1 | 1/1 | Complete | 2026-01-29 |
 | 10 | v1.1 | 0/2 | Ready | - |
+| 11 | v1.2 | 0/3 | Ready | - |
