@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { Settings, Save, Search } from "lucide-react";
+import { Settings, Save, Search, Share2 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor } from "./components/editor/Editor";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
@@ -10,6 +10,7 @@ import { SettingsPage } from "./components/settings/SettingsPage";
 import { SearchPalette } from "./components/search/SearchPalette";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { SidebarTimeline } from "./components/sidebar/SidebarTimeline";
+import { GraphView } from "./components/graph/GraphView";
 
 const queryClient = new QueryClient();
 
@@ -117,6 +118,14 @@ function MainCapture() {
                 <Search className="w-6 h-6" />
               </button>
               <button
+                onClick={() => navigate("/graph")}
+                className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-all rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2 active:scale-95"
+                aria-label="Graph View"
+                title="Graph View"
+              >
+                <Share2 className="w-6 h-6" />
+              </button>
+              <button
                 onClick={() => navigate("/settings")}
                 className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-all rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2 active:scale-95"
                 aria-label="Settings"
@@ -155,6 +164,7 @@ function App() {
         <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 transition-colors duration-300">
           <Routes>
             <Route path="/" element={<MainCapture />} />
+            <Route path="/graph" element={<GraphView />} />
             <Route
               path="/settings"
               element={
