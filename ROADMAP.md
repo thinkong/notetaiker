@@ -22,6 +22,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - [x] **Phase 9: AI Provider Resilience** - Graceful fallbacks for AI configuration.
 - [x] **Phase 10: Display & Control Polish** - UI refinements and standardized controls.
 - [x] **Phase 11: Graph View** - Visual exploration of notes.
+- [ ] **Phase 12: UX Flow Improvements** - Seamless navigation and editing session management.
+- [ ] **Phase 13: Manual Tag Control** - User control over tags with intelligent AI preservation.
 
 ## Phase Details
 

@@ -74,10 +74,12 @@ Plans:
   3. When AI re-processes a note, user-defined tags remain untouched while AI tags update
   4. User can inspect note frontmatter and identify which tags came from AI vs manual input
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — Schema and API Updates
+- [ ] 13-02-PLAN.md — Editor Enhancements (Hashtags)
+- [ ] 13-03-PLAN.md — UI Polish and Tag Distinction
 
 ## Progress
 
