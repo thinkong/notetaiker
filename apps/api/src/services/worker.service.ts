@@ -4,7 +4,7 @@ import { QueueService } from "./queue.service";
 import type { EventsService } from "./events.service";
 import type { AIService } from "./ai.service";
 import type { StorageService } from "./storage.service";
-import { mergeTags } from "../lib/markdown";
+import { mergeTags, toTitleCase } from "../lib/markdown";
 
 export class WorkerService {
   private queue: PQueue;
@@ -80,26 +80,42 @@ export class WorkerService {
           }
 
           const generatedTags = await this.aiService.generateTags(note.content);
-          const updatedTags = mergeTags(note.metadata.tags, generatedTags);
 
-          // Only save if tags actually changed
-          const existingTags = note.metadata.tags || [];
-          const tagsChanged =
-            updatedTags.length !== existingTags.length ||
-            !updatedTags.every((t) => existingTags.includes(t));
+          const manualTags = note.metadata.tags || [];
+          const ignoredTags = note.metadata.ignored_tags || [];
 
-          if (tagsChanged) {
+          // Filter out tags that are already in manual tags or ignored tags
+          const filteredGenerated = generatedTags.filter((t) => {
+            const titleCased = toTitleCase(t);
+            return (
+              !manualTags.includes(titleCased) &&
+              !ignoredTags.includes(titleCased)
+            );
+          });
+
+          const updatedAiTags = mergeTags(
+            note.metadata.ai_tags,
+            filteredGenerated,
+          );
+
+          // Only save if ai_tags actually changed
+          const existingAiTags = note.metadata.ai_tags || [];
+          const aiTagsChanged =
+            updatedAiTags.length !== existingAiTags.length ||
+            !updatedAiTags.every((t) => existingAiTags.includes(t));
+
+          if (aiTagsChanged) {
             const updatedMetadata = {
               ...note.metadata,
-              tags: updatedTags,
+              ai_tags: updatedAiTags,
             };
 
             await this.storageService.saveNote(note.content, updatedMetadata);
             console.log(
-              `Worker: Updated tags for note ${noteId}: ${updatedTags.join(", ")}`,
+              `Worker: Updated ai_tags for note ${noteId}: ${updatedAiTags.join(", ")}`,
             );
           } else {
-            console.log(`Worker: No new tags for note ${noteId}`);
+            console.log(`Worker: No new AI tags for note ${noteId}`);
           }
 
           console.log(`Worker: Completed job ${jobId}`);

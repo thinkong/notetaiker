@@ -30,9 +30,11 @@ describe("Notes Routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     app = new Hono();
-    // Inject mock queueService into context
+    // Inject mock services into context
     app.use("*", async (c, next) => {
+      const { StorageService } = await import("../services/storage.service");
       c.set("queueService", { enqueue: mockEnqueue });
+      c.set("storageService", new StorageService("" as any, {} as any));
       await next();
     });
     app.route("/notes", notes);
