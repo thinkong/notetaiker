@@ -7,7 +7,8 @@ Milestone v1.1 focuses on hardening the AI configuration defaults and polishing 
 ## Milestones
 
 - ✅ **v1.0 MVP** - Phases 1-8 (shipped 2026-01-29)
-- 🚧 **v1.1 Fixes & Polish** - Phases 9-10 (in progress)
+- ✅ **v1.1 Fixes & Polish** - Phases 9-10 (complete)
+- ✅ **v1.2 Graph View** - Phase 11 (complete 2026-01-30)
 
 ## Phases
 
@@ -48,9 +49,8 @@ Milestone v1.1 focuses on hardening the AI configuration defaults and polishing 
 
 </details>
 
-### 🚧 v1.1 Fixes & Polish (In Progress)
-
-**Milestone Goal:** Robustify configuration and refine presentation to ensure a polished v1 experience.
+<details>
+<summary>✅ v1.1 Fixes & Polish (Complete)</summary>
 
 #### Phase 9: AI Provider Resilience
 **Goal**: AI processing continues even if provider base URLs are left blank by using standard defaults.
@@ -74,8 +74,10 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — Metadata Toggle and Frontmatter Polish
-- [ ] 10-02-PLAN.md — Universal Save Shortcut and Save Feedback
+- [x] 10-01-PLAN.md — Metadata Toggle and Frontmatter Polish
+- [x] 10-02-PLAN.md — Universal Save Shortcut and Save Feedback
+
+</details>
 
 #### Phase 11: Graph View
 **Goal**: Visual exploration of notes via a force-directed graph based on tags and links.
@@ -88,9 +90,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 11-01-PLAN.md — Setup Infrastructure and Data Transformation
-- [ ] 11-02-PLAN.md — Core Graph Visualization
-- [ ] 11-03-PLAN.md — Note Side Panel and Navigation
+- [x] 11-01-PLAN.md — Setup Infrastructure and Data Transformation
+- [x] 11-02-PLAN.md — Core Graph Visualization
+- [x] 11-03-PLAN.md — Note Side Panel and Navigation
 
 ## Progress
 
@@ -98,5 +100,5 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v1.0 | 26/26 | Complete | 2026-01-29 |
 | 9 | v1.1 | 1/1 | Complete | 2026-01-29 |
-| 10 | v1.1 | 0/2 | Ready | - |
-| 11 | v1.2 | 0/3 | Ready | - |
+| 10 | v1.1 | 2/2 | Complete | 2026-01-30 |
+| 11 | v1.2 | 3/3 | Complete | 2026-01-30 |

@@ -8,13 +8,13 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.1 Fixes & Polish
+## Current Milestone: v1.2 Graph View (Complete)
 
-**Goal:** robustify configuration and refine presentation to ensure a polished v1 experience.
+**Goal:** Provide visual exploration of notes via a force-directed graph.
 
 **Target features:**
-- **Robust AI Config:** Default to standard Base URLs if unspecified (don't fail on empty).
-- **Clean Note Rendering:** Hide/parse YAML frontmatter in note views (don't render as body text).
+- **Graph Visualization:** Interactive 2D graph of notes and tags.
+- **Node Navigation:** Click nodes to view content in a side panel.
 
 ## Requirements
 
@@ -29,15 +29,18 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **AI-03**: Tags are saved to the file's YAML frontmatter — v1.0
 - ✓ **AI-04**: User can configure Cloud API keys (OpenAI/Anthropic) — v1.0
 - ✓ **CONT-01**: User can capture plain text notes — v1.0
+- ✓ **AI-FIX-01**: System uses default provider Base URL when user leaves it empty — v1.1
+- ✓ **UI-FIX-01**: Note view parses frontmatter and excludes it from body rendering — v1.1
+- ✓ **UI-FIX-02**: User can save note using `Ctrl+Enter` shortcut — v1.1
+- ✓ **GRAPH-01**: User can view notes in a force-directed graph — v1.2
+- ✓ **GRAPH-02**: Links between notes are visualized as edges — v1.2
 
 ### Active
 
-- [ ] **AI-FIX-01**: System uses default provider Base URL when user leaves it empty
-- [ ] **UI-FIX-01**: Note view parses frontmatter and excludes it from body rendering
+- None (Milestone complete)
 
 ### Out of Scope
 
-- **Graph View**: Deferred to v2 (focus on capture and list retrieval first).
 - **Desktop/CLI Apps**: Deferred to future milestones (Web first).
 - **Hosted Service**: Deferred (local-first focus for v1).
 - **Complex Editors**: No WYSIWYG for v1 (Markdown only).
@@ -45,8 +48,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 ## Context
 
 Shipped v1.0 MVP with ~3000 LOC TypeScript.
-Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6.
-Performance: <100ms TTI, <5ms note listing via SQLite index.
+Completed v1.1 (Fixes) and v1.2 (Graph View).
+Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph.
 
 ## Constraints
 
@@ -65,7 +68,8 @@ Performance: <100ms TTI, <5ms note listing via SQLite index.
 | **Local Mirror Pattern**      | Store full note content in SQLite index for <5ms listing performance.                                      | ✓ Good (v1.0) |
 | **Separate Index DB**         | Placed metadata index in its own database (index.db) to decouple from the task queue.                      | ✓ Good (v1.0) |
 | **Immediate-feedback-save**   | Bypass debounce for Cmd+Enter to ensure user data safety.                                                  | ✓ Good (v1.0) |
+| **Graph Visualization**       | Used `react-force-graph-2d` for performance and Canvas rendering for scalability.                         | ✓ Good (v1.2) |
 
 ---
 
-_Last updated: 2026-01-29 after v1.0 milestone (started v1.1)_
+_Last updated: 2026-01-30 after v1.2 milestone (Graph View)_
