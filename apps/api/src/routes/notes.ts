@@ -95,4 +95,37 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
       return c.json({ error: "Note not found" }, 404);
     }
     return c.json(note);
-  });
+  })
+  .patch(
+    "/:id",
+    zValidator(
+      "json",
+      z.object({
+        metadata: z.record(z.any()),
+      }),
+    ),
+    async (c) => {
+      const id = c.req.param("id");
+      const { metadata } = c.req.valid("json");
+      const storageService = c.get("storageService");
+
+      const existingNote = await storageService.getNote(id);
+      if (!existingNote) {
+        return c.json({ error: "Note not found" }, 404);
+      }
+
+      const fileName = await storageService.saveNote(existingNote.content, {
+        ...metadata,
+        id,
+      });
+
+      const savedNote = await storageService.getNote(fileName);
+
+      const queueService = c.get("queueService");
+      if (savedNote && savedNote.metadata.id) {
+        queueService.enqueue(savedNote.metadata.id);
+      }
+
+      return c.json(savedNote);
+    },
+  );
