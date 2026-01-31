@@ -8,9 +8,13 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: Planning Next Milestone
+## Current Milestone: v1.3.1 Patch Fixes
 
-**Goal:** (To be defined in next milestone)
+**Goal:** Resolve known issues and regressions from v1.3 to ensure stability.
+
+**Target features:**
+- Fix known bugs and regressions
+- Improve stability
 
 ## Requirements
 
@@ -39,7 +43,7 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ### Active
 
-(Requirements will be added in next milestone)
+- [ ] Fix known bugs
 
 ### Out of Scope
 
@@ -78,4 +82,4 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ---
 
-_Last updated: 2026-01-31 after v1.3 milestone completion_
+_Last updated: 2026-01-31 after start of v1.3.1 milestone_
