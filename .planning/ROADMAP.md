@@ -55,11 +55,13 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 ### 🚧 v1.3.1 Patch Fixes (Active)
 
 #### Phase 14: Stability & UI Polish
+
 **Goal:** Resolve known regressions and harden the build system.
 
 **Plans:** 2 plans
-- [ ] 14-01-PLAN.md — Unified tag display and removal in Note Preview
-- [ ] 14-02-PLAN.md — Build system hardening and type-import enforcement
+
+- [x] 14-01-PLAN.md — Unified tag display and removal in Note Preview
+- [x] 14-02-PLAN.md — Build system hardening and type-import enforcement
 
 - **Dependencies:** None (Post-v1.3 maintenance)
 - **Requirements:** FIX-01, FIX-02, FIX-03
@@ -77,10 +79,10 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 ## Progress
 
-| Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
-| 1-8 | v1.0 | 26/26 | Complete | 2026-01-29 |
-| 9-10 | v1.1 | 3/3 | Complete | 2026-01-30 |
-| 11 | v1.2 | 3/3 | Complete | 2026-01-30 |
-| 12-13 | v1.3 | 7/7 | Complete | 2026-01-31 |
-| 14 | v1.3.1 | 0/2 | Active | - |
+| Phase | Milestone | Plans Complete | Status   | Completed  |
+| ----- | --------- | -------------- | -------- | ---------- |
+| 1-8   | v1.0      | 26/26          | Complete | 2026-01-29 |
+| 9-10  | v1.1      | 3/3            | Complete | 2026-01-30 |
+| 11    | v1.2      | 3/3            | Complete | 2026-01-30 |
+| 12-13 | v1.3      | 7/7            | Complete | 2026-01-31 |
+| 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
