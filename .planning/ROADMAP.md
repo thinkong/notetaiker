@@ -57,6 +57,10 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 #### Phase 14: Stability & UI Polish
 **Goal:** Resolve known regressions and harden the build system.
 
+**Plans:** 2 plans
+- [ ] 14-01-PLAN.md — Unified tag display and removal in Note Preview
+- [ ] 14-02-PLAN.md — Build system hardening and type-import enforcement
+
 - **Dependencies:** None (Post-v1.3 maintenance)
 - **Requirements:** FIX-01, FIX-02, FIX-03
 - **Success Criteria:**
