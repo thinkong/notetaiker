@@ -22,9 +22,9 @@
 
 | Requirement | Phase    | Status  |
 | ----------- | -------- | ------- |
-| FIX-01      | Phase 14 | Pending |
-| FIX-02      | Phase 14 | Pending |
-| FIX-03      | Phase 14 | Pending |
+| FIX-01      | Phase 14 | Complete |
+| FIX-02      | Phase 14 | Complete |
+| FIX-03      | Phase 14 | Complete |
 
 **Coverage:**
 
