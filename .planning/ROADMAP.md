@@ -10,7 +10,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.1 Fixes & Polish** - Phases 9-10 (shipped 2026-01-30)
 - ✅ **v1.2 Graph View** - Phase 11 (shipped 2026-01-30)
 - ✅ **v1.3 UX Polish & Flow** - Phases 12-13 (shipped 2026-01-31)
-- 📋 **v1.4** - (Planned)
+- 🚧 **v1.3.1 Patch Fixes** - Phase 14 (Active)
+- 📋 **v1.4 [To Be Defined]** - Phase 15+
 
 ## Phases
 
@@ -51,9 +52,24 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 🚧 v1.4 [To Be Defined]
+### 🚧 v1.3.1 Patch Fixes (Active)
 
-- [ ] Phase 14: [To Be Defined]
+#### Phase 14: Stability & UI Polish
+**Goal:** Resolve known regressions and harden the build system.
+
+- **Dependencies:** None (Post-v1.3 maintenance)
+- **Requirements:** FIX-01, FIX-02, FIX-03
+- **Success Criteria:**
+  - Note preview overlay uses the unified `Tag` component for visual consistency.
+  - Note preview overlay displays both manual `tags` and `ai_tags` correctly.
+  - Project builds successfully with `verbatimModuleSyntax` enabled in TypeScript.
+  - Linter enforces `import type` syntax, preventing future build regressions.
+
+---
+
+### 📋 v1.4 [To Be Defined]
+
+- [ ] Phase 15: [To Be Defined]
 
 ## Progress
 
@@ -63,3 +79,4 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 9-10 | v1.1 | 3/3 | Complete | 2026-01-30 |
 | 11 | v1.2 | 3/3 | Complete | 2026-01-30 |
 | 12-13 | v1.3 | 7/7 | Complete | 2026-01-31 |
+| 14 | v1.3.1 | 0/2 | Active | - |
