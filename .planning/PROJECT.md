@@ -8,15 +8,9 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.3 UX Polish & Flow
+## Current Milestone: Planning Next Milestone
 
-**Goal:** Improve user experience with better navigation, manual controls, and smoother editing flow.
-
-**Target features:**
-- Click note in side panel to open in editor
-- "Save" ends the current edit session (ready for next)
-- Auto-clear default placeholder on focus
-- Manual tag entry support during capture
+**Goal:** (To be defined in next milestone)
 
 ## Requirements
 
@@ -36,13 +30,16 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **UI-FIX-02**: User can save note using `Ctrl+Enter` shortcut — v1.1
 - ✓ **GRAPH-01**: User can view notes in a force-directed graph — v1.2
 - ✓ **GRAPH-02**: Links between notes are visualized as edges — v1.2
+- ✓ **UX-01**: Note selection in side panel loads content into editor — v1.3
+- ✓ **UX-02**: Save action completes session and resets editor — v1.3
+- ✓ **UX-03**: Editor placeholder clears automatically on interaction — v1.3
+- ✓ **TAG-01**: User can manually input tags during creation — v1.3
+- ✓ **TAG-02**: System distinguishes between user-defined tags and AI-generated tags — v1.3
+- ✓ **TAG-03**: AI re-processing updates AI tags but strictly preserves user-defined tags — v1.3
 
 ### Active
 
-- [ ] **UX-01**: Note selection in side panel loads content into editor
-- [ ] **UX-02**: Save action completes session and resets editor
-- [ ] **UX-03**: Editor placeholder clears automatically on interaction
-- [ ] **TAG-01**: User can manually input tags during creation
+(Requirements will be added in next milestone)
 
 ### Out of Scope
 
@@ -52,8 +49,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.0 MVP, v1.1 Polish, and v1.2 Graph View.
-System is stable with ~4250 LOC TypeScript.
+Shipped v1.0 MVP, v1.1 Polish, v1.2 Graph View, and v1.3 UX Polish & Flow.
+System is stable with ~5100 LOC TypeScript.
 Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph.
 
 ## Constraints
@@ -76,7 +73,9 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 | **Graph Visualization** | Used `react-force-graph-2d` for performance and Canvas rendering for scalability. | ✓ Good (v1.2) |
 | **Tag Hub Structure** | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering. | ✓ Good (v1.2) |
 | **Side Panel Nav** | Absolute-positioned panel avoids reflowing graph canvas on interaction. | ✓ Good (v1.2) |
+| **Guard-First Navigation** | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes). | ✓ Good (v1.3) |
+| **Schema Separation** | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent. | ✓ Good (v1.3) |
 
 ---
 
-_Last updated: 2026-01-30 after start of v1.3 milestone_
+_Last updated: 2026-01-31 after v1.3 milestone completion_

@@ -1,5 +1,30 @@
 # Project Milestones: NoteTaiker
 
+## v1.3 UX Polish & Flow (Shipped: 2026-01-31)
+
+**Delivered:** Improved user experience with seamless navigation, draft persistence, and manual control over AI tagging.
+
+**Phases completed:** 12-13 (7 plans total)
+
+**Key accomplishments:**
+
+- **Guard-First Navigation**: Centralized protection against data loss when navigating away from unsaved changes.
+- **Draft Persistence**: Automatic local backup ensures work is never lost on refresh or accidental closure.
+- **Manual Tag Control**: Full support for hashtags (#tag) in the editor with visual distinction from AI tags.
+- **Seamless Flow**: "Save & Reset" workflow allows continuous capture without breaking focus.
+
+**Stats:**
+
+- 7 plans completed
+- 100% requirements coverage (6/6)
+- 0 regressions in cross-phase integration
+
+**Git range:** `feat(12-01)` → `feat(13-03)`
+
+**What's next:** Plan v1.4 (Scope TBD)
+
+---
+
 ## v1.2 Graph View (Shipped: 2026-01-30)
 
 **Delivered:** Interactive visual exploration of the note network with force-directed graph.
