@@ -6,6 +6,9 @@ interface ConfirmDialogProps {
   onSave: () => void;
   onDiscard: () => void;
   onCancel: () => void;
+  title?: string;
+  description?: string;
+  saveLabel?: string;
 }
 
 export function ConfirmDialog({
@@ -13,6 +16,9 @@ export function ConfirmDialog({
   onSave,
   onDiscard,
   onCancel,
+  title = "Unsaved Changes",
+  description = "You have unsaved content. What would you like to do?",
+  saveLabel = "Save Changes",
 }: ConfirmDialogProps) {
   return (
     <Command.Dialog
@@ -20,7 +26,7 @@ export function ConfirmDialog({
       onOpenChange={(isOpen) => {
         if (!isOpen) onCancel();
       }}
-      label="Unsaved Changes"
+      label={title}
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
     >
       <div
@@ -35,12 +41,12 @@ export function ConfirmDialog({
             <AlertCircle className="w-6 h-6" />
           </div>
           <h2 className="text-xl font-bold text-nord-polar0 dark:text-nord-snow2">
-            Unsaved Changes
+            {title}
           </h2>
         </div>
 
         <p className="text-nord-polar3 dark:text-nord-snow0 mb-8">
-          You have unsaved content. What would you like to do?
+          {description}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
@@ -60,7 +66,7 @@ export function ConfirmDialog({
             onClick={onSave}
             className="px-6 py-2 bg-nord-frost3 text-white rounded-lg hover:bg-nord-frost2 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
           >
-            Save Changes
+            {saveLabel}
           </button>
         </div>
       </div>

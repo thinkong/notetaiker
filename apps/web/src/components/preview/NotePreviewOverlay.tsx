@@ -1,9 +1,12 @@
 import { Command } from "cmdk";
-import { useQuery } from "@tanstack/react-query";
-import { X, Edit, Calendar, Tag } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { X, Edit, Calendar, Tag as TagIcon } from "lucide-react";
 import { api } from "../../lib/api";
 import { Markdown } from "../common/Markdown";
+import { Tag } from "../common/Tag";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 import { format } from "date-fns";
+import { useState, useMemo } from "react";
 
 interface NotePreviewOverlayProps {
   noteId: string | null;
@@ -18,6 +21,12 @@ export function NotePreviewOverlay({
   onClose,
   onEdit,
 }: NotePreviewOverlayProps) {
+  const queryClient = useQueryClient();
+  const [tagToDelete, setTagToDelete] = useState<{
+    label: string;
+    variant: "manual" | "ai";
+  } | null>(null);
+
   // Fetch note data
   const {
     data: note,
@@ -33,6 +42,62 @@ export function NotePreviewOverlay({
     },
     enabled: open && !!noteId,
   });
+
+  const updateMetadataMutation = useMutation({
+    mutationFn: async (metadata: Record<string, unknown>) => {
+      if (!noteId) return;
+      const res = await api.notes[":id"].$patch({
+        param: { id: noteId },
+        json: { metadata },
+      });
+      if (!res.ok) throw new Error("Failed to update note");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["note", noteId] });
+      setTagToDelete(null);
+    },
+  });
+
+  const { manualTags, aiTags } = useMemo(() => {
+    if (!note) return { manualTags: [], aiTags: [] };
+    const manual = (note.metadata.tags || []) as string[];
+    const ai = (note.metadata.ai_tags || []) as string[];
+
+    // Filter out manual tags from AI tags to avoid duplicates
+    const filteredAi = ai.filter((t) => !manual.includes(t));
+
+    return { manualTags: manual, aiTags: filteredAi };
+  }, [note]);
+
+  const MAX_VISIBLE_TAGS = 8;
+  const allTags = useMemo(() => {
+    const combined = [
+      ...manualTags.map((t) => ({ label: t, variant: "manual" as const })),
+      ...aiTags.map((t) => ({ label: t, variant: "ai" as const })),
+    ];
+    return combined;
+  }, [manualTags, aiTags]);
+
+  const visibleTags = allTags.slice(0, MAX_VISIBLE_TAGS);
+  const remainingTagsCount = allTags.length - MAX_VISIBLE_TAGS;
+
+  const handleDeleteTag = () => {
+    if (!tagToDelete || !note) return;
+
+    const metadata = { ...note.metadata };
+    if (tagToDelete.variant === "manual") {
+      metadata.tags = (metadata.tags || []).filter(
+        (t: string) => t !== tagToDelete.label,
+      );
+    } else {
+      metadata.ai_tags = (metadata.ai_tags || []).filter(
+        (t: string) => t !== tagToDelete.label,
+      );
+    }
+
+    updateMetadataMutation.mutate(metadata);
+  };
 
   // Extract title from content (first # line)
   const title =
@@ -95,11 +160,28 @@ export function NotePreviewOverlay({
                     {format(new Date(note.metadata.createdAt), "MMM d, yyyy")}
                   </span>
                 )}
-                {note.metadata.tags && note.metadata.tags.length > 0 && (
-                  <span className="flex items-center gap-1">
-                    <Tag className="w-4 h-4" />
-                    {note.metadata.tags.join(", ")}
-                  </span>
+                {(manualTags.length > 0 || aiTags.length > 0) && (
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <TagIcon className="w-4 h-4 mr-1 shrink-0" />
+                    {visibleTags.map((tag) => (
+                      <Tag
+                        key={`${tag.variant}-${tag.label}`}
+                        label={tag.label}
+                        variant={tag.variant}
+                        onDismiss={() =>
+                          setTagToDelete({
+                            label: tag.label,
+                            variant: tag.variant,
+                          })
+                        }
+                      />
+                    ))}
+                    {remainingTagsCount > 0 && (
+                      <span className="text-xs text-nord-polar3 dark:text-nord-snow0 font-medium">
+                        +{remainingTagsCount} more
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -128,6 +210,16 @@ export function NotePreviewOverlay({
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!tagToDelete}
+        onSave={handleDeleteTag}
+        onDiscard={() => setTagToDelete(null)}
+        onCancel={() => setTagToDelete(null)}
+        title="Remove Tag"
+        description={`Are you sure you want to remove the tag "${tagToDelete?.label}"?`}
+        saveLabel="Remove"
+      />
     </Command.Dialog>
   );
 }
