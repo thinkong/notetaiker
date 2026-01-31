@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  NoteFrontmatterSchema,
-  mergeTags,
-  extractHashtags,
-} from "./markdown";
+import { NoteFrontmatterSchema, mergeTags, extractHashtags } from "./markdown";
 
 describe("NoteFrontmatterSchema", () => {
   it("should parse valid frontmatter with tags", () => {
@@ -68,7 +64,8 @@ describe("mergeTags", () => {
 
 describe("extractHashtags", () => {
   it("should extract hashtags and normalize to title case", () => {
-    const content = "This is a note with #react and #TYPESCRIPT and #node_js tags.";
+    const content =
+      "This is a note with #react and #TYPESCRIPT and #node_js tags.";
     const tags = extractHashtags(content);
     expect(tags).toEqual(["React", "Typescript", "Node_js"]);
   });

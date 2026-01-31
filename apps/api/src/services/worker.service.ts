@@ -1,6 +1,6 @@
 import PQueue from "p-queue";
 import pRetry from "p-retry";
-import { QueueService } from "./queue.service";
+import type { QueueService } from "./queue.service";
 import type { EventsService } from "./events.service";
 import type { AIService } from "./ai.service";
 import type { StorageService } from "./storage.service";

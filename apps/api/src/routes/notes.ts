@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { StorageService } from "../services/storage.service";
+import type { StorageService } from "../services/storage.service";
 import { env } from "@notetaiker/env";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

@@ -68,10 +68,13 @@ describe("WorkerService", () => {
       expect.objectContaining({
         ai_tags: ["New Ai Tag"],
         tags: ["Manual Tag"], // Should be unchanged
-      })
+      }),
     );
 
-    expect(mockQueueService.updateJobStatus).toHaveBeenCalledWith("job-1", "completed");
+    expect(mockQueueService.updateJobStatus).toHaveBeenCalledWith(
+      "job-1",
+      "completed",
+    );
   });
 
   it("should normalize tags to Title Case when filtering", async () => {
@@ -98,7 +101,7 @@ describe("WorkerService", () => {
       "Note content",
       expect.objectContaining({
         ai_tags: ["New Ai Tag"],
-      })
+      }),
     );
   });
 

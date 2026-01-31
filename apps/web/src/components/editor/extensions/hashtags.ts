@@ -1,14 +1,14 @@
+import type { ViewUpdate } from "@codemirror/view";
 import {
   MatchDecorator,
   Decoration,
   ViewPlugin,
   type DecorationSet,
   EditorView,
-  ViewUpdate,
 } from "@codemirror/view";
+import type { CompletionContext } from "@codemirror/autocomplete";
 import {
   autocompletion,
-  CompletionContext,
   type CompletionResult,
 } from "@codemirror/autocomplete";
 
