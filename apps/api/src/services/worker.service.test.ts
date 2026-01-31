@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { WorkerService } from "./worker.service";
-import { QueueService } from "./queue.service";
 
 describe("WorkerService", () => {
   let workerService: WorkerService;

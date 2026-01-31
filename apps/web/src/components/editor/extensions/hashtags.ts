@@ -2,14 +2,14 @@ import {
   MatchDecorator,
   Decoration,
   ViewPlugin,
-  DecorationSet,
+  type DecorationSet,
   EditorView,
   ViewUpdate,
 } from "@codemirror/view";
 import {
   autocompletion,
   CompletionContext,
-  CompletionResult,
+  type CompletionResult,
 } from "@codemirror/autocomplete";
 
 const hashtagDecoration = Decoration.mark({
