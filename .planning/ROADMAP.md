@@ -10,7 +10,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.1 Fixes & Polish** - Phases 9-10 (shipped 2026-01-30)
 - ✅ **v1.2 Graph View** - Phase 11 (shipped 2026-01-30)
 - ✅ **v1.3 UX Polish & Flow** - Phases 12-13 (shipped 2026-01-31)
-- 🚧 **v1.3.1 Patch Fixes** - Phase 14 (Active)
+- ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
 - 📋 **v1.4 [To Be Defined]** - Phase 15+
 
 ## Phases
@@ -52,26 +52,12 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 🚧 v1.3.1 Patch Fixes (Active)
+<details>
+<summary>✅ v1.3.1 Patch Fixes (Phase 14) - SHIPPED 2026-01-31</summary>
 
-#### Phase 14: Stability & UI Polish
+- [x] Phase 14: Stability & UI Polish (2/2 plans)
 
-**Goal:** Resolve known regressions and harden the build system.
-
-**Plans:** 2 plans
-
-- [x] 14-01-PLAN.md — Unified tag display and removal in Note Preview
-- [x] 14-02-PLAN.md — Build system hardening and type-import enforcement
-
-- **Dependencies:** None (Post-v1.3 maintenance)
-- **Requirements:** FIX-01, FIX-02, FIX-03
-- **Success Criteria:**
-  - Note preview overlay uses the unified `Tag` component for visual consistency.
-  - Note preview overlay displays both manual `tags` and `ai_tags` correctly.
-  - Project builds successfully with `verbatimModuleSyntax` enabled in TypeScript.
-  - Linter enforces `import type` syntax, preventing future build regressions.
-
----
+</details>
 
 ### 📋 v1.4 [To Be Defined]
 

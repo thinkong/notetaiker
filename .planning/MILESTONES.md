@@ -1,5 +1,31 @@
 # Project Milestones: NoteTaiker
 
+## v1.3.1 Patch Fixes (Shipped: 2026-01-31)
+
+**Delivered:** Patch release focused on resolving known regressions and hardening the build system.
+
+**Phases completed:** 14 (2 plans total)
+
+**Key accomplishments:**
+
+- **Tag UI Unification**: Consistent display for manual and AI tags with removal workflow.
+- **Build System Hardening**: Enabled `verbatimModuleSyntax` across the monorepo for robust imports.
+- **Type Safety**: Enforced `import type` usage via ESLint to prevent side-effect imports.
+- **Regression Fixes**: Resolved UI inconsistencies in note preview overlay.
+
+**Stats:**
+
+- 71 files modified
+- ~5250 LOC TypeScript
+- 1 phase, 2 plans
+- 1 day from start to ship
+
+**Git range:** `docs(14)` → `docs(phase-14)`
+
+**What's next:** Plan v1.4 (Scope TBD)
+
+---
+
 ## v1.3 UX Polish & Flow (Shipped: 2026-01-31)
 
 **Delivered:** Improved user experience with seamless navigation, draft persistence, and manual control over AI tagging.
@@ -72,7 +98,7 @@
 
 **Key accomplishments:**
 
-- Zero-friction Markdown capture with "Cmd+Enter" immediate save.
+- **Zero-friction Markdown capture with "Cmd+Enter" immediate save.
 - Real-time AI processing pipeline using Server-Sent Events (SSE).
 - Automated tagging and YAML frontmatter injection.
 - Keyboard-driven navigation with "Cmd+K" command palette.

@@ -8,14 +8,9 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.3.1 Patch Fixes
+## Current Milestone: v1.4 [To Be Defined]
 
-**Goal:** Resolve known issues and regressions from v1.3 to ensure stability.
-
-**Target features:**
-
-- Fix known bugs and regressions
-- Improve stability
+**Goal:** [To be defined in next planning session]
 
 ## Requirements
 
@@ -41,10 +36,13 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **TAG-01**: User can manually input tags during creation — v1.3
 - ✓ **TAG-02**: System distinguishes between user-defined tags and AI-generated tags — v1.3
 - ✓ **TAG-03**: AI re-processing updates AI tags but strictly preserves user-defined tags — v1.3
+- ✓ **FIX-01**: Note Preview Overlay uses unified `Tag` component and displays `ai_tags` — v1.3.1
+- ✓ **FIX-02**: Fix TypeScript `verbatimModuleSyntax` errors for type-only imports across the codebase — v1.3.1
+- ✓ **FIX-03**: Enforce `verbatimModuleSyntax` compliant imports in linter configuration to prevent recurrence — v1.3.1
 
 ### Active
 
-- [ ] Fix known bugs
+- [ ] [Awaiting next milestone planning]
 
 ### Out of Scope
 
@@ -54,8 +52,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.0 MVP, v1.1 Polish, v1.2 Graph View, and v1.3 UX Polish & Flow.
-System is stable with ~5100 LOC TypeScript.
+Shipped v1.0 MVP, v1.1 Polish, v1.2 Graph View, v1.3 UX Polish, and v1.3.1 Patch Fixes.
+System is stable with ~5250 LOC TypeScript.
 Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph.
 
 ## Constraints
@@ -80,7 +78,8 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 | **Side Panel Nav**            | Absolute-positioned panel avoids reflowing graph canvas on interaction.                                    | ✓ Good (v1.2) |
 | **Guard-First Navigation**    | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes).                  | ✓ Good (v1.3) |
 | **Schema Separation**         | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent.                       | ✓ Good (v1.3) |
+| **Verbatim Module Syntax**    | Enabled in base TSConfig to ensure import/export correctness and tree-shakability.                         | ✓ Good (v1.3.1)|
 
 ---
 
-_Last updated: 2026-01-31 after start of v1.3.1 milestone_
+_Last updated: 2026-01-31 after v1.3.1 milestone_
