@@ -51,6 +51,7 @@ completed: 2026-01-30
 - **Files modified:** 2 (excluding artifacts from previous plans committed here)
 
 ## Accomplishments
+
 - Created `NotePreviewOverlay` component with automatic note fetching and markdown rendering.
 - Refactored `Editor` component to support `forwardRef`, enabling parent components to trigger focus.
 - Maintained theme consistency (Nord) and interaction patterns (Escape to close, backdrop click).
@@ -63,23 +64,29 @@ Each task was committed atomically:
 2. **Task 2: Extend Editor with ref forwarding** - `a56b688` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/src/components/preview/NotePreviewOverlay.tsx` - New full-screen preview component
 - `apps/web/src/components/editor/Editor.tsx` - Extended with focus control
 
 ## Decisions Made
+
 - Extracted the note title dynamically from the first `#` header in the content for the preview header.
 - Used `animate-in fade-in zoom-in` Tailwind classes to match existing application animations.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written. (Note: `pnpm lint:fix` was run to ensure consistent formatting).
 
 ## Issues Encountered
+
 - Full project build showed pre-existing type errors in `ForceGraph.tsx`, but isolated type checking for the modified files passed successfully.
 
 ## Next Phase Readiness
+
 - Components are ready to be integrated into `App.tsx` in plan 12-03.
 - Focus management can now be wired up to the save workflow.
 
 ---
-*Phase: 12-ux-flow-improvements*
-*Completed: 2026-01-30*
+
+_Phase: 12-ux-flow-improvements_
+_Completed: 2026-01-30_

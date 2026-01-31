@@ -17,7 +17,8 @@ affects: [09-ai-provider-resilience]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: [Shared constants for provider defaults, Hybrid input for model selection]
+  patterns:
+    [Shared constants for provider defaults, Hybrid input for model selection]
 
 key-files:
   created: []
@@ -53,6 +54,7 @@ completed: 2026-01-29
 - **Files modified:** 4
 
 ## Accomplishments
+
 - Added `model` field to `SecretsSchema` for OpenAI, Anthropic, and Gemini.
 - Implemented fallback logic in `AIService` using `DEFAULT_BASE_URLS` and `DEFAULT_MODELS`.
 - Updated validation route to use centralized constants, removing hardcoded strings.
@@ -69,25 +71,31 @@ Each task was committed atomically:
 **Plan metadata:** `pending` (docs: complete plan)
 
 ## Files Created/Modified
+
 - `packages/env/index.ts` - Added `model` to SecretsSchema
 - `apps/api/src/services/ai.service.ts` - Defined defaults and updated `getModel` logic
 - `apps/api/src/routes/settings.ts` - Used shared constants for validation
 - `apps/web/src/components/settings/ProviderSection.tsx` - Enhanced UI with placeholders and hybrid input
 
 ## Decisions Made
+
 - Used `gpt-4o-mini`, `claude-3-5-sonnet-20240620`, and `gemini-1.5-flash` as defaults for cost/speed balance.
 - Kept `baseUrl` and `model` as optional strings to allow the simplest possible "just paste API key" experience.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None.
 
 ## Next Phase Readiness
+
 - AI configuration is now resilient and user-friendly.
 - Ready for any further resilience tasks in Phase 9 if planned (e.g., retries, fallback providers).
 
 ---
-*Phase: 09-ai-provider-resilience*
-*Completed: 2026-01-29*
+
+_Phase: 09-ai-provider-resilience_
+_Completed: 2026-01-29_

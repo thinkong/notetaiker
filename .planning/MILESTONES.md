@@ -32,12 +32,14 @@
 **Phases completed:** 11 (3 plans total)
 
 **Key accomplishments:**
+
 - **Force-Directed Graph**: High-performance Canvas rendering of notes and tags.
 - **Intelligent Clustering**: "Tag Hub" model that visualizes shared topics as central nodes.
 - **Seamless Navigation**: Side panel for viewing note content without losing graph context.
 - **Visual Depth**: Hover effects, zooming, and relative node dimming for focus.
 
 **Stats:**
+
 - ~4250 LOC total
 - 3 plans completed
 - 100% test coverage for new components

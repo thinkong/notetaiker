@@ -56,6 +56,7 @@ completed: 2026-01-30
 - **Files modified:** 4
 
 ## Accomplishments
+
 - **Wired Sidebar Interactions:** Clicking a note card in the timeline now opens the full-screen preview overlay.
 - **Navigational Guardrails:** Switching from editing a draft to previewing an existing note now prompts the user if they have unsaved changes.
 - **Preview-to-Editor Pipeline:** The "Edit" button in the preview overlay successfully closes the overlay and loads the note content into the main editor, returning focus for immediate editing.
@@ -66,24 +67,30 @@ completed: 2026-01-30
 1. **Task 1: Wire note clicks and complete preview overlay** - `d19c4af` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/src/App.tsx` - Passed handlers to sidebar and preview components.
 - `apps/web/src/components/sidebar/SidebarNoteCard.tsx` - Implemented click handler and propagation management.
 - `apps/web/src/components/sidebar/SidebarTimeline.tsx` - Updated to pass `onNoteClick` through to children.
 - `apps/web/src/components/preview/NotePreviewOverlay.tsx` - Fully wired the Edit action.
 
 ## Decisions Made
+
 - Confirmed that CodeMirror's built-in placeholder management is superior to custom logic for UX-03, as it ensures zero flicker and handles multi-line/complex content transitions natively.
 
 ## Deviations from Plan
+
 - None - the wiring was completed exactly as specified and passed human verification on the first attempt.
 
 ## Issues Encountered
+
 - **Click Propagation:** Initial testing showed that clicking the expand chevron also opened the preview. This was fixed by adding `e.stopPropagation()` to the toggle button.
 
 ## Next Phase Readiness
+
 - **Phase 12 Complete:** All UX flow improvements (Draft Persistence, Save-and-Reset, Note Preview, and Navigation Guards) are now functional and integrated.
 - **Ready for Milestone v1.3 Completion:** Transitioning to Phase 13 for final polish and launch preparation.
 
 ---
-*Phase: 12-ux-flow-improvements*
-*Completed: 2026-01-30*
+
+_Phase: 12-ux-flow-improvements_
+_Completed: 2026-01-30_

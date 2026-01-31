@@ -16,33 +16,33 @@ score: 2/2 must-haves verified
 
 ### Observable Truths
 
-| #   | Truth                                               | Status     | Evidence                                                                           |
-| --- | --------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| 1   | User can toggle metadata view on note cards         | ✓ VERIFIED | `NoteCard.tsx` implements `showMetadata` state and Info button.                    |
-| 2   | Metadata is hidden by default                       | ✓ VERIFIED | `useState(false)` initializes the toggle to off.                                   |
-| 3   | User can save via keyboard shortcut (Mod+Enter)     | ✓ VERIFIED | `Editor.tsx` includes `keymap` for `Mod-Enter` calling `onSave`.                   |
-| 4   | Save provides visual feedback                       | ✓ VERIFIED | `StatusIndicator.tsx` handles `saving` and `saved` states driven by `App.tsx`.     |
+| #   | Truth                                           | Status     | Evidence                                                                       |
+| --- | ----------------------------------------------- | ---------- | ------------------------------------------------------------------------------ |
+| 1   | User can toggle metadata view on note cards     | ✓ VERIFIED | `NoteCard.tsx` implements `showMetadata` state and Info button.                |
+| 2   | Metadata is hidden by default                   | ✓ VERIFIED | `useState(false)` initializes the toggle to off.                               |
+| 3   | User can save via keyboard shortcut (Mod+Enter) | ✓ VERIFIED | `Editor.tsx` includes `keymap` for `Mod-Enter` calling `onSave`.               |
+| 4   | Save provides visual feedback                   | ✓ VERIFIED | `StatusIndicator.tsx` handles `saving` and `saved` states driven by `App.tsx`. |
 
 **Score:** 2/2 truths verified
 
 ### Required Artifacts
 
-| Artifact                                          | Expected                  | Status     | Details                                                                 |
-| ------------------------------------------------- | ------------------------- | ---------- | ----------------------------------------------------------------------- |
-| `apps/web/src/components/timeline/NoteCard.tsx`   | Metadata toggle UI        | ✓ VERIFIED | Implemented with conditional rendering and JSON display.                |
-| `apps/web/src/components/editor/Editor.tsx`       | Save shortcut handling    | ✓ VERIFIED | Implemented using CodeMirror `keymap` extension.                        |
+| Artifact                                        | Expected               | Status     | Details                                                  |
+| ----------------------------------------------- | ---------------------- | ---------- | -------------------------------------------------------- |
+| `apps/web/src/components/timeline/NoteCard.tsx` | Metadata toggle UI     | ✓ VERIFIED | Implemented with conditional rendering and JSON display. |
+| `apps/web/src/components/editor/Editor.tsx`     | Save shortcut handling | ✓ VERIFIED | Implemented using CodeMirror `keymap` extension.         |
 
 ### Key Link Verification
 
-| From               | To               | Via           | Status  | Details                                    |
-| ------------------ | ---------------- | ------------- | ------- | ------------------------------------------ |
-| `Editor.tsx`       | `App.tsx`        | `onSave` prop | ✓ WIRED | Editor triggers App-level save logic.      |
-| `NoteCard.tsx`     | `metadata`       | Props         | ✓ WIRED | Metadata is correctly destructured and displayed. |
+| From           | To         | Via           | Status  | Details                                           |
+| -------------- | ---------- | ------------- | ------- | ------------------------------------------------- |
+| `Editor.tsx`   | `App.tsx`  | `onSave` prop | ✓ WIRED | Editor triggers App-level save logic.             |
+| `NoteCard.tsx` | `metadata` | Props         | ✓ WIRED | Metadata is correctly destructured and displayed. |
 
 ### Requirements Coverage
 
-| Requirement | Status      | Blocking Issue |
-| ----------- | ----------- | -------------- |
+| Requirement | Status      | Blocking Issue                                     |
+| ----------- | ----------- | -------------------------------------------------- |
 | UI-FIX-01   | ✓ SATISFIED | Metadata is separated from content and toggleable. |
 | UI-FIX-02   | ✓ SATISFIED | Standardized keyboard shortcut implemented.        |
 
@@ -53,6 +53,7 @@ None.
 ### Human Verification Required
 
 ### 1. Shortcut Feel
+
 **Test:** Type in editor, hit Cmd+Enter.
 **Expected:** Instant save without losing focus.
 **Why human:** Latency perception.

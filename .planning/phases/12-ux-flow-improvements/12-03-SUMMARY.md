@@ -57,6 +57,7 @@ completed: 2026-01-30
 - **Files modified:** 2
 
 ## Accomplishments
+
 - **Draft Persistence:** Notes are now automatically backed up to localStorage as the user types and restored if the page is refreshed.
 - **Seamless Save:** Pressing Cmd+Enter saves the note, clears the editor, shows a success toast, and returns focus to the editor in one fluid motion.
 - **Unsaved Protection:** The application now tracks "dirty" state and prepares to warn users before they perform actions that would lose unsaved content.
@@ -67,21 +68,27 @@ completed: 2026-01-30
 1. **Task 1 & 2: Integrate UX flows** - `18dc2db` (feat)
 
 ## Files Created/Modified
+
 - `apps/web/src/App.tsx` - Main integration logic for save flow and state management.
 - `apps/web/src/components/preview/NotePreviewOverlay.tsx` - Updated with `onEdit` prop to allow loading notes back into the editor.
 
 ## Decisions Made
+
 - Chose to use `eslint-disable-next-line` for `handleNoteClick` temporarily as it is fully implemented but won't be called until the sidebar wiring in Plan 04.
 
 ## Deviations from Plan
+
 - **Pre-emptive component updates:** Modified `NotePreviewOverlay.tsx` to include the `onEdit` prop earlier than planned to ensure type safety during `App.tsx` integration.
 
 ## Issues Encountered
+
 - **Linting:** Encountered a shadowing/unused variable warning for `handleNoteClick` which was resolved with an eslint annotation since it's required for the next plan's wiring.
 
 ## Next Phase Readiness
+
 - Ready for Plan 12-04: Wiring sidebar triggers and finalizing preview interactions.
 
 ---
-*Phase: 12-ux-flow-improvements*
-*Completed: 2026-01-30*
+
+_Phase: 12-ux-flow-improvements_
+_Completed: 2026-01-30_

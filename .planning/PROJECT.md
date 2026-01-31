@@ -13,6 +13,7 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 **Goal:** Resolve known issues and regressions from v1.3 to ensure stability.
 
 **Target features:**
+
 - Fix known bugs and regressions
 - Improve stability
 
@@ -65,20 +66,20 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
+| Decision                      | Rationale                                                                                                  | Outcome       |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- |
 | **Local Server Architecture** | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | ✓ Good (v1.0) |
-| **Atomic Notes** | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes. | ✓ Good (v1.0) |
-| **YAML Frontmatter** | Standard, portable way to attach metadata without polluting body content. | ✓ Good (v1.0) |
-| **Web Client First** | Fastest path to validation; PWA capabilities can mimic desktop feel. | ✓ Good (v1.0) |
-| **Local Mirror Pattern** | Store full note content in SQLite index for <5ms listing performance. | ✓ Good (v1.0) |
-| **Separate Index DB** | Placed metadata index in its own database (index.db) to decouple from the task queue. | ✓ Good (v1.0) |
-| **Immediate-feedback-save** | Bypass debounce for Cmd+Enter to ensure user data safety. | ✓ Good (v1.0) |
-| **Graph Visualization** | Used `react-force-graph-2d` for performance and Canvas rendering for scalability. | ✓ Good (v1.2) |
-| **Tag Hub Structure** | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering. | ✓ Good (v1.2) |
-| **Side Panel Nav** | Absolute-positioned panel avoids reflowing graph canvas on interaction. | ✓ Good (v1.2) |
-| **Guard-First Navigation** | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes). | ✓ Good (v1.3) |
-| **Schema Separation** | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent. | ✓ Good (v1.3) |
+| **Atomic Notes**              | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes.          | ✓ Good (v1.0) |
+| **YAML Frontmatter**          | Standard, portable way to attach metadata without polluting body content.                                  | ✓ Good (v1.0) |
+| **Web Client First**          | Fastest path to validation; PWA capabilities can mimic desktop feel.                                       | ✓ Good (v1.0) |
+| **Local Mirror Pattern**      | Store full note content in SQLite index for <5ms listing performance.                                      | ✓ Good (v1.0) |
+| **Separate Index DB**         | Placed metadata index in its own database (index.db) to decouple from the task queue.                      | ✓ Good (v1.0) |
+| **Immediate-feedback-save**   | Bypass debounce for Cmd+Enter to ensure user data safety.                                                  | ✓ Good (v1.0) |
+| **Graph Visualization**       | Used `react-force-graph-2d` for performance and Canvas rendering for scalability.                          | ✓ Good (v1.2) |
+| **Tag Hub Structure**         | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering.               | ✓ Good (v1.2) |
+| **Side Panel Nav**            | Absolute-positioned panel avoids reflowing graph canvas on interaction.                                    | ✓ Good (v1.2) |
+| **Guard-First Navigation**    | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes).                  | ✓ Good (v1.3) |
+| **Schema Separation**         | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent.                       | ✓ Good (v1.3) |
 
 ---
 

@@ -14,20 +14,24 @@ Ensures AI processing continues robustly even if provider base URLs are left bla
 ## Implementation Decisions
 
 ### Migration Behavior
+
 - **Runtime handling:** Do not modify existing database records. Logic will interpret empty/null values at runtime.
 - **Empty string = Default:** An empty string in the database `baseUrl` field signifies "Use the provider's standard default".
 - **Hot reload:** Changes to configuration apply immediately without requiring an app restart.
 
 ### Settings UI Presentation
+
 - **Placeholder text:** Show the default URL (e.g. `https://api.openai.com/v1`) as gray placeholder text in the input field when empty.
 - **Minimal indication:** No extra badges/labels ("Default") needed; the placeholder communicates the state sufficiently.
 
 ### Model Selection
+
 - **Require Key:** Only attempt to fetch model lists if a valid API key is present.
 - **Auto-fetch:** Automatically attempt to fetch models when the settings page loads (if key exists).
 - **Allow manual entry:** The model selection input must be a hybrid (combobox/datalist) that allows selecting from the fetched list OR typing a custom model name manually (resilience fallback).
 
 ### Claude's Discretion
+
 - Exact debounce timing for auto-fetch
 - Error message wording if fetch fails
 - Caching strategy for model lists (session vs persistent)
@@ -51,5 +55,5 @@ Ensures AI processing continues robustly even if provider base URLs are left bla
 
 ---
 
-*Phase: 09-ai-provider-resilience*
-*Context gathered: 2026-01-29*
+_Phase: 09-ai-provider-resilience_
+_Context gathered: 2026-01-29_

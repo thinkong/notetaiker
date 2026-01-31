@@ -16,33 +16,33 @@ score: 4/4 must-haves verified
 
 ### Observable Truths
 
-| #   | Truth   | Status     | Evidence       |
-| --- | ------- | ---------- | -------------- |
-| 1   | AI processing works even if Base URL is empty | ✓ VERIFIED | `ai.service.ts` uses `DEFAULT_BASE_URLS` as fallback. |
+| #   | Truth                                                 | Status     | Evidence                                                     |
+| --- | ----------------------------------------------------- | ---------- | ------------------------------------------------------------ |
+| 1   | AI processing works even if Base URL is empty         | ✓ VERIFIED | `ai.service.ts` uses `DEFAULT_BASE_URLS` as fallback.        |
 | 2   | System uses configured model or falls back to default | ✓ VERIFIED | `ai.service.ts` uses `DEFAULT_MODELS` if `model` is missing. |
-| 3   | Settings UI shows default URLs as placeholders | ✓ VERIFIED | `ProviderSection.tsx` implements `DEFAULT_PLACEHOLDERS`. |
-| 4   | User can select from a list or enter custom model | ✓ VERIFIED | `ProviderSection.tsx` uses a text input with a `datalist`. |
+| 3   | Settings UI shows default URLs as placeholders        | ✓ VERIFIED | `ProviderSection.tsx` implements `DEFAULT_PLACEHOLDERS`.     |
+| 4   | User can select from a list or enter custom model     | ✓ VERIFIED | `ProviderSection.tsx` uses a text input with a `datalist`.   |
 
 **Score:** 4/4 truths verified
 
 ### Required Artifacts
 
-| Artifact | Expected    | Status | Details |
-| -------- | ----------- | ------ | ------- |
-| `packages/env/index.ts` | Secrets schema with `model` field | ✓ VERIFIED | Added to all three providers in `SecretsSchema`. |
-| `apps/api/src/services/ai.service.ts` | Runtime default URL and model handling | ✓ VERIFIED | `getModel` uses exported static constants. |
-| `apps/web/src/components/settings/ProviderSection.tsx` | Hybrid model selection UI | ✓ VERIFIED | Implemented with `datalist` and placeholders. |
+| Artifact                                               | Expected                               | Status     | Details                                          |
+| ------------------------------------------------------ | -------------------------------------- | ---------- | ------------------------------------------------ |
+| `packages/env/index.ts`                                | Secrets schema with `model` field      | ✓ VERIFIED | Added to all three providers in `SecretsSchema`. |
+| `apps/api/src/services/ai.service.ts`                  | Runtime default URL and model handling | ✓ VERIFIED | `getModel` uses exported static constants.       |
+| `apps/web/src/components/settings/ProviderSection.tsx` | Hybrid model selection UI              | ✓ VERIFIED | Implemented with `datalist` and placeholders.    |
 
 ### Key Link Verification
 
-| From | To  | Via | Status | Details |
-| ---- | --- | --- | ------ | ------- |
+| From                  | To            | Via                | Status     | Details                                            |
+| --------------------- | ------------- | ------------------ | ---------- | -------------------------------------------------- |
 | `ProviderSection.tsx` | `settings.ts` | `validateMutation` | ✓ VERIFIED | Calls `/validate` to fetch and display model list. |
 
 ### Requirements Coverage
 
-| Requirement | Status | Blocking Issue |
-| ----------- | ------ | -------------- |
+| Requirement               | Status      | Blocking Issue                            |
+| ------------------------- | ----------- | ----------------------------------------- |
 | 09 AI Provider Resilience | ✓ SATISFIED | Fallbacks implemented in both UI and API. |
 
 ### Anti-Patterns Found

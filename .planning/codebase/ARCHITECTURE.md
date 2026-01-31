@@ -7,6 +7,7 @@
 **Overall:** Service-Oriented Monorepo with Local-First Data Strategy
 
 **Key Characteristics:**
+
 - **Local-First:** Notes are stored as Markdown files on the local filesystem, ensuring user ownership and offline availability.
 - **Asynchronous Enrichment:** AI analysis (tagging, etc.) is handled via a background job queue to keep the UI responsive.
 - **Hybrid Storage:** SQLite is used as a high-performance index and job queue, while the filesystem remains the source of truth for content.
@@ -14,6 +15,7 @@
 ## Layers
 
 **API Layer:**
+
 - Purpose: Provides REST endpoints and Server-Sent Events (SSE) for the frontend.
 - Location: `apps/api/src/routes`
 - Contains: Hono route definitions, request validation (Zod), and service orchestration.
@@ -21,6 +23,7 @@
 - Used by: Frontend Web Application
 
 **Services Layer:**
+
 - Purpose: Encapsulates business logic, data persistence, and external integrations.
 - Location: `apps/api/src/services`
 - Contains: `StorageService`, `IndexerService`, `AIService`, `QueueService`, `WorkerService`.
@@ -28,6 +31,7 @@
 - Used by: API Layer, Worker Service.
 
 **Frontend Layer:**
+
 - Purpose: User interface for capturing and viewing notes, including a graph visualization.
 - Location: `apps/web/src`
 - Contains: React components, TanStack Query hooks, CodeMirror editor extensions.
@@ -53,16 +57,19 @@
 ## Key Abstractions
 
 **Storage Service:**
+
 - Purpose: Unified interface for filesystem operations and index synchronization.
 - Examples: `apps/api/src/services/storage.service.ts`
 - Pattern: Repository Pattern
 
 **Indexer Service:**
+
 - Purpose: Maintains a searchable SQLite index of the Markdown files.
 - Examples: `apps/api/src/services/indexer.service.ts`
 - Pattern: Search Index / Projection
 
 **Worker Service:**
+
 - Purpose: Manages background processing of notes.
 - Examples: `apps/api/src/services/worker.service.ts`
 - Pattern: Background Worker / Consumer
@@ -70,11 +77,13 @@
 ## Entry Points
 
 **API Server:**
+
 - Location: `apps/api/src/index.ts`
 - Triggers: `pnpm dev` or `node index.js`
 - Responsibilities: Initializes services, starts Hono server, begins background worker.
 
 **Web Client:**
+
 - Location: `apps/web/src/main.tsx`
 - Triggers: Browser loading the application.
 - Responsibilities: Mounts React tree, initializes QueryClient and Router.
@@ -84,6 +93,7 @@
 **Strategy:** Fail-soft with background recovery.
 
 **Patterns:**
+
 - **Job Recovery:** Stuck jobs are reset on server restart in `apps/api/src/index.ts`.
 - **Validation:** Runtime request validation using Zod in Hono routes.
 
@@ -95,4 +105,4 @@
 
 ---
 
-*Architecture analysis: 2026-01-30*
+_Architecture analysis: 2026-01-30_

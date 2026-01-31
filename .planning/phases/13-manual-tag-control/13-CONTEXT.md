@@ -7,6 +7,7 @@
 ## Phase Boundary
 
 User control over tags with intelligent AI preservation.
+
 - Enable manual tagging via editor interactions (typing `#tag`).
 - Distinguish between User-defined tags and AI-generated tags in storage and UI.
 - Ensure AI updates do not overwrite user decisions.
@@ -18,12 +19,14 @@ User control over tags with intelligent AI preservation.
 ## Implementation Decisions
 
 ### Tag Entry Experience
+
 - **Trigger**: Typing `#` immediately triggers tag mode/autocomplete.
 - **Autocomplete**: Shows ALL existing tags (both Manual and AI-generated source).
 - **Completion**: Pressing `,` (comma) completes the tag.
 - **Visual Style**: Tags remain as highlighted text in the body (not immediate chips), but promote to metadata.
 
 ### Frontmatter Structure
+
 - **Storage**: Separate keys in YAML frontmatter:
   - `tags`: User-defined tags (Manual).
   - `ai_tags`: AI-generated tags (AI).
@@ -33,6 +36,7 @@ User control over tags with intelligent AI preservation.
 - **UI Location**: Rendered tag list shown at the bottom of the editor.
 
 ### AI Interaction & Preservation
+
 - **Update Frequency**: AI analysis runs **On Save**.
 - **Conflict Handling**:
   - **User Wins**: If AI generates a tag that exists in `tags` (Manual), the Manual tag takes precedence (deduplicated in UI, stored in `tags`).
@@ -40,11 +44,13 @@ User control over tags with intelligent AI preservation.
 - **Mutability**: User can delete AI-generated tags.
 
 ### Visual Distinction
+
 - **Differentiation**: Color coding to distinguish sources (e.g., Blue for Manual, Purple for AI).
 - **Management**: Hover over a tag to reveal an 'x' button to remove it.
 - **Density**: If many tags (>10), truncate the list (e.g., "Show more").
 
 ### Claude's Discretion
+
 - Specific colors/styling for the tags.
 - Exact mechanism for "Ask user" on re-add (e.g., an `ignored_tags` field or just stateless heuristic).
 - Design of the autocomplete dropdown.
@@ -70,5 +76,5 @@ User control over tags with intelligent AI preservation.
 
 ---
 
-*Phase: 13-manual-tag-control*
-*Context gathered: 2026-01-30*
+_Phase: 13-manual-tag-control_
+_Context gathered: 2026-01-30_

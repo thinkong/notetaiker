@@ -13,24 +13,26 @@
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| New Features | Patch release focus only |
-| Major Refactors | Stability focus |
+| Feature         | Reason                   |
+| --------------- | ------------------------ |
+| New Features    | Patch release focus only |
+| Major Refactors | Stability focus          |
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| FIX-01 | Phase 14 | Pending |
-| FIX-02 | Phase 14 | Pending |
-| FIX-03 | Phase 14 | Pending |
+| Requirement | Phase    | Status  |
+| ----------- | -------- | ------- |
+| FIX-01      | Phase 14 | Pending |
+| FIX-02      | Phase 14 | Pending |
+| FIX-03      | Phase 14 | Pending |
 
 **Coverage:**
+
 - v1.3.1 requirements: 3 total
 - Mapped to phases: 3
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after v1.3.1 definition*
+
+_Requirements defined: 2026-01-31_
+_Last updated: 2026-01-31 after v1.3.1 definition_
