@@ -26,7 +26,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | UX-04 | Phase 15 | Complete |
-| UX-05 | Phase 16 | Pending |
+| UX-05 | Phase 16 | Complete |
 | UX-06 | Phase 15 | Complete |
 
 **Coverage:**
