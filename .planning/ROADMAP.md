@@ -71,7 +71,10 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 1. User can click a "New Note" button to reset the editor state and clear all content and tags.
 2. User can click any note in the history sidebar to populate the editor with its content and metadata.
 3. The UI clearly distinguishes between a "Draft" (new note) and "Editing" (existing note) state.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 15-01-PLAN.md — Core Mode State & Fresh Capture
+- [ ] 15-02-PLAN.md — Sidebar Integration & Note Loading
+- [ ] 15-03-PLAN.md — Mode Visuals & Shortcuts
 
 #### Phase 16: Intelligent Navigation Guarding
 **Goal**: Users are protected from data loss without being interrupted by unnecessary prompts.
@@ -92,5 +95,5 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 11    | v1.2      | 3/3            | Complete | 2026-01-30 |
 | 12-13 | v1.3      | 7/7            | Complete | 2026-01-31 |
 | 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
-| 15    | v1.4      | 0/TBD          | Not started | - |
+| 15    | v1.4      | 0/3            | Not started | - |
 | 16    | v1.4      | 0/TBD          | Not started | - |
