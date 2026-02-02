@@ -84,7 +84,9 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 1. Navigation guard (browser/app) triggers ONLY when the user attempts to move away from a note with unsaved changes.
 2. Guard remains silent when navigating away from an empty new note or a note that matches its last saved state.
 3. The "Smart Dirty Check" accounts for both the body content and manual tag changes.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 16-01-PLAN.md — Data Router Migration
+- [ ] 16-02-PLAN.md — Navigation Guard & Smart Dirty Check
 
 ## Progress
 
@@ -96,4 +98,4 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 12-13 | v1.3      | 7/7            | Complete | 2026-01-31 |
 | 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
 | 15    | v1.4      | 3/3            | Complete | 2026-02-02 |
-| 16    | v1.4      | 0/TBD          | Not started | - |
+| 16    | v1.4      | 0/2            | In progress | - |
