@@ -4,7 +4,10 @@ import { api } from "../lib/api";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
-export function useDebouncedSave(delay = 1000) {
+export function useDebouncedSave(
+  delay = 1000,
+  onSaveSuccess?: (content: string, noteId: string) => void,
+) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [noteId, setNoteIdState] = useState<string | null>(null);
   const noteIdRef = useRef<string | null>(null);
@@ -34,10 +37,15 @@ export function useDebouncedSave(delay = 1000) {
 
         if (res.ok) {
           const data = await res.json();
+          let currentId = noteIdRef.current;
           if (data && "metadata" in data && data.metadata.id) {
             setNoteIdState(data.metadata.id);
+            currentId = data.metadata.id;
           }
           setStatus("saved");
+          if (onSaveSuccess && currentId) {
+            onSaveSuccess(content, currentId);
+          }
         } else {
           console.error("Save failed with status:", res.status);
           setStatus("error");
@@ -51,36 +59,44 @@ export function useDebouncedSave(delay = 1000) {
     return () => {
       debouncedSaveRef.current?.cancel();
     };
-  }, [delay]);
+  }, [delay, onSaveSuccess]);
 
-  const saveImmediately = useCallback(async (content: string) => {
-    if (!content.trim()) return;
+  const saveImmediately = useCallback(
+    async (content: string) => {
+      if (!content.trim()) return;
 
-    debouncedSaveRef.current?.cancel();
-    setStatus("saving");
+      debouncedSaveRef.current?.cancel();
+      setStatus("saving");
 
-    try {
-      const res = await api.notes.$post({
-        json: {
-          content,
-          id: noteIdRef.current || undefined,
-        },
-      });
+      try {
+        const res = await api.notes.$post({
+          json: {
+            content,
+            id: noteIdRef.current || undefined,
+          },
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data && "metadata" in data && data.metadata.id) {
-          setNoteIdState(data.metadata.id);
+        if (res.ok) {
+          const data = await res.json();
+          let currentId = noteIdRef.current;
+          if (data && "metadata" in data && data.metadata.id) {
+            setNoteIdState(data.metadata.id);
+            currentId = data.metadata.id;
+          }
+          setStatus("saved");
+          if (onSaveSuccess && currentId) {
+            onSaveSuccess(content, currentId);
+          }
+        } else {
+          setStatus("error");
         }
-        setStatus("saved");
-      } else {
+      } catch (error) {
+        console.error("Failed to save note:", error);
         setStatus("error");
       }
-    } catch (error) {
-      console.error("Failed to save note:", error);
-      setStatus("error");
-    }
-  }, []);
+    },
+    [onSaveSuccess],
+  );
 
   const setNoteId = useCallback((id: string | null) => {
     setNoteIdState(id);

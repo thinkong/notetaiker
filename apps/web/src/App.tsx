@@ -66,7 +66,10 @@ function MainCapture() {
   const navigate = useNavigate();
 
   const { status, noteId, forceSave, cancelSave, setNoteId, clearNoteId } =
-    useDebouncedSave();
+    useDebouncedSave(1000, (savedContent) => {
+      // Update baseline when background save succeeds
+      setOriginalContent(savedContent);
+    });
 
   const handleSave = async () => {
     if (!content.trim()) return;
