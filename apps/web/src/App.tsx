@@ -189,6 +189,16 @@ function MainCapture() {
   });
 
   useHotkeys(
+    "mod+n",
+    (e) => {
+      e.preventDefault();
+      handleNewNote();
+    },
+    { enableOnFormTags: true },
+    [handleNewNote],
+  );
+
+  useHotkeys(
     "mod+enter",
     (e) => {
       e.preventDefault();
@@ -216,15 +226,19 @@ function MainCapture() {
       >
         <div className="max-w-3xl mx-auto w-full py-12 px-4">
           <header className="mb-12 flex justify-between items-start">
-            <div>
+            <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold text-nord-frost3 tracking-tight">
                 notetAIker
               </h1>
-              <p className="text-nord-polar3 dark:text-nord-snow1 mt-2">
-                {noteId
-                  ? "Editing Note"
-                  : "Focused, distraction-free capturing."}
-              </p>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  noteId
+                    ? "bg-nord-frost3/10 text-nord-frost3 border border-nord-frost3/20"
+                    : "bg-nord-polar3/10 text-nord-polar3 border border-nord-polar3/20"
+                }`}
+              >
+                {noteId ? "Editing" : "Draft"}
+              </span>
             </div>
             <div className="flex gap-2">
               <button
@@ -243,7 +257,9 @@ function MainCapture() {
                 title="Save (Ctrl + Enter)"
               >
                 <Save className="w-5 h-5" />
-                <span className="hidden sm:inline">Save</span>
+                <span className="hidden sm:inline">
+                  {noteId ? "Save" : "Capture"}
+                </span>
               </button>
               <button
                 onClick={() => setIsSearchOpen(true)}
