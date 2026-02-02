@@ -76,6 +76,14 @@ export function useDebouncedSave(delay = 1000) {
     }
   }, []);
 
+  const setNoteId = useCallback((id: string | null) => {
+    noteIdRef.current = id;
+  }, []);
+
+  const clearNoteId = useCallback(() => {
+    noteIdRef.current = null;
+  }, []);
+
   const handleContentChange = useCallback((content: string) => {
     if (content.trim()) {
       setStatus("saving");
@@ -87,5 +95,7 @@ export function useDebouncedSave(delay = 1000) {
     status,
     save: handleContentChange,
     forceSave: saveImmediately,
+    setNoteId,
+    clearNoteId,
   };
 }

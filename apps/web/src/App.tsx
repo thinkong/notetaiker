@@ -66,7 +66,7 @@ function MainCapture() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
-  const { status, forceSave } = useDebouncedSave();
+  const { status, forceSave, setNoteId, clearNoteId } = useDebouncedSave();
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
@@ -85,6 +85,7 @@ function MainCapture() {
       // Clear editor and draft
       setContent("");
       clearDraft();
+      clearNoteId(); // Reset for new notes
       markClean();
 
       // Invalidate notes query to refresh sidebar
@@ -123,6 +124,7 @@ function MainCapture() {
       const res = await api.notes[":id"].$get({ param: { id: noteId } });
       if (res.ok) {
         const note = await res.json();
+        setNoteId(noteId); // Set the note ID for editing
         setContent(note.content);
         setDraft(note.content);
         markDirty(); // Mark as having content
