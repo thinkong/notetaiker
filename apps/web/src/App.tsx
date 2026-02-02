@@ -64,6 +64,7 @@ function MainCapture() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLoadingNote, setIsLoadingNote] = useState(false);
   const navigate = useNavigate();
 
   const { status, noteId, forceSave, cancelSave, setNoteId, clearNoteId } =
@@ -131,6 +132,8 @@ function MainCapture() {
     setShowPreview(false);
     setPreviewNoteId(null);
 
+    setIsLoadingNote(true);
+
     // Fetch note content
     try {
       const res = await api.notes[":id"].$get({ param: { id: noteId } });
@@ -144,6 +147,8 @@ function MainCapture() {
       }
     } catch (error) {
       console.error("Failed to load note:", error);
+    } finally {
+      setIsLoadingNote(false);
     }
   };
 
@@ -267,14 +272,24 @@ function MainCapture() {
           </header>
 
           <div className="min-h-[60vh]">
-            <Editor
-              ref={editorRef}
-              value={content}
-              onChange={handleContentChange}
-              onSave={handleSave}
-              placeholder="Capture your thoughts..."
-              availableTags={availableTags}
-            />
+            {isLoadingNote ? (
+              <div className="w-full h-full animate-pulse space-y-4">
+                <div className="h-8 bg-nord-snow1 dark:bg-nord-polar2 rounded w-3/4" />
+                <div className="h-4 bg-nord-snow1 dark:bg-nord-polar2 rounded w-full" />
+                <div className="h-4 bg-nord-snow1 dark:bg-nord-polar2 rounded w-5/6" />
+                <div className="h-4 bg-nord-snow1 dark:bg-nord-polar2 rounded w-4/5" />
+                <div className="h-32 bg-nord-snow1 dark:bg-nord-polar2 rounded w-full" />
+              </div>
+            ) : (
+              <Editor
+                ref={editorRef}
+                value={content}
+                onChange={handleContentChange}
+                onSave={handleSave}
+                placeholder="Capture your thoughts..."
+                availableTags={availableTags}
+              />
+            )}
           </div>
         </div>
       </div>
