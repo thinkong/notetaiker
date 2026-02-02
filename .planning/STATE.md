@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-01-31)
 Phase: 15 (To Be Defined)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-02-02 — Quick task 001 complete (note overwrite & tag fix)
+Last activity: 2026-02-02 - Completed quick task 001: Fix note overwrite and missing tags
 
 Progress: [....................] 0%
 
@@ -29,3 +29,9 @@ Progress: [....................] 0%
 Last session: 2026-02-02
 Stopped at: Completed quick/001-PLAN.md
 Resume file: None
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | Fix note overwrite and missing tags | 2026-02-02 | 8cf9317 | [001-fix-note-overwrite-and-missing-tags](./quick/001-fix-note-overwrite-and-missing-tags/) |
