@@ -96,6 +96,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 **Success Criteria**:
 1. Background saves triggered by debounce properly update `originalContent` baseline.
 2. Smart dirty check clears dirty state automatically after a background save without user intervention.
+**Plans**: 1 plan
+- [ ] 17-01-PLAN.md — Smart Guard Integration
 
 #### Phase 18: UI Polish (Pulse Animation)
 **Goal**: Add visual feedback for save states.
@@ -104,6 +106,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 **Gap Closure**: Closes tech debt from v1.4 audit (StatusIndicator).
 **Success Criteria**:
 1. StatusIndicator pulses when saving.
+**Plans**: 1 plan
+- [ ] 18-01-PLAN.md — Pulse Animation Polish
 
 ## Progress
 
