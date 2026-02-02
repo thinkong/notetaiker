@@ -88,6 +88,23 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - [x] 16-01-PLAN.md — Data Router Migration
 - [x] 16-02-PLAN.md — Navigation Guard & Smart Dirty Check
 
+#### Phase 17: Smart Guard Integration Fix
+**Goal**: Restore integrity of Smart Dirty Check by wiring background saves to baseline updates.
+**Depends on**: Phase 16
+**Requirements**: [UX-05]
+**Gap Closure**: Closes critical integration gap from v1.4 audit (App.tsx wiring).
+**Success Criteria**:
+1. Background saves triggered by debounce properly update `originalContent` baseline.
+2. Smart dirty check clears dirty state automatically after a background save without user intervention.
+
+#### Phase 18: UI Polish (Pulse Animation)
+**Goal**: Add visual feedback for save states.
+**Depends on**: Phase 15
+**Requirements**: [Tech Debt]
+**Gap Closure**: Closes tech debt from v1.4 audit (StatusIndicator).
+**Success Criteria**:
+1. StatusIndicator pulses when saving.
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
