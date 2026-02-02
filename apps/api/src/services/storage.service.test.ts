@@ -33,7 +33,7 @@ describe("StorageService", () => {
 
       const fileName = await storageService.saveNote(content, metadata);
 
-      expect(fileName).toMatch(/^\d{8}-\d{6}\.md$/);
+      expect(fileName).toMatch(/^\d{8}-\d{9}-[a-z0-9]{4}\.md$/);
 
       const filePath = path.join(tempDir, fileName);
       const fileContent = await fs.readFile(filePath, "utf-8");
@@ -48,7 +48,7 @@ describe("StorageService", () => {
 
     it("should handle filename collisions by appending a suffix", async () => {
       vi.useFakeTimers();
-      const now = new Date("2024-01-01T12:00:00Z");
+      const now = new Date("2024-01-01T12:00:00.000Z");
       vi.setSystemTime(now);
 
       const content1 = "Note 1";
@@ -57,9 +57,9 @@ describe("StorageService", () => {
       const fileName1 = await storageService.saveNote(content1, {});
       const fileName2 = await storageService.saveNote(content2, {});
 
-      // Use fileName to verify file exists if needed, or suppress warning
-      expect(fileName1).toBe("20240101-120000.md");
-      expect(fileName2).toBe("20240101-120000_1.md");
+      expect(fileName1).toMatch(/^20240101-120000000-[a-z0-9]{4}\.md$/);
+      expect(fileName2).toMatch(/^20240101-120000000-[a-z0-9]{4}\.md$/);
+      expect(fileName1).not.toBe(fileName2);
 
       const file1Content = await fs.readFile(
         path.join(tempDir, fileName1),
@@ -117,7 +117,7 @@ describe("StorageService", () => {
       await storageService.saveNote(content, metadata);
 
       // We need to read the file to get the generated UUID
-      const files = await fs.readdir(tempDir);
+      const files = (await fs.readdir(tempDir)).filter((f) => f.endsWith(".md"));
       const fileContent = await fs.readFile(
         path.join(tempDir, files[0]),
         "utf-8",

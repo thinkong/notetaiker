@@ -4,7 +4,12 @@ import writeFileAtomic from "write-file-atomic";
 import matter from "gray-matter";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
-import { parseMarkdown, type ParsedNote } from "../lib/markdown";
+import {
+  parseMarkdown,
+  type ParsedNote,
+  extractHashtags,
+  mergeTags,
+} from "../lib/markdown";
 import type { IndexerService } from "./indexer.service";
 
 export interface NoteMetadata {
@@ -64,13 +69,28 @@ export class StorageService {
       filePath = path.join(this.storagePath, fileName);
     }
 
+    // Intelligent tag merging
+    const mergedTags = mergeTags(
+      existingMetadata.tags,
+      metadata.tags || extractHashtags(content),
+    );
+
     const fullMetadata = {
       ...existingMetadata,
       ...metadata,
+      tags: mergedTags,
       id,
       createdAt,
       updatedAt,
     };
+
+    // Preserve special AI tags if not explicitly provided in update
+    if (!metadata.ai_tags && existingMetadata.ai_tags) {
+      fullMetadata.ai_tags = existingMetadata.ai_tags;
+    }
+    if (!metadata.ignored_tags && existingMetadata.ignored_tags) {
+      fullMetadata.ignored_tags = existingMetadata.ignored_tags;
+    }
 
     const fileContent = matter.stringify(content, fullMetadata);
 
@@ -118,12 +138,7 @@ export class StorageService {
       const entries = this.indexer.query({ limit, offset });
       return entries.map((entry) => ({
         content: entry.content,
-        metadata: {
-          id: entry.id,
-          tags: JSON.parse(entry.tags),
-          createdAt: entry.createdAt,
-          updatedAt: entry.updatedAt,
-        },
+        metadata: JSON.parse(entry.metadata),
       }));
     } catch (err) {
       console.error("Failed to list notes from index:", err);
@@ -132,12 +147,13 @@ export class StorageService {
   }
 
   private async generateUniqueFileName(date: Date): Promise<string> {
-    const baseName = format(date, "yyyyMMdd-HHmmss");
-    let fileName = `${baseName}.md`;
+    const baseName = format(date, "yyyyMMdd-HHmmssSSS");
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    let fileName = `${baseName}-${randomSuffix}.md`;
     let counter = 1;
 
     while (await this.fileExists(path.join(this.storagePath, fileName))) {
-      fileName = `${baseName}_${counter}.md`;
+      fileName = `${baseName}-${randomSuffix}_${counter}.md`;
       counter++;
     }
 
