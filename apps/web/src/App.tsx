@@ -4,7 +4,12 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
 import { Settings, Save, Search, Share2 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor, type EditorHandle } from "./components/editor/Editor";
@@ -347,25 +352,43 @@ function MainCapture() {
   );
 }
 
+function Layout() {
+  return (
+    <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 transition-colors duration-300">
+      <Outlet />
+    </div>
+  );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <MainCapture />,
+      },
+      {
+        path: "graph",
+        element: <GraphView />,
+      },
+      {
+        path: "settings",
+        element: (
+          <main className="max-w-3xl mx-auto w-full py-12 px-4">
+            <SettingsPage />
+          </main>
+        ),
+      },
+    ],
+  },
+]);
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <div className="min-h-screen bg-nord-snow2 dark:bg-nord-polar0 transition-colors duration-300">
-          <Routes>
-            <Route path="/" element={<MainCapture />} />
-            <Route path="/graph" element={<GraphView />} />
-            <Route
-              path="/settings"
-              element={
-                <main className="max-w-3xl mx-auto w-full py-12 px-4">
-                  <SettingsPage />
-                </main>
-              }
-            />
-          </Routes>
-        </div>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }
