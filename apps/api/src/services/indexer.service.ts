@@ -7,7 +7,7 @@ export interface IndexEntry {
   id: string;
   filename: string;
   content: string;
-  tags: string; // JSON string
+  metadata: string; // JSON string of full metadata
   createdAt: string;
   updatedAt: string;
 }
@@ -42,7 +42,7 @@ export class IndexerService {
         id TEXT PRIMARY KEY,
         filename TEXT NOT NULL,
         content TEXT,
-        tags TEXT,
+        metadata TEXT,
         createdAt DATETIME,
         updatedAt DATETIME
       )
@@ -54,7 +54,7 @@ export class IndexerService {
   }
 
   syncNote(filename: string, content: string, metadata: any) {
-    const tags = JSON.stringify(metadata.tags || []);
+    const fullMetadata = JSON.stringify(metadata);
     const createdAt = metadata.createdAt || new Date().toISOString();
     const updatedAt = metadata.updatedAt || new Date().toISOString();
     const id = metadata.id;
@@ -62,17 +62,17 @@ export class IndexerService {
     if (!id) return;
 
     const stmt = this.db.prepare(`
-      INSERT INTO notes_index (id, filename, content, tags, createdAt, updatedAt)
+      INSERT INTO notes_index (id, filename, content, metadata, createdAt, updatedAt)
       VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         filename = excluded.filename,
         content = excluded.content,
-        tags = excluded.tags,
+        metadata = excluded.metadata,
         createdAt = excluded.createdAt,
         updatedAt = excluded.updatedAt
     `);
 
-    stmt.run(id, filename, content, tags, createdAt, updatedAt);
+    stmt.run(id, filename, content, fullMetadata, createdAt, updatedAt);
   }
 
   deleteNote(id: string) {
@@ -138,7 +138,7 @@ export class IndexerService {
       // This is a bit naive but works for a starter SQLite implementation
       const tagConditions = tags.map((t) => {
         params.push(`%${t}%`);
-        return "tags LIKE ?";
+        return "metadata LIKE ?";
       });
       query += ` WHERE ${tagConditions.join(" OR ")}`;
     }
