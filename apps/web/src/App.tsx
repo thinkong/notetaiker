@@ -65,11 +65,18 @@ function MainCapture() {
   const [isLoadingNote, setIsLoadingNote] = useState(false);
   const navigate = useNavigate();
 
-  const { status, noteId, forceSave, cancelSave, setNoteId, clearNoteId } =
-    useDebouncedSave(1000, (savedContent) => {
-      // Update baseline when background save succeeds
-      setOriginalContent(savedContent);
-    });
+  const {
+    status,
+    noteId,
+    save,
+    forceSave,
+    cancelSave,
+    setNoteId,
+    clearNoteId,
+  } = useDebouncedSave(1000, (savedContent) => {
+    // Update baseline when background save succeeds
+    setOriginalContent(savedContent);
+  });
 
   const handleSave = async () => {
     if (!content.trim()) return;
@@ -127,6 +134,7 @@ function MainCapture() {
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
     setDraft(newContent); // Auto-save to localStorage
+    save(newContent); // Trigger background save cycle
   };
 
   const [showPreview, setShowPreview] = useState(false);

@@ -31,6 +31,14 @@ export function useNavigationGuard({
       isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
+  // 3. Auto-proceed watchdog
+  // If the content becomes clean while a navigation is blocked, proceed automatically
+  useEffect(() => {
+    if (!isDirty && blocker.state === "blocked") {
+      blocker.proceed();
+    }
+  }, [isDirty, blocker]);
+
   const proceed = useCallback(() => {
     if (blocker.state === "blocked") {
       blocker.proceed();

@@ -27,7 +27,7 @@ export function StatusIndicator({ status }: StatusIndicatorProps) {
     <div
       className={`fixed bottom-6 right-6 text-xs font-mono select-none transition-colors duration-300 ${
         status === "saving"
-          ? "text-nord-frost3"
+          ? "text-nord-frost3 animate-pulse"
           : status === "error"
             ? "text-nord-aurora0"
             : "text-nord-polar3 dark:text-nord4/50"
