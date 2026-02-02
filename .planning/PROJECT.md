@@ -39,12 +39,9 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **FIX-01**: Note Preview Overlay uses unified `Tag` component and displays `ai_tags` — v1.3.1
 - ✓ **FIX-02**: Fix TypeScript `verbatimModuleSyntax` errors for type-only imports across the codebase — v1.3.1
 - ✓ **FIX-03**: Enforce `verbatimModuleSyntax` compliant imports in linter configuration to prevent recurrence — v1.3.1
-
-### Active
-
-- [ ] **UX-04**: Explicit "New Note" button clears editor for fresh capture
-- [ ] **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check)
-- [ ] **UX-06**: Clicking note in history stream loads content into editor
+- ✓ **UX-04**: Explicit "New Note" button clears editor for fresh capture — v1.4
+- ✓ **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check) — v1.4
+- ✓ **UX-06**: Clicking note in history stream loads content into editor — v1.4
 
 ### Out of Scope
 
@@ -84,4 +81,4 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ---
 
-_Last updated: 2026-02-02 after start of v1.4 milestone_
+_Last updated: 2026-02-02 after completion of v1.4 milestone_
