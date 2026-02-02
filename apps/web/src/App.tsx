@@ -66,7 +66,19 @@ function MainCapture() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
-  const { status, forceSave, setNoteId, clearNoteId } = useDebouncedSave();
+  const { status, noteId, forceSave, cancelSave, setNoteId, clearNoteId } =
+    useDebouncedSave();
+
+  const handleNewNote = () => {
+    requestAction(() => {
+      cancelSave();
+      clearNoteId();
+      setContent("");
+      clearDraft();
+      markClean();
+      setTimeout(() => editorRef.current?.focus(), 50);
+    });
+  };
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
@@ -204,10 +216,22 @@ function MainCapture() {
                 notetAIker
               </h1>
               <p className="text-nord-polar3 dark:text-nord-snow1 mt-2">
-                Focused, distraction-free capturing.
+                {noteId
+                  ? "Editing Note"
+                  : "Focused, distraction-free capturing."}
               </p>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handleNewNote}
+                className="flex items-center gap-2 px-4 py-2 bg-nord-snow1 dark:bg-nord-polar2 text-nord-polar3 dark:text-nord-snow1 rounded-full hover:bg-nord-snow0 dark:hover:bg-nord-polar1 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+                title="New Note"
+              >
+                <span className="w-5 h-5 flex items-center justify-center text-xl font-bold">
+                  +
+                </span>
+                <span className="hidden sm:inline">New</span>
+              </button>
               <button
                 onClick={handleSave}
                 className="flex items-center gap-2 px-4 py-2 bg-nord-frost3 text-white rounded-full hover:bg-nord-frost2 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
