@@ -21,7 +21,7 @@ import { Sidebar } from "./components/sidebar/Sidebar";
 import { SidebarTimeline } from "./components/sidebar/SidebarTimeline";
 import { GraphView } from "./components/graph/GraphView";
 import { useDraftPersistence } from "./hooks/useDraftPersistence";
-import { useUnsavedChanges } from "./hooks/useUnsavedChanges";
+import { useNavigationGuard } from "./hooks/useNavigationGuard";
 import { Toast } from "./components/common/Toast";
 import { ConfirmDialog } from "./components/common/ConfirmDialog";
 import { NotePreviewOverlay } from "./components/preview/NotePreviewOverlay";
@@ -48,21 +48,14 @@ function MainCapture() {
   }, [timelineData]);
 
   const { draft, setDraft, clearDraft } = useDraftPersistence();
-  const [content, setContent] = useState<string>(() => {
-    // If draft exists, use it; otherwise default welcome text
-    return (
-      draft || "# Welcome to notetAIker\n\nStart typing your thoughts here..."
-    );
-  });
-
-  const {
-    markDirty,
-    markClean,
-    requestAction,
-    showDialog,
-    confirmDiscard,
-    cancelAction,
-  } = useUnsavedChanges();
+  const initialContent = useMemo(
+    () =>
+      draft || "# Welcome to notetAIker\n\nStart typing your thoughts here...",
+    [draft],
+  );
+  const [content, setContent] = useState<string>(initialContent);
+  const [originalContent, setOriginalContent] =
+    useState<string>(initialContent);
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -75,36 +68,20 @@ function MainCapture() {
   const { status, noteId, forceSave, cancelSave, setNoteId, clearNoteId } =
     useDebouncedSave();
 
-  const handleNewNote = () => {
-    requestAction(() => {
-      cancelSave();
-      clearNoteId();
-      setContent("");
-      clearDraft();
-      markClean();
-      setTimeout(() => editorRef.current?.focus(), 50);
-    });
-  };
-
-  const handleContentChange = (newContent: string) => {
-    setContent(newContent);
-    setDraft(newContent); // Auto-save to localStorage
-    if (newContent.trim()) {
-      markDirty();
-    }
-  };
-
   const handleSave = async () => {
     if (!content.trim()) return;
 
     try {
       await forceSave(content);
 
+      // Store what we just saved as original
+      setOriginalContent(content);
+
       // Clear editor and draft
       setContent("");
+      setOriginalContent("");
       clearDraft();
       clearNoteId(); // Reset for new notes
-      markClean();
 
       // Invalidate notes query to refresh sidebar
       queryClient.invalidateQueries({ queryKey: ["notes"] });
@@ -120,6 +97,33 @@ function MainCapture() {
       setToastMessage("Save failed");
       setShowToast(true);
     }
+  };
+
+  const isDirty = useMemo(
+    () => content.trim() !== originalContent.trim(),
+    [content, originalContent],
+  );
+
+  const { isBlocked, proceed, reset, saveAndProceed, requestAction } =
+    useNavigationGuard({
+      isDirty,
+      onSave: handleSave,
+    });
+
+  const handleNewNote = () => {
+    requestAction(() => {
+      cancelSave();
+      clearNoteId();
+      setContent("");
+      setOriginalContent("");
+      clearDraft();
+      setTimeout(() => editorRef.current?.focus(), 50);
+    });
+  };
+
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setDraft(newContent); // Auto-save to localStorage
   };
 
   const [showPreview, setShowPreview] = useState(false);
@@ -146,8 +150,8 @@ function MainCapture() {
         const note = await res.json();
         setNoteId(noteId); // Set the note ID for editing
         setContent(note.content);
+        setOriginalContent(note.content);
         setDraft(note.content);
-        markDirty(); // Mark as having content
         editorRef.current?.focus();
       }
     } catch (error) {
@@ -323,15 +327,12 @@ function MainCapture() {
         onSelectNote={handleSelectNote}
       />
 
-      {showDialog && (
+      {isBlocked && (
         <ConfirmDialog
-          open={showDialog}
-          onSave={async () => {
-            await handleSave();
-            confirmDiscard();
-          }}
-          onDiscard={confirmDiscard}
-          onCancel={cancelAction}
+          open={isBlocked}
+          onSave={saveAndProceed}
+          onDiscard={proceed}
+          onCancel={reset}
         />
       )}
 

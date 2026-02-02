@@ -75,7 +75,7 @@ export class StorageService {
       metadata.tags || extractHashtags(content),
     );
 
-    const fullMetadata = {
+    const fullMetadata: NoteMetadata = {
       ...existingMetadata,
       ...metadata,
       tags: mergedTags,
