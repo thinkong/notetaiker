@@ -7,9 +7,9 @@
 
 ### UX Refinement
 
-- [ ] **UX-04**: Explicit "New Note" button clears editor for fresh capture
+- [x] **UX-04**: Explicit "New Note" button clears editor for fresh capture
 - [ ] **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check)
-- [ ] **UX-06**: Clicking note in history stream loads content into editor
+- [x] **UX-06**: Clicking note in history stream loads content into editor
 
 ## Future Requirements
 
@@ -25,9 +25,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UX-04 | Phase 15 | Pending |
+| UX-04 | Phase 15 | Complete |
 | UX-05 | Phase 16 | Pending |
-| UX-06 | Phase 15 | Pending |
+| UX-06 | Phase 15 | Complete |
 
 **Coverage:**
 - v1.4 requirements: 3 total
@@ -36,4 +36,4 @@
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after start of v1.4 milestone*
+*Last updated: 2026-02-02 after completion of Phase 15*
