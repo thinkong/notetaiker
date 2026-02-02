@@ -4,7 +4,7 @@ import type { QueueService } from "./queue.service";
 import type { EventsService } from "./events.service";
 import type { AIService } from "./ai.service";
 import type { StorageService } from "./storage.service";
-import { mergeTags, toTitleCase } from "../lib/markdown";
+import { toTitleCase } from "../lib/markdown";
 
 export class WorkerService {
   private queue: PQueue;
@@ -93,10 +93,8 @@ export class WorkerService {
             );
           });
 
-          const updatedAiTags = mergeTags(
-            note.metadata.ai_tags,
-            filteredGenerated,
-          );
+          // Replace old AI tags with fresh list (not merge) to avoid accumulation
+          const updatedAiTags = filteredGenerated.map(toTitleCase);
 
           // Only save if ai_tags actually changed
           const existingAiTags = note.metadata.ai_tags || [];
