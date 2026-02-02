@@ -6,10 +6,12 @@ import { FileText } from "lucide-react";
 
 interface SidebarTimelineProps {
   onNoteClick?: (noteId: string) => void;
+  activeNoteId?: string | null;
 }
 
 export const SidebarTimeline: React.FC<SidebarTimelineProps> = ({
   onNoteClick,
+  activeNoteId,
 }) => {
   const {
     data,
@@ -84,6 +86,7 @@ export const SidebarTimeline: React.FC<SidebarTimelineProps> = ({
         <SidebarNoteCard
           key={note.metadata.id}
           note={note}
+          active={note.metadata.id === activeNoteId}
           onClick={onNoteClick}
         />
       ))}

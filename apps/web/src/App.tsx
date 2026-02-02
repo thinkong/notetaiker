@@ -200,7 +200,7 @@ function MainCapture() {
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       >
-        <SidebarTimeline onNoteClick={handleNoteClick} />
+        <SidebarTimeline onNoteClick={handleNoteClick} activeNoteId={noteId} />
       </Sidebar>
 
       {/* Main Content */}
