@@ -25,14 +25,14 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UX-04 | | Pending |
-| UX-05 | | Pending |
-| UX-06 | | Pending |
+| UX-04 | Phase 15 | Pending |
+| UX-05 | Phase 16 | Pending |
+| UX-06 | Phase 15 | Pending |
 
 **Coverage:**
 - v1.4 requirements: 3 total
-- Mapped to phases: 0
-- Unmapped: 3 ⚠️
+- Mapped to phases: 3
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-02*

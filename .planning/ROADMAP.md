@@ -11,7 +11,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.2 Graph View** - Phase 11 (shipped 2026-01-30)
 - ✅ **v1.3 UX Polish & Flow** - Phases 12-13 (shipped 2026-01-31)
 - ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
-- 📋 **v1.4 [To Be Defined]** - Phase 15+
+- 🚧 **v1.4 UX Refinement** - Phases 15-16 (in progress)
 
 ## Phases
 
@@ -59,16 +59,38 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 📋 v1.4 [To Be Defined]
+### 🚧 v1.4 UX Refinement (In Progress)
 
-- [ ] Phase 15: [To Be Defined]
+**Milestone Goal:** Improve editor flow with explicit creation, smarter navigation guards, and history integration.
+
+#### Phase 15: History Integration & Fresh Capture
+**Goal**: Users can move fluidly between new capture and historical notes.
+**Depends on**: Phase 14
+**Requirements**: [UX-04, UX-06]
+**Success Criteria**:
+1. User can click a "New Note" button to reset the editor state and clear all content and tags.
+2. User can click any note in the history sidebar to populate the editor with its content and metadata.
+3. The UI clearly distinguishes between a "Draft" (new note) and "Editing" (existing note) state.
+**Plans**: TBD
+
+#### Phase 16: Intelligent Navigation Guarding
+**Goal**: Users are protected from data loss without being interrupted by unnecessary prompts.
+**Depends on**: Phase 15
+**Requirements**: [UX-05]
+**Success Criteria**:
+1. Navigation guard (browser/app) triggers ONLY when the user attempts to move away from a note with unsaved changes.
+2. Guard remains silent when navigating away from an empty new note or a note that matches its last saved state.
+3. The "Smart Dirty Check" accounts for both the body content and manual tag changes.
+**Plans**: TBD
 
 ## Progress
 
-| Phase | Milestone | Plans Complete | Status   | Completed  |
-| ----- | --------- | -------------- | -------- | ---------- |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
 | 1-8   | v1.0      | 26/26          | Complete | 2026-01-29 |
 | 9-10  | v1.1      | 3/3            | Complete | 2026-01-30 |
 | 11    | v1.2      | 3/3            | Complete | 2026-01-30 |
 | 12-13 | v1.3      | 7/7            | Complete | 2026-01-31 |
 | 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
+| 15    | v1.4      | 0/TBD          | Not started | - |
+| 16    | v1.4      | 0/TBD          | Not started | - |
