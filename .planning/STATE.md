@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Phase: 16 of 16 (Intelligent Navigation Guarding)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-02 — Completed Phase 15
+Plan: 1 of 3 (Data Router Migration)
+Status: In progress
+Last activity: 2026-02-02 — Completed 16-01-PLAN.md
 
-Progress: [▓▓▓▓▓▓▓▓▓▓] 94% (44/47 estimated plans completed)
+Progress: [███████████░] 96% (45/47 estimated plans completed)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 44
+- Total plans completed: 45
 - Average duration: ~322s
 - Total execution time: TBD
 
@@ -29,6 +29,7 @@ Progress: [▓▓▓▓▓▓▓▓▓▓] 94% (44/47 estimated plans completed)
 |-------|-------|-------|----------|
 | 1-14  | 41    | -     | -        |
 | 15    | 3     | 3     | 322s     |
+| 16    | 1     | 3     | ~360s    |
 
 ## Accumulated Context
 
@@ -36,14 +37,10 @@ Progress: [▓▓▓▓▓▓▓▓▓▓] 94% (44/47 estimated plans completed)
 
 Recent decisions affecting current work:
 
+- [16-01-01]: Used a `Layout` component with an `Outlet` to preserve the global background styles across all routes when migrating to Data Router.
+- [16-01-02]: Maintained the router definition in `App.tsx` for minimal friction and consistency with existing component structure.
 - [15-03]: Placed the Mode Badge in the header rather than the toolbar to make it a high-level context indicator.
 - [15-03]: Standardized on `Mod+N` as it matches user expectations from other productivity software.
-- [15-02]: Chose a subtle background tint and border for the active note highlight to maintain the clean Nord aesthetic while remaining clearly visible.
-- [15-02]: Implemented a simple vertical skeleton pattern for the loading state to match the expected markdown document structure.
-- [15-01]: Used a synchronized state+ref pattern for `noteId` to balance React reactivity with debounced closure requirements.
-- [15-01]: Chose to update the header subtitle as a visual indicator of "Draft" vs "Editing" mode.
-- [v1.4]: Transition to explicit "New Note" vs "Editing" mode to support history loading.
-- [v1.4]: Smart dirty checking must include body content and manual tags.
 
 ### Pending Todos
 
@@ -55,6 +52,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-02 05:55
-Stopped at: Phase 15 completion.
+Last session: 2026-02-02 07:25
+Stopped at: Completed 16-01-PLAN.md.
 Resume file: None
