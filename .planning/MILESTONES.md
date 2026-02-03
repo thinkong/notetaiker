@@ -1,5 +1,31 @@
 # Project Milestones: NoteTaiker
 
+## v1.4 UX Refinement (Shipped: 2026-02-03)
+
+**Delivered:** Improved editor flow with explicit creation, smarter navigation guards, and history integration.
+
+**Phases completed:** 15-18 (7 plans total)
+
+**Key accomplishments:**
+
+- **Fresh Capture Mode:** "New Note" button and `Cmd+N` instantly reset editor for zero-friction capture.
+- **Smart Navigation Guard:** Intelligent dirty checking prevents data loss without false positives on manual undo.
+- **History Integration:** Seamless loading of past notes into the editor with visual "Editing" mode indication.
+- **Pulse Animation:** Visual feedback during background saves for better system status awareness.
+
+**Stats:**
+
+- 7 files modified
+- ~5500 LOC TypeScript
+- 4 phases, 7 plans
+- 1 day from start to ship
+
+**Git range:** `feat(15-01)` → `feat(18-01)`
+
+**What's next:** Plan Next Milestone (likely v1.5 or v2.0)
+
+---
+
 ## v1.3.1 Patch Fixes (Shipped: 2026-01-31)
 
 **Delivered:** Patch release focused on resolving known regressions and hardening the build system.

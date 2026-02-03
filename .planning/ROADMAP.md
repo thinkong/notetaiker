@@ -11,7 +11,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.2 Graph View** - Phase 11 (shipped 2026-01-30)
 - ✅ **v1.3 UX Polish & Flow** - Phases 12-13 (shipped 2026-01-31)
 - ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
-- 🚧 **v1.4 UX Refinement** - Phases 15-16 (in progress)
+- ✅ **v1.4 UX Refinement** - Phases 15-18 (shipped 2026-02-03)
 
 ## Phases
 
@@ -59,55 +59,15 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 🚧 v1.4 UX Refinement (In Progress)
+<details>
+<summary>✅ v1.4 UX Refinement (Phases 15-18) - SHIPPED 2026-02-03</summary>
 
-**Milestone Goal:** Improve editor flow with explicit creation, smarter navigation guards, and history integration.
+- [x] Phase 15: History Integration & Fresh Capture (3/3 plans)
+- [x] Phase 16: Intelligent Navigation Guarding (2/2 plans)
+- [x] Phase 17: Smart Guard Integration Fix (1/1 plan)
+- [x] Phase 18: UI Polish (Pulse Animation) (1/1 plan)
 
-#### Phase 15: History Integration & Fresh Capture
-**Goal**: Users can move fluidly between new capture and historical notes.
-**Depends on**: Phase 14
-**Requirements**: [UX-04, UX-06]
-**Success Criteria**:
-1. User can click a "New Note" button to reset the editor state and clear all content and tags.
-2. User can click any note in the history sidebar to populate the editor with its content and metadata.
-3. The UI clearly distinguishes between a "Draft" (new note) and "Editing" (existing note) state.
-**Plans**: 3/3 plans
-- [x] 15-01-PLAN.md — Core Mode State & Fresh Capture
-- [x] 15-02-PLAN.md — Sidebar Integration & Note Loading
-- [x] 15-03-PLAN.md — Mode Visuals & Shortcuts
-
-#### Phase 16: Intelligent Navigation Guarding
-**Goal**: Users are protected from data loss without being interrupted by unnecessary prompts.
-**Depends on**: Phase 15
-**Requirements**: [UX-05]
-**Success Criteria**:
-1. Navigation guard (browser/app) triggers ONLY when the user attempts to move away from a note with unsaved changes.
-2. Guard remains silent when navigating away from an empty new note or a note that matches its last saved state.
-3. The "Smart Dirty Check" accounts for both the body content and manual tag changes.
-**Plans**: 2 plans
-- [x] 16-01-PLAN.md — Data Router Migration
-- [x] 16-02-PLAN.md — Navigation Guard & Smart Dirty Check
-
-#### Phase 17: Smart Guard Integration Fix
-**Goal**: Restore integrity of Smart Dirty Check by wiring background saves to baseline updates.
-**Depends on**: Phase 16
-**Requirements**: [UX-05]
-**Gap Closure**: Closes critical integration gap from v1.4 audit (App.tsx wiring).
-**Success Criteria**:
-1. Background saves triggered by debounce properly update `originalContent` baseline.
-2. Smart dirty check clears dirty state automatically after a background save without user intervention.
-**Plans**: 1/1 plan
-- [x] 17-01-PLAN.md — Smart Guard Integration
-
-#### Phase 18: UI Polish (Pulse Animation)
-**Goal**: Add visual feedback for save states.
-**Depends on**: Phase 15
-**Requirements**: [Tech Debt]
-**Gap Closure**: Closes tech debt from v1.4 audit (StatusIndicator).
-**Success Criteria**:
-1. StatusIndicator pulses when saving.
-**Plans**: 1/1 plan
-- [x] 18-01-PLAN.md — Pulse Animation Polish
+</details>
 
 ## Progress
 
