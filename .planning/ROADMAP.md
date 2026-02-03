@@ -120,5 +120,5 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
 | 15    | v1.4      | 3/3            | Complete | 2026-02-02 |
 | 16    | v1.4      | 2/2            | Complete | 2026-02-02 |
-| 17    | v1.4      | 1/1            | Complete | 2026-02-02 |
+| 17    | v1.4      | 1/1            | Complete | 2026-02-03 |
 | 18    | v1.4      | 1/1            | Complete | 2026-02-02 |

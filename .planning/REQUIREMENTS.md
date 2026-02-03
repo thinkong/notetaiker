@@ -8,7 +8,7 @@
 ### UX Refinement
 
 - [x] **UX-04**: Explicit "New Note" button clears editor for fresh capture
-- [ ] **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check)
+- [x] **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check)
 - [x] **UX-06**: Clicking note in history stream loads content into editor
 
 ## Future Requirements
