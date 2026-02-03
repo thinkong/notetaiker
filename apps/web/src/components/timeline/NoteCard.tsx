@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Info } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,19 +21,30 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     ? new Date(metadata.createdAt)
     : new Date();
 
-  // Simple title extraction: first line if it starts with #, or just truncate content
-  const lines = content.trim().split("\n");
-  const firstLine = lines[0] || "";
-  const hasTitle = firstLine.startsWith("#");
-  const title = hasTitle ? firstLine.replace(/^#+\s*/, "") : "Untitled Note";
-  const bodyContent = hasTitle
-    ? lines.slice(1).join("\n").trim()
-    : content.trim();
+  // Memoize expensive text parsing and metadata updates
+  const { title, bodyContent, displayMetadata } = useMemo(() => {
+    // Simple title extraction: first line if it starts with #, or just truncate content
+    const lines = content.trim().split("\n");
+    const firstLine = lines[0] || "";
+    const hasTitle = firstLine.startsWith("#");
+    const extractedTitle = hasTitle
+      ? firstLine.replace(/^#+\s*/, "")
+      : "Untitled Note";
+    const extractedBody = hasTitle
+      ? lines.slice(1).join("\n").trim()
+      : content.trim();
 
-  // Filter out content from metadata for display
-  const displayMetadata = Object.fromEntries(
-    Object.entries(metadata).filter(([key]) => key !== "content"),
-  );
+    // Filter out content from metadata for display
+    const filteredMetadata = Object.fromEntries(
+      Object.entries(metadata).filter(([key]) => key !== "content"),
+    );
+
+    return {
+      title: extractedTitle,
+      bodyContent: extractedBody,
+      displayMetadata: filteredMetadata,
+    };
+  }, [content, metadata]);
 
   const handleDismissTag = async (tagToDismiss: string) => {
     const updatedAiTags = (metadata.ai_tags || []).filter(

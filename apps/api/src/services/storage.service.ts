@@ -9,6 +9,7 @@ import {
   type ParsedNote,
   extractHashtags,
   mergeTags,
+  toTitleCase,
 } from "../lib/markdown";
 import type { IndexerService } from "./indexer.service";
 

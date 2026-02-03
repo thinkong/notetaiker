@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
 import {
   type GraphData,
@@ -75,29 +75,50 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
     }, 200);
   }, []);
 
+  // Pre-calculate favorites for O(1) lookup
+  const neighborsMap = useMemo(() => {
+    const map = new Map<string, { neighbor: string; linkId: string }[]>();
+
+    data.links.forEach((link) => {
+      const source =
+        typeof link.source === "object"
+          ? (link.source as GraphNode).id
+          : link.source;
+      const target =
+        typeof link.target === "object"
+          ? (link.target as GraphNode).id
+          : link.target;
+      const linkId = `${source}-${target}`;
+
+      if (!map.has(source)) map.set(source, []);
+      if (!map.has(target)) map.set(target, []);
+
+      map.get(source)?.push({ neighbor: target, linkId });
+      map.get(target)?.push({ neighbor: source, linkId });
+    });
+
+    return map;
+  }, [data.links]);
+
   const handleNodeHover = useCallback(
     (node: GraphNode | null) => {
+      if (!node) {
+        setHoverNode(null);
+        setHighlightNodes(new Set());
+        setHighlightLinks(new Set());
+        return;
+      }
+
       const neighbors = new Set<string>();
       const links = new Set<string>();
 
-      if (node) {
-        neighbors.add(node.id);
-        data.links.forEach((link) => {
-          // react-force-graph replaces string IDs with object references
-          const source =
-            typeof link.source === "object"
-              ? (link.source as GraphNode).id
-              : link.source;
-          const target =
-            typeof link.target === "object"
-              ? (link.target as GraphNode).id
-              : link.target;
+      neighbors.add(node.id); // Add self
 
-          if (source === node.id || target === node.id) {
-            neighbors.add(source);
-            neighbors.add(target);
-            links.add(`${source}-${target}`);
-          }
+      const nodeNeighbors = neighborsMap.get(node.id);
+      if (nodeNeighbors) {
+        nodeNeighbors.forEach(({ neighbor, linkId }) => {
+          neighbors.add(neighbor);
+          links.add(linkId);
         });
       }
 
@@ -105,7 +126,7 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
       setHighlightNodes(neighbors);
       setHighlightLinks(links);
     },
-    [data],
+    [neighborsMap],
   );
 
   const paintNode = useCallback(
@@ -209,25 +230,29 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
       onNodeClick={onNodeClick}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onNodeHover={handleNodeHover as any}
-      linkColor={(linkObject) => {
-        const link = linkObject as unknown as InternalLink;
-        const source =
-          typeof link.source === "object" ? link.source.id : link.source;
-        const target =
-          typeof link.target === "object" ? link.target.id : link.target;
-        const linkId = `${source}-${target}`;
-        if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
-        return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
-      }}
-      linkWidth={(linkObject) => {
-        const link = linkObject as unknown as InternalLink;
-        const source =
-          typeof link.source === "object" ? link.source.id : link.source;
-        const target =
-          typeof link.target === "object" ? link.target.id : link.target;
-        const linkId = `${source}-${target}`;
-        return highlightLinks.has(linkId) ? 2 : 1;
-      }}
+      linkColor={useCallback(
+        (link: InternalLink) => {
+          const source =
+            typeof link.source === "object" ? link.source.id : link.source;
+          const target =
+            typeof link.target === "object" ? link.target.id : link.target;
+          const linkId = `${source}-${target}`;
+          if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
+          return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
+        },
+        [highlightLinks, highlightNodes.size],
+      )}
+      linkWidth={useCallback(
+        (link: InternalLink) => {
+          const source =
+            typeof link.source === "object" ? link.source.id : link.source;
+          const target =
+            typeof link.target === "object" ? link.target.id : link.target;
+          const linkId = `${source}-${target}`;
+          return highlightLinks.has(linkId) ? 2 : 1;
+        },
+        [highlightLinks],
+      )}
     />
   );
 }
