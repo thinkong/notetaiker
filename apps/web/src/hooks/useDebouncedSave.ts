@@ -20,41 +20,45 @@ export function useDebouncedSave(
 
   // Initialize/update debounced function
   useEffect(() => {
-    debouncedSaveRef.current = debounce(async (content: string) => {
-      if (!content.trim()) {
-        setStatus("idle");
-        return;
-      }
+    debouncedSaveRef.current = debounce(
+      async (content: string, metadata?: Record<string, unknown>) => {
+        if (!content.trim()) {
+          setStatus("idle");
+          return;
+        }
 
-      setStatus("saving");
-      try {
-        const res = await api.notes.$post({
-          json: {
-            content,
-            id: noteIdRef.current || undefined,
-          },
-        });
+        setStatus("saving");
+        try {
+          const res = await api.notes.$post({
+            json: {
+              content,
+              id: noteIdRef.current || undefined,
+              metadata,
+            },
+          });
 
-        if (res.ok) {
-          const data = await res.json();
-          let currentId = noteIdRef.current;
-          if (data && "metadata" in data && data.metadata.id) {
-            setNoteIdState(data.metadata.id);
-            currentId = data.metadata.id;
+          if (res.ok) {
+            const data = await res.json();
+            let currentId = noteIdRef.current;
+            if (data && "metadata" in data && data.metadata.id) {
+              setNoteIdState(data.metadata.id);
+              currentId = data.metadata.id;
+            }
+            setStatus("saved");
+            if (onSaveSuccess && currentId) {
+              onSaveSuccess(content, currentId);
+            }
+          } else {
+            console.error("Save failed with status:", res.status);
+            setStatus("error");
           }
-          setStatus("saved");
-          if (onSaveSuccess && currentId) {
-            onSaveSuccess(content, currentId);
-          }
-        } else {
-          console.error("Save failed with status:", res.status);
+        } catch (error) {
+          console.error("Failed to save note:", error);
           setStatus("error");
         }
-      } catch (error) {
-        console.error("Failed to save note:", error);
-        setStatus("error");
-      }
-    }, delay);
+      },
+      delay,
+    );
 
     return () => {
       debouncedSaveRef.current?.cancel();
@@ -62,7 +66,7 @@ export function useDebouncedSave(
   }, [delay, onSaveSuccess]);
 
   const saveImmediately = useCallback(
-    async (content: string) => {
+    async (content: string, metadata?: Record<string, unknown>) => {
       if (!content.trim()) return;
 
       debouncedSaveRef.current?.cancel();
@@ -73,6 +77,7 @@ export function useDebouncedSave(
           json: {
             content,
             id: noteIdRef.current || undefined,
+            metadata,
           },
         });
 
@@ -111,12 +116,15 @@ export function useDebouncedSave(
     setStatus("idle");
   }, []);
 
-  const handleContentChange = useCallback((content: string) => {
-    if (content.trim()) {
-      setStatus("saving");
-    }
-    debouncedSaveRef.current?.(content);
-  }, []);
+  const handleContentChange = useCallback(
+    (content: string, metadata?: Record<string, unknown>) => {
+      if (content.trim()) {
+        setStatus("saving");
+      }
+      debouncedSaveRef.current?.(content, metadata);
+    },
+    [],
+  );
 
   return {
     status,
