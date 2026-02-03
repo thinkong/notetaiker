@@ -31,14 +31,6 @@ export function useNavigationGuard({
       isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
-  // 3. Auto-proceed watchdog
-  // If the content becomes clean while a navigation is blocked, proceed automatically
-  useEffect(() => {
-    if (!isDirty && blocker.state === "blocked") {
-      blocker.proceed();
-    }
-  }, [isDirty, blocker]);
-
   const proceed = useCallback(() => {
     if (blocker.state === "blocked") {
       blocker.proceed();
@@ -63,7 +55,17 @@ export function useNavigationGuard({
     proceed();
   }, [onSave, proceed]);
 
-  // 3. Manual action protection (Internal state changes like "New Note")
+  // 3. Auto-proceed watchdog
+  // If the content becomes clean while a navigation is blocked, proceed automatically
+  useEffect(() => {
+    if (!isDirty && (blocker.state === "blocked" || pendingAction !== null)) {
+      // Defer proceed to avoid synchronous state update in effect
+      const t = setTimeout(proceed, 0);
+      return () => clearTimeout(t);
+    }
+  }, [isDirty, blocker.state, pendingAction, proceed]);
+
+  // 4. Manual action protection (Internal state changes like "New Note")
   const requestAction = useCallback(
     (action: () => void) => {
       if (isDirty) {
