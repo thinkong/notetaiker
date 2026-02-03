@@ -88,6 +88,38 @@ notetAIker is a monorepo built with:
 - `pnpm format`: Format code using Prettier.
 - `pnpm test`: Run tests (currently setup in API).
 
+## Docker Deployment
+
+NoteTAIker can be deployed as a self-contained Docker image.
+
+### Quick Start with Docker Compose
+
+```bash
+docker compose up -d
+```
+
+Access the app at [http://localhost:3001](http://localhost:3001)
+
+### Manual Docker Build
+
+```bash
+# Build the image
+docker build -t notetaiker:latest .
+
+# Run the container
+docker run -d \
+  --name notetaiker \
+  -p 3001:3001 \
+  -v notetaiker-data:/app/data \
+  -v notetaiker-config:/app/.notetaiker \
+  notetaiker:latest
+```
+
+### Docker Volumes
+
+- `/app/data`: Notes are stored here as Markdown files
+- `/app/.notetaiker`: Configuration and SQLite databases (secrets, queues)
+
 ## License
 
 Private

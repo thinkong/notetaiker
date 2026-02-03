@@ -1,4 +1,10 @@
 import { hc } from "hono/client";
 import type { AppType } from "@notetaiker/api";
 
-export const api = hc<AppType>("http://localhost:3001");
+// In production, the API is served from the same origin
+// In development, we proxy to localhost:3001
+const apiBaseUrl = import.meta.env.PROD
+  ? window.location.origin
+  : "http://localhost:3001";
+
+export const api = hc<AppType>(apiBaseUrl);

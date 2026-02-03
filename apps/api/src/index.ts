@@ -1,4 +1,5 @@
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { env } from "@notetaiker/env";
@@ -99,6 +100,34 @@ const routes = app
   .route("/notes", notes)
   .route("/settings", settings)
   .route("/api/events", events);
+
+// In production, serve the static web frontend
+if (env.NODE_ENV === "production") {
+  const webDistPath = path.resolve(__dirname, "../../web/dist");
+
+  // Check if the web dist directory exists
+  if (fs.existsSync(webDistPath)) {
+    console.log("Serving static files from:", webDistPath);
+
+    // Serve static assets
+    app.use(
+      "/*",
+      serveStatic({
+        root: webDistPath,
+        rewriteRequestPath: (reqPath) => reqPath,
+      })
+    );
+
+    // SPA fallback - serve index.html for non-API routes
+    app.get("*", async (c) => {
+      const indexPath = path.join(webDistPath, "index.html");
+      const html = fs.readFileSync(indexPath, "utf-8");
+      return c.html(html);
+    });
+  } else {
+    console.warn("Web dist directory not found at:", webDistPath);
+  }
+}
 
 const port = Number(process.env.PORT) || 3001;
 console.log(`Server is running on port ${port}`);
