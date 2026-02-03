@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 Phase: N/A (Milestone v1.4 Complete)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-02-03 — Completed quick task 002: Remove preview modal
+Last activity: 2026-02-03 — Completed quick task 003: Replace preview with expandable tags in sidebar
 
 Progress: [----------] 0% (Fresh Milestone)
 
@@ -25,11 +25,12 @@ Progress: [----------] 0% (Fresh Milestone)
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Quick task 002 completed
+Stopped at: Quick task 003 completed
 Resume file: None
 
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 003 | Replace preview with expandable tags in sidebar note cards | 2026-02-03 | 3610dff | [003-replace-preview-with-expandable-tags-in-](./quick/003-replace-preview-with-expandable-tags-in-/) |
 | 002 | Remove preview modal and load note directly into editor with save guard | 2026-02-03 | f1be556 | [002-remove-preview-modal-and-load-note-direc](./quick/002-remove-preview-modal-and-load-note-direc/) |
