@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { Note } from "../../types";
-import { Markdown } from "../common/Markdown";
 import { Tag } from "../common/Tag";
 
 interface SidebarNoteCardProps {
@@ -29,9 +28,6 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
   const title = hasTitle
     ? firstLine.replace(/^#+\s*/, "")
     : content.trim().slice(0, 40) + (content.length > 40 ? "..." : "");
-  const bodyContent = hasTitle
-    ? lines.slice(1).join("\n").trim()
-    : content.trim();
 
   const manualTags = (metadata.tags || []) as string[];
   const aiTags = (metadata.ai_tags || []) as string[];
@@ -69,49 +65,42 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
             </time>
           </div>
           {allTags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {allTags.slice(0, 3).map((tag, idx) => (
-                <Tag
-                  key={`${tag.variant}-${tag.label}-${idx}`}
-                  label={tag.label}
-                  variant={tag.variant}
-                  className="!px-1 !py-0 !text-[9px]"
-                />
-              ))}
+            <div className="flex items-start gap-1 mt-2">
+              <div className="flex flex-wrap gap-1 flex-1">
+                {(isExpanded ? allTags : allTags.slice(0, 3)).map(
+                  (tag, idx) => (
+                    <Tag
+                      key={`${tag.variant}-${tag.label}-${idx}`}
+                      label={tag.label}
+                      variant={tag.variant}
+                      className="!px-1 !py-0 !text-[9px]"
+                    />
+                  ),
+                )}
+                {!isExpanded && allTags.length > 3 && (
+                  <span className="text-[10px] text-nord-polar3 dark:text-nord-snow1 opacity-60">
+                    +{allTags.length - 3}
+                  </span>
+                )}
+              </div>
               {allTags.length > 3 && (
-                <span className="text-[10px] text-nord-polar3 dark:text-nord-snow1 opacity-60">
-                  +{allTags.length - 3}
-                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering card onClick
+                    setIsExpanded(!isExpanded);
+                  }}
+                  className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-nord-snow0 dark:hover:bg-nord-polar1 rounded"
+                  aria-label={isExpanded ? "Collapse tags" : "Expand tags"}
+                >
+                  {isExpanded ? (
+                    <ChevronUp className="w-3 h-3 text-nord-polar3 dark:text-nord-snow1" />
+                  ) : (
+                    <ChevronDown className="w-3 h-3 text-nord-polar3 dark:text-nord-snow1" />
+                  )}
+                </button>
               )}
             </div>
           )}
-        </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent triggering card onClick
-            setIsExpanded(!isExpanded);
-          }}
-          className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-nord-snow0 dark:hover:bg-nord-polar1 rounded"
-          aria-label={isExpanded ? "Collapse" : "Expand"}
-        >
-          {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-nord-polar3 dark:text-nord-snow1" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-nord-polar3 dark:text-nord-snow1" />
-          )}
-        </button>
-      </div>
-
-      {/* Expanded content */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <div className="px-3 pb-3 pt-1 border-t border-nord-snow1 dark:border-nord-polar3">
-          <div className="text-xs max-h-60 overflow-y-auto custom-scrollbar">
-            <Markdown content={bodyContent || "*No additional content*"} />
-          </div>
         </div>
       </div>
     </div>
