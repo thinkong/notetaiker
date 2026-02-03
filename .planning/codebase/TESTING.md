@@ -1,150 +1,132 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-02-03
 
 ## Test Framework
 
 **Runner:**
-
-- Vitest ^4.0.18
-- Config: `apps/api/vitest.config.ts` (not explicitly seen but referenced in `package.json`)
+- Vitest (v4.0.18)
+- Config: Managed via `package.json` and default Vitest behavior.
 
 **Assertion Library:**
-
 - Vitest (`expect`)
 
 **Run Commands:**
-
 ```bash
-pnpm test              # Run all tests (usually maps to vitest)
+pnpm test                                 # Run all tests in apps/api
 pnpm --filter @notetaiker/api test <file> # Run specific test file
 ```
 
 ## Test File Organization
 
 **Location:**
-
-- Co-located with implementation (e.g., `apps/api/src/services/ai.service.test.ts` next to `ai.service.ts`).
+- Co-located with implementation files in `apps/api/src/`.
 
 **Naming:**
-
-- `[name].test.ts` (e.g., `storage.service.test.ts`)
+- `*.test.ts` (e.g., `apps/api/src/services/ai.service.test.ts`)
 
 **Structure:**
-
 ```
-src/
-  services/
-    storage.service.ts
-    storage.service.test.ts
+apps/api/src/
+├── services/
+│   ├── ai.service.ts
+│   └── ai.service.test.ts
+├── routes/
+│   ├── notes.ts
+│   └── notes.test.ts
 ```
 
 ## Test Structure
 
 **Suite Organization:**
-
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("ServiceName", () => {
   beforeEach(() => {
-    // Setup
+    vi.clearAllMocks();
+    // setup mocks/services
   });
 
-  it("should do something", async () => {
-    // Test logic
+  describe("methodName", () => {
+    it("should behave correctly", async () => {
+      // test logic
+    });
   });
 });
 ```
 
 **Patterns:**
-
-- `describe` blocks for grouping by method or functionality.
-- `beforeEach` for resetting mocks and initializing services.
+- `beforeEach`: Used to reset mocks and re-instantiate services for isolation.
+- `describe` blocks: Nested to group tests by method or scenario.
+- `it`: Clear descriptions of expected behavior.
 
 ## Mocking
 
 **Framework:** Vitest (`vi`)
 
 **Patterns:**
-
 ```typescript
-// Mocking external SDKs
+// Mocking external modules
 vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }));
 
-// Mocking local services
+// Mocking class dependencies
 const secretsServiceMock = {
   getSecrets: vi.fn(),
 };
+const aiService = new AIService(secretsServiceMock as any);
 ```
 
 **What to Mock:**
-
-- External AI SDKs (`ai`, `@ai-sdk/openai`, etc.)
+- External APIs (AI SDK, File System).
 - Services passed as dependencies to other services.
+- Cross-service dependencies.
 
 **What NOT to Mock:**
-
-- Data-only utilities (e.g., `markdown.ts`)
-- Zod schemas
+- Pure utility functions (e.g., `markdown.ts`).
+- Data models/Zod schemas.
 
 ## Fixtures and Factories
 
 **Test Data:**
-
-- Manual creation of test directories and files (e.g., `const testDbDir = path.join(workspaceRoot, ".notetaiker-test")` in `queue.service.test.ts`).
+- Often defined inline within tests or at the top of the test file.
+- Manual creation of test directories/files for integration-level checks (e.g., `.notetaiker-test`).
 
 **Location:**
-
-- Temporary test directories are often created within the workspace root (e.g., `.notetaiker-test`).
+- Mostly inline; temporary test directories are created in the workspace root.
 
 ## Coverage
 
-**Requirements:** None enforced in `package.json`.
+**Requirements:** None explicitly enforced in configuration.
 
 **View Coverage:**
-
 ```bash
-# Not explicitly configured in package.json but supported by vitest
 pnpm vitest run --coverage
 ```
 
 ## Test Types
 
 **Unit Tests:**
-
-- Focus on individual services (`ai.service.test.ts`, `indexer.service.test.ts`).
-- Heavy use of mocking for dependencies.
+- Heavily used in `apps/api` for services (`ai.service.test.ts`, `indexer.service.test.ts`).
+- Focus on mocking external dependencies and verifying logic.
 
 **Integration Tests:**
-
-- `queue.service.test.ts` interacts with the filesystem and SQLite.
-- `notes.test.ts` (API routes) likely tests the integration between Hono and services.
+- Route tests (`notes.test.ts`) and some services (`queue.service.test.ts`) interact with the filesystem or SQLite.
 
 **E2E Tests:**
-
-- Not detected.
+- Not currently detected in the codebase.
 
 ## Common Patterns
 
 **Async Testing:**
-
-- Use `async/await` in test functions.
-- `expect(promise).rejects.toThrow(...)` for error cases.
+- Standard `async/await` in test functions.
+- `await expect(...).rejects.toThrow()` for error cases.
 
 **Error Testing:**
-
-```typescript
-it("should throw error if no provider is configured", async () => {
-  secretsServiceMock.getSecrets.mockResolvedValue({});
-  await expect(aiService.generateTags("content")).rejects.toThrow(
-    "No AI provider configured",
-  );
-});
-```
+- Verifying that services handle missing configuration or API failures gracefully.
 
 ---
 
-_Testing analysis: 2026-01-30_
+*Testing analysis: 2026-02-03*

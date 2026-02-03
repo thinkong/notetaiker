@@ -1,126 +1,113 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-02-03
 
 ## Directory Layout
 
 ```
 notetaiker/
 ├── apps/
-│   ├── api/                # Hono backend + Worker
+│   ├── api/                # Hono backend + Background Workers
 │   │   ├── src/
-│   │   │   ├── lib/        # Shared utilities (markdown parsing)
-│   │   │   ├── routes/     # API endpoints
-│   │   │   └── services/   # Business logic & data access
-│   │   └── test/           # API tests
-│   └── web/                # React frontend
+│   │   │   ├── lib/        # Shared backend utilities (markdown, etc.)
+│   │   │   ├── routes/     # Hono route definitions
+│   │   │   └── services/   # Business logic, DB access, AI, Workers
+│   │   └── dist/           # Compiled backend output
+│   └── web/                # React + Vite frontend
 │       ├── src/
-│       │   ├── components/ # UI components
-│       │   ├── hooks/      # Custom React hooks
-│       │   ├── lib/        # Frontend utilities
-│       │   └── types/      # TypeScript definitions
+│       │   ├── components/ # React components (UI, Editor, Graph, etc.)
+│       │   ├── hooks/      # Custom React hooks (save, persistence, SSE)
+│       │   ├── lib/        # API client and utilities
+│       │   └── types/      # Frontend TypeScript definitions
+│       └── dist/           # Bundled frontend output
 ├── packages/               # Shared monorepo packages
-│   ├── env/                # Environment variable schemas
-│   ├── eslint-config/      # Linting rules
-│   └── tsconfig/           # Base TS configs
-├── data/                   # Default local storage for notes (ignored by git)
-└── .notetaiker/            # App configuration and SQLite database
+│   ├── env/                # Zod environment schemas
+│   ├── eslint-config/      # Shared linting configuration
+│   └── tsconfig/           # Base TypeScript configurations
+├── data/                   # Default storage for Markdown notes (git-ignored)
+└── .notetaiker/            # App metadata and SQLite index database
 ```
 
 ## Directory Purposes
 
 **apps/api/src/services:**
-
-- Purpose: Core logic and infrastructure abstraction.
-- Contains: Service classes for storage, indexing, AI, and queuing.
-- Key files: `storage.service.ts`, `indexer.service.ts`, `ai.service.ts`.
+- Purpose: Core infrastructure and logic encapsulation.
+- Contains: Services for storage, indexing, AI provider integration, and background task management.
+- Key files: `storage.service.ts`, `indexer.service.ts`, `ai.service.ts`, `worker.service.ts`.
 
 **apps/api/src/routes:**
-
-- Purpose: API endpoint definitions.
-- Contains: Hono route handlers.
+- Purpose: HTTP endpoint definitions and request handling.
+- Contains: Hono route modules.
 - Key files: `notes.ts`, `settings.ts`, `events.ts`.
 
 **apps/web/src/components:**
+- Purpose: User interface modules.
+- Contains: Atomic components and complex views like the graph and editor extensions.
+- Key files: `editor/Editor.tsx`, `graph/ForceGraph.tsx`, `sidebar/Sidebar.tsx`.
 
-- Purpose: Reusable UI elements and views.
-- Contains: Layout, Editor, Graph, Search, and Sidebar components.
-- Key files: `editor/Editor.tsx`, `graph/GraphView.tsx`.
-
-**packages/env:**
-
-- Purpose: Centralized environment variable management.
-- Contains: Zod schemas for validation.
-- Key files: `index.ts`.
+**apps/web/src/hooks:**
+- Purpose: Shared React logic and state management.
+- Contains: Logic for debounced saving, local persistence, and SSE event handling.
+- Key files: `useDebouncedSave.ts`, `useTimeline.ts`, `useSSE.ts`.
 
 ## Key File Locations
 
 **Entry Points:**
-
-- `apps/api/src/index.ts`: Backend entry point.
-- `apps/web/src/main.tsx`: Frontend entry point.
+- `apps/api/src/index.ts`: Backend entry point (Node.js server).
+- `apps/web/src/main.tsx`: Frontend entry point (React mount).
 
 **Configuration:**
-
-- `pnpm-workspace.yaml`: Monorepo workspace config.
-- `turbo.json`: Build pipeline configuration.
-- `apps/api/package.json`: Backend dependencies and scripts.
-- `apps/web/package.json`: Frontend dependencies and scripts.
+- `package.json`: Workspace-level dependencies and scripts.
+- `turbo.json`: Turbo build pipeline definition.
+- `pnpm-workspace.yaml`: Monorepo workspace setup.
 
 **Core Logic:**
-
-- `apps/api/src/services/storage.service.ts`: Note persistence logic.
-- `apps/api/src/services/worker.service.ts`: Background job processing.
+- `apps/api/src/services/storage.service.ts`: Note persistence and index coordination.
+- `apps/api/src/services/worker.service.ts`: Background enrichment process.
+- `apps/api/src/lib/markdown.ts`: Markdown parsing and frontmatter extraction.
 
 **Testing:**
-
-- `apps/api/src/**/*.test.ts`: Vitest unit and integration tests.
+- `apps/api/src/**/*.test.ts`: Backend unit and service tests.
 
 ## Naming Conventions
 
 **Files:**
-
 - API Services: `*.service.ts`
-- API Routes: `*.ts` (usually plural matching resource)
-- Web Components: `PascalCase.tsx`
-- Web Hooks: `use*.ts`
+- API Routes: Plural resource names (e.g., `notes.ts`).
+- React Components: `PascalCase.tsx`.
+- React Hooks: `use*.ts` (camelCase).
+- Test Files: `*.test.ts`.
 
 **Directories:**
-
-- Kebab-case: `eslint-config`, `notetaiker-api`.
+- Kebab-case: `eslint-config`, `apps/api`, `apps/web`.
 
 ## Where to Add New Code
 
 **New Feature:**
-
-- Primary API logic: `apps/api/src/services/`
-- API Endpoint: `apps/api/src/routes/`
+- API logic: `apps/api/src/services/`
+- API Route: `apps/api/src/routes/`
 - Frontend Hook: `apps/web/src/hooks/`
 - Frontend View: `apps/web/src/components/`
 
 **New Component/Module:**
-
-- Implementation: `apps/web/src/components/` in a relevant subfolder.
+- Implementation: `apps/web/src/components/[category]/`
 
 **Utilities:**
-
-- Backend shared helpers: `apps/api/src/lib/`
-- Frontend shared helpers: `apps/web/src/lib/`
+- Shared API logic: `apps/api/src/lib/`
+- Shared Web logic: `apps/web/src/lib/`
 
 ## Special Directories
 
 **data/:**
-
-- Purpose: Local note storage (Markdown files).
-- Generated: Yes (by API)
-- Committed: No
+- Purpose: Default directory for user Markdown notes.
+- Generated: No (configured via ENV, created on startup if missing).
+- Committed: No.
 
 **.notetaiker/:**
-
-- Purpose: Application metadata and SQLite index.
-- Generated: Yes (by API)
-- Committed: No
+- Purpose: Persistent application metadata and search index.
+- Generated: Yes (on first run).
+- Committed: No.
 
 ---
 
-_Structure analysis: 2026-01-30_
+*Structure analysis: 2026-02-03*

@@ -1,108 +1,114 @@
 # Architecture
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-02-03
 
 ## Pattern Overview
 
-**Overall:** Service-Oriented Monorepo with Local-First Data Strategy
+**Overall:** Local-first Monorepo with AI-Enriched Indexing
 
 **Key Characteristics:**
-
-- **Local-First:** Notes are stored as Markdown files on the local filesystem, ensuring user ownership and offline availability.
-- **Asynchronous Enrichment:** AI analysis (tagging, etc.) is handled via a background job queue to keep the UI responsive.
-- **Hybrid Storage:** SQLite is used as a high-performance index and job queue, while the filesystem remains the source of truth for content.
+- **Local-First Persistence:** Notes are stored as individual Markdown files on the local filesystem.
+- **Asynchronous AI Enrichment:** Background workers process notes to generate tags and metadata without blocking the main thread.
+- **SQLite Search Index:** A local SQLite database maintains a searchable index of the Markdown files for performance.
+- **SSE Real-time Updates:** Server-Sent Events notify the frontend of background task completion (e.g., AI tag generation).
 
 ## Layers
 
 **API Layer:**
-
-- Purpose: Provides REST endpoints and Server-Sent Events (SSE) for the frontend.
+- Purpose: Provides RESTful endpoints and real-time event streaming.
 - Location: `apps/api/src/routes`
-- Contains: Hono route definitions, request validation (Zod), and service orchestration.
-- Depends on: Services Layer
-- Used by: Frontend Web Application
+- Contains: Hono route definitions, request validation, and service orchestration.
+- Depends on: Services Layer.
+- Used by: Web Frontend.
 
 **Services Layer:**
-
-- Purpose: Encapsulates business logic, data persistence, and external integrations.
+- Purpose: Encapsulates core business logic and infrastructure access.
 - Location: `apps/api/src/services`
 - Contains: `StorageService`, `IndexerService`, `AIService`, `QueueService`, `WorkerService`.
-- Depends on: Libraries, SQLite, Filesystem, External AI APIs.
-- Used by: API Layer, Worker Service.
+- Depends on: Node.js standard libraries (`fs`, `path`), `better-sqlite3`, `p-queue`.
+- Used by: API Layer, Background Workers.
 
 **Frontend Layer:**
-
-- Purpose: User interface for capturing and viewing notes, including a graph visualization.
+- Purpose: User interface for creating, editing, and visualizing notes.
 - Location: `apps/web/src`
-- Contains: React components, TanStack Query hooks, CodeMirror editor extensions.
-- Depends on: API Layer (via HTTP/SSE).
-- Used by: End user.
+- Contains: React components, TanStack Query hooks, React Router definitions.
+- Depends on: API Layer (via Hono client).
+- Used by: End Users.
+
+**Shared Packages:**
+- Purpose: Shared configuration and environment management.
+- Location: `packages/`
+- Contains: `@notetaiker/env`, `@notetaiker/eslint-config`, `@notetaiker/tsconfig`.
+- Depends on: `zod`.
+- Used by: `apps/api`, `apps/web`.
 
 ## Data Flow
 
-**Note Capture Flow:**
+**Note Capture & Enrichment:**
 
-1. User types in the editor in `apps/web/src/App.tsx`.
-2. `useDebouncedSave` hook triggers a POST request to `/notes` in `apps/api/src/routes/notes.ts`.
-3. `StorageService` saves the Markdown file to disk and updates the `IndexerService` (SQLite).
-4. `QueueService` enqueues a background job for AI processing.
-5. `WorkerService` picks up the job, calls `AIService`, and updates the note's frontmatter via `StorageService`.
+1. User submits note content in `apps/web/src/App.tsx`.
+2. Frontend calls `/notes` endpoint in `apps/api/src/routes/notes.ts`.
+3. `StorageService` (`apps/api/src/services/storage.service.ts`) writes the Markdown file.
+4. `IndexerService` (`apps/api/src/services/indexer.service.ts`) updates the SQLite index.
+5. `QueueService` enqueues a job for AI processing.
+6. `WorkerService` (`apps/api/src/services/worker.service.ts`) picks up the job, calls `AIService`, and updates the note with tags.
+7. `EventsService` broadcasts a `note_updated` event via SSE to the frontend.
 
-**Note Retrieval Flow:**
+**Search and Retrieval:**
 
-1. Frontend requests notes from `/notes` or specific note from `/notes/:id`.
-2. `StorageService` retrieves data. For lists, it queries `IndexerService` (SQLite) for performance. For single notes, it reads the Markdown file from disk.
-3. Metadata is parsed from frontmatter using `apps/api/src/lib/markdown.ts`.
+1. Frontend requests notes via `useTimeline` hook in `apps/web/src/hooks/useTimeline.ts`.
+2. API queries `IndexerService` which performs a SELECT on the SQLite database.
+3. Metadata and partial content are returned to the frontend.
+
+**State Management:**
+- Server state managed via TanStack Query.
+- Local draft state managed via `useDraftPersistence` in `apps/web/src/hooks/useDraftPersistence.ts`.
+- Source of truth is the local filesystem.
 
 ## Key Abstractions
 
-**Storage Service:**
-
-- Purpose: Unified interface for filesystem operations and index synchronization.
+**StorageService:**
+- Purpose: High-level API for reading/writing notes and coordinating index updates.
 - Examples: `apps/api/src/services/storage.service.ts`
-- Pattern: Repository Pattern
+- Pattern: Repository Pattern.
 
-**Indexer Service:**
-
-- Purpose: Maintains a searchable SQLite index of the Markdown files.
+**IndexerService:**
+- Purpose: Manages the SQLite database that acts as a cache/search index for the Markdown files.
 - Examples: `apps/api/src/services/indexer.service.ts`
-- Pattern: Search Index / Projection
+- Pattern: Search Index / Materialized View.
 
-**Worker Service:**
-
-- Purpose: Manages background processing of notes.
+**WorkerService:**
+- Purpose: Orchestrates background tasks using a priority queue.
 - Examples: `apps/api/src/services/worker.service.ts`
-- Pattern: Background Worker / Consumer
+- Pattern: Consumer / Task Processor.
 
 ## Entry Points
 
-**API Server:**
-
+**Backend Server:**
 - Location: `apps/api/src/index.ts`
-- Triggers: `pnpm dev` or `node index.js`
-- Responsibilities: Initializes services, starts Hono server, begins background worker.
+- Triggers: Starts the Node.js process.
+- Responsibilities: Initializes services, runs initial index sync, starts background workers, and listens for HTTP requests.
 
-**Web Client:**
-
+**Frontend Application:**
 - Location: `apps/web/src/main.tsx`
-- Triggers: Browser loading the application.
-- Responsibilities: Mounts React tree, initializes QueryClient and Router.
+- Triggers: Browser page load.
+- Responsibilities: Mounts the React application, initializes providers (QueryClient, Router).
 
 ## Error Handling
 
-**Strategy:** Fail-soft with background recovery.
+**Strategy:** Fail-soft with retries for background tasks.
 
 **Patterns:**
-
-- **Job Recovery:** Stuck jobs are reset on server restart in `apps/api/src/index.ts`.
-- **Validation:** Runtime request validation using Zod in Hono routes.
+- **p-retry:** Used in `WorkerService` for AI API calls.
+- **Validation:** Zod schemas for all environment variables and API payloads.
+- **Safe Writes:** `write-file-atomic` used in `StorageService` to prevent file corruption.
 
 ## Cross-Cutting Concerns
 
-**Logging:** Standard console logging in API and Web.
-**Validation:** Zod schemas used for API contracts and environment variables.
-**Authentication:** Secrets management handled by `SecretsService` via environment variables.
+**Logging:** Console logging with specific service prefixes.
+**Validation:** Zod-based runtime validation at the boundary (ENV and API).
+**Authentication:** Secret management for AI provider API keys.
 
 ---
 
-_Architecture analysis: 2026-01-30_
+*Architecture analysis: 2026-02-03*
