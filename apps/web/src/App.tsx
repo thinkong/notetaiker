@@ -24,7 +24,6 @@ import { useDraftPersistence } from "./hooks/useDraftPersistence";
 import { useNavigationGuard } from "./hooks/useNavigationGuard";
 import { Toast } from "./components/common/Toast";
 import { ConfirmDialog } from "./components/common/ConfirmDialog";
-import { NotePreviewOverlay } from "./components/preview/NotePreviewOverlay";
 import { useTimeline } from "./hooks/useTimeline";
 import { api } from "./lib/api";
 
@@ -137,21 +136,13 @@ function MainCapture() {
     save(newContent); // Trigger background save cycle
   };
 
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewNoteId, setPreviewNoteId] = useState<string | null>(null);
-
   const handleNoteClick = (noteId: string) => {
     requestAction(() => {
-      setPreviewNoteId(noteId);
-      setShowPreview(true);
+      handleEditNote(noteId);
     });
   };
 
   const handleEditNote = async (noteId: string) => {
-    // Close preview
-    setShowPreview(false);
-    setPreviewNoteId(null);
-
     setIsLoadingNote(true);
 
     // Fetch note content
@@ -350,16 +341,6 @@ function MainCapture() {
       {showToast && (
         <Toast message={toastMessage} onDismiss={() => setShowToast(false)} />
       )}
-
-      <NotePreviewOverlay
-        noteId={previewNoteId}
-        open={showPreview}
-        onClose={() => {
-          setShowPreview(false);
-          setPreviewNoteId(null);
-        }}
-        onEdit={handleEditNote}
-      />
     </>
   );
 }
