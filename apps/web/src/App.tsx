@@ -13,6 +13,7 @@ import {
 import { Settings, Save, Search, Share2 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor, type EditorHandle } from "./components/editor/Editor";
+import { TagManager } from "./components/editor/TagManager";
 import { useDebouncedSave } from "./hooks/useDebouncedSave";
 import { StatusIndicator } from "./components/layout/StatusIndicator";
 import { SettingsPage } from "./components/settings/SettingsPage";
@@ -55,6 +56,9 @@ function MainCapture() {
   const [content, setContent] = useState<string>(initialContent);
   const [originalContent, setOriginalContent] =
     useState<string>(initialContent);
+  const [tags, setTags] = useState<string[]>([]);
+  const [aiTags, setAiTags] = useState<string[]>([]);
+  const [ignoredTags, setIgnoredTags] = useState<string[]>([]);
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -80,7 +84,11 @@ function MainCapture() {
     if (!content.trim()) return;
 
     try {
-      await forceSave(content);
+      await forceSave(content, {
+        tags,
+        ai_tags: aiTags,
+        ignored_tags: ignoredTags,
+      });
 
       // Store what we just saved as original
       setOriginalContent(content);
@@ -88,6 +96,9 @@ function MainCapture() {
       // Clear editor and draft
       setContent("");
       setOriginalContent("");
+      setTags([]);
+      setAiTags([]);
+      setIgnoredTags([]);
       clearDraft();
       clearNoteId(); // Reset for new notes
 
@@ -124,6 +135,9 @@ function MainCapture() {
       clearNoteId();
       setContent("");
       setOriginalContent("");
+      setTags([]);
+      setAiTags([]);
+      setIgnoredTags([]);
       clearDraft();
       setTimeout(() => editorRef.current?.focus(), 50);
     });
@@ -132,7 +146,11 @@ function MainCapture() {
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
     setDraft(newContent); // Auto-save to localStorage
-    save(newContent); // Trigger background save cycle
+    save(newContent, {
+      tags,
+      ai_tags: aiTags,
+      ignored_tags: ignoredTags,
+    }); // Trigger background save cycle
   };
 
   const handleNoteClick = (noteId: string) => {
@@ -151,11 +169,48 @@ function MainCapture() {
         setContent(note.content);
         setOriginalContent(note.content);
         setDraft(note.content);
+        setTags(note.metadata.tags || []);
+        setAiTags(note.metadata.ai_tags || []);
+        setIgnoredTags(note.metadata.ignored_tags || []);
         editorRef.current?.focus();
       }
     } catch (error) {
       console.error("Failed to load note:", error);
     }
+  };
+
+  const handleAddTag = (tag: string) => {
+    if (!tags.includes(tag)) {
+      const newTags = [...tags, tag];
+      setTags(newTags);
+      save(content, {
+        tags: newTags,
+        ai_tags: aiTags,
+        ignored_tags: ignoredTags,
+      });
+    }
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    const newTags = tags.filter((t) => t !== tag);
+    setTags(newTags);
+    save(content, {
+      tags: newTags,
+      ai_tags: aiTags,
+      ignored_tags: ignoredTags,
+    });
+  };
+
+  const handleDismissAiTag = (tag: string) => {
+    const newAiTags = aiTags.filter((t) => t !== tag);
+    const newIgnoredTags = [...ignoredTags, tag];
+    setAiTags(newAiTags);
+    setIgnoredTags(newIgnoredTags);
+    save(content, {
+      tags,
+      ai_tags: newAiTags,
+      ignored_tags: newIgnoredTags,
+    });
   };
 
   const handleSelectNote = (noteId: string) => {
@@ -294,6 +349,13 @@ function MainCapture() {
           </header>
 
           <div className="min-h-[60vh]">
+            <TagManager
+              tags={tags}
+              aiTags={aiTags}
+              onAddTag={handleAddTag}
+              onRemoveTag={handleRemoveTag}
+              onDismissAiTag={handleDismissAiTag}
+            />
             <Editor
               ref={editorRef}
               value={content}
