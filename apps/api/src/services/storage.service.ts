@@ -69,26 +69,32 @@ export class StorageService {
       filePath = path.join(this.storagePath, fileName);
     }
 
-    // Intelligent tag merging
-    const mergedTags = mergeTags(
-      existingMetadata.tags,
-      metadata.tags || extractHashtags(content),
-    );
-
     const fullMetadata: NoteMetadata = {
       ...existingMetadata,
       ...metadata,
-      tags: mergedTags,
       id,
       createdAt,
       updatedAt,
     };
 
+    // If tags are explicitly provided (e.g. from UI), use them.
+    // Otherwise, merge existing tags with hashtags extracted from content.
+    if (metadata.tags) {
+      fullMetadata.tags = Array.from(
+        new Set(metadata.tags.map((t: string) => toTitleCase(t))),
+      );
+    } else {
+      fullMetadata.tags = mergeTags(
+        existingMetadata.tags,
+        extractHashtags(content),
+      );
+    }
+
     // Preserve special AI tags if not explicitly provided in update
-    if (!metadata.ai_tags && existingMetadata.ai_tags) {
+    if (metadata.ai_tags === undefined && existingMetadata.ai_tags) {
       fullMetadata.ai_tags = existingMetadata.ai_tags;
     }
-    if (!metadata.ignored_tags && existingMetadata.ignored_tags) {
+    if (metadata.ignored_tags === undefined && existingMetadata.ignored_tags) {
       fullMetadata.ignored_tags = existingMetadata.ignored_tags;
     }
 
