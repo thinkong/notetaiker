@@ -52,7 +52,7 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
   const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
   const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
 
-  // Physics setup
+  // Physics setup and auto-zoom
   useEffect(() => {
     if (!fgRef.current) return;
 
@@ -60,6 +60,12 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
     fgRef.current.d3Force("charge")?.strength(-150);
     // Increase link distance
     fgRef.current.d3Force("link")?.distance(50);
+
+    // Auto-zoom to fit all nodes on initial load
+    // Small delay ensures graph is rendered before zoom
+    setTimeout(() => {
+      fgRef.current?.zoomToFit(400, 80);
+    }, 200);
   }, []);
 
   const handleNodeHover = useCallback(
