@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-03)
+See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Planning next milestone (v1.5/v2.0)
+**Current focus:** v1.5 AI Enhancements
 
 ## Current Position
 
-Phase: N/A (Milestone v1.4 Complete)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-03 — Completed quick task 005: Add manual tags and display AI tags in editor
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-04 — Milestone v1.5 started
 
 Progress: [----------] 0% (Fresh Milestone)
 

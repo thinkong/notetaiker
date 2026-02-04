@@ -8,9 +8,13 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: Planning Next Milestone
+## Current Milestone: v1.5 AI Enhancements
 
-**Goal:** Determine next steps (likely v1.5 or v2.0).
+**Goal:** Enhance AI capabilities with local LLM support for privacy/cost and automated summarization.
+
+**Target features:**
+- **Local LLM Support**: Integration with Ollama/Llamafile for offline inference.
+- **Summarization**: Auto-generate titles or summaries for notes.
 
 ## Requirements
 
@@ -42,6 +46,11 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **UX-04**: Explicit "New Note" button clears editor for fresh capture — v1.4
 - ✓ **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check) — v1.4
 - ✓ **UX-06**: Clicking note in history stream loads content into editor — v1.4
+
+### Active
+
+- [ ] **AI-LOCAL-01**: User can configure local LLM provider (Ollama)
+- [ ] **AI-SUM-01**: System generates titles/summaries for notes automatically
 
 ### Out of Scope
 
@@ -84,4 +93,4 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ---
 
-_Last updated: 2026-02-03 after completion of v1.4 milestone_
+_Last updated: 2026-02-04 after start of v1.5 milestone_
