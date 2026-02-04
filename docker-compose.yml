@@ -17,6 +17,7 @@ services:
       - NODE_ENV=production
       - NOTES_DIR=/app/data/notes
       - PORT=3001
+      - DOCKER_ENV=true
     volumes:
       # Bind mount your existing local directories
       - ./data:/app/data
@@ -27,3 +28,18 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    restart: unless-stopped
+    # Optional: Tune for CPU performance
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h  # Keeps Gemma 3 in RAM to avoid reload delays
+      - OLLAMA_HOST=0.0.0.0
+    entrypoint: >
+      /bin/sh -c "ollama serve & sleep 5 && ollama pull gemma3:4b && wait"

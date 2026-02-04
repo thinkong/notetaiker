@@ -82,7 +82,8 @@ export const SettingsPage = () => {
             Settings
           </h1>
           <p className="text-nord-polar3 dark:text-nord-snow1 mt-2">
-            Configure your AI providers and preferences.
+            Configure your AI providers and preferences. If none is set, it will
+            try to use local Ollama gemma3:4b.
           </p>
         </div>
       </header>

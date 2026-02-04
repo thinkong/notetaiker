@@ -43,3 +43,7 @@ data
 .husky
 .planning
 .notetaiker
+
+.agents
+.agent
+ollama_data

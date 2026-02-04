@@ -5,6 +5,11 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev --ui tui",
+    "ollama:start": "docker compose up -d ollama",
+    "ollama:stop": "docker compose down ollama",
+    "docker:start": "docker compose up --build -d",
+    "docker:stop": "docker compose down",
+    "docker:build": "docker compose build",
     "lint": "turbo lint",
     "lint:fix": "turbo lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

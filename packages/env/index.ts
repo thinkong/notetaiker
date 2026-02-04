@@ -45,3 +45,5 @@ if (!_env.success) {
 }
 
 export const env = _env.data;
+
+export const isDocker = processEnv.DOCKER_ENV === "true";
