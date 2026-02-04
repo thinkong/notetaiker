@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -62,21 +62,33 @@ export class AIService {
   async generateTags(content: string): Promise<string[]> {
     const model = await this.getModel();
 
-    const { object } = await generateObject({
+    const { text } = await generateText({
       model,
-      schema: z.object({
-        tags: z
-          .array(z.string())
-          .min(3)
-          .max(5)
-          .describe("3-5 relevant, Title Case tags"),
-      }),
       prompt: `Generate 3-5 relevant, Title Case tags for this note content.
+Return ONLY a JSON object with a single key "tags" containing the array of strings.
+Example: {"tags": ["React", "JavaScript", "Web Development"]}
 
 Content:
 ${content}`,
     });
 
-    return object.tags;
+    try {
+      const cleanText = text.replace(/```json\n?|\n?```/g, "").trim();
+      const json = JSON.parse(cleanText);
+
+      const schema = z.object({
+        tags: z
+          .array(z.string())
+          .min(3)
+          .max(5)
+          .describe("3-5 relevant, Title Case tags"),
+      });
+
+      const result = schema.parse(json);
+      return result.tags;
+    } catch (error) {
+      console.error("Failed to parse tags:", error);
+      return [];
+    }
   }
 }
