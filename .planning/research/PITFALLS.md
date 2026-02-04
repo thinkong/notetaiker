@@ -1,179 +1,152 @@
-# Pitfalls Research
+# Pitfalls Research: Local LLM Support & Summarization
 
-**Domain:** Local-first AI Note Taking App
-**Researched:** 2026-01-26
+**Domain:** Local-first AI (Ollama)
+**Researched:** 2026-02-04
 **Confidence:** HIGH
 
 ## Critical Pitfalls
 
-### Pitfall 1: Frontmatter Race Conditions
+### Pitfall 1: Ollama CORS & Connection Blocks
 
 **What goes wrong:**
-The user is typing in a note while the background AI agent attempts to update the YAML frontmatter with new tags. If using standard file-system writes, the AI might overwrite the user's latest text, or the user's save might wipe out the AI-generated tags.
+The React frontend attempts to call the Ollama API directly, but the request is blocked by CORS (Cross-Origin Resource Sharing) or a connection error occurs because Ollama is only listening on localhost and not configured for web access.
 
 **Why it happens:**
-Developers treat Markdown files as simple strings to be read/written. In a local-first system, concurrent edits (User vs. AI) are inevitable.
+By default, Ollama's API is restricted to prevent unauthorized access. Developers often forget to set the `OLLAMA_ORIGINS` environment variable, or users run the app in an environment where localhost access is restricted.
 
 **How to avoid:**
-Implement a state-based synchronization or a CRDT for the note structure. Alternatively, use a "sidecar" file or a local SQLite database to stage AI metadata before merging it into the Markdown file during an idle period with a proper diffing library.
+Proxy all Ollama requests through the Hono backend. This avoids browser CORS issues entirely and allows the backend to handle authentication or rate limiting if NoteTaiker ever moves to a multi-user setup.
 
 **Warning signs:**
-Users reporting "lost text" or tags disappearing shortly after they appear. Git history showing frequent "reverts" of either content or metadata.
+"Failed to fetch" errors in the browser console. AI features working for the developer but failing for users.
 
 **Phase to address:**
-Phase 1 (Sync & Storage Architecture)
+Phase 1: Connectivity & Infrastructure
 
 ---
 
-### Pitfall 2: AI Write-Loops (The "Hallucination Loop")
+### Pitfall 2: Model Availability & Cold Starts
 
 **What goes wrong:**
-The background AI agent updates a file's frontmatter, which triggers a "file changed" event from the OS. The AI agent (watching the filesystem) sees the change and starts processing the file again, creating an infinite loop of AI processing and disk writes.
+The app requests a specific model (e.g., `llama3.2`) that the user hasn't downloaded yet, or the first request takes 30+ seconds while the model loads into VRAM.
 
 **Why it happens:**
-The file watcher does not distinguish between user-initiated changes and agent-initiated changes.
+Local models are large (GBs) and must be "pulled" before use. Loading them into GPU memory also takes significant time depending on hardware speed.
 
 **How to avoid:**
-Implement an exclusion mechanism in the file watcher (e.g., ignore changes with a specific metadata flag or "debouncing" based on the agent's own write operations). Use a "dirty bit" or checksum that only triggers the agent if the _content_ (not metadata) has changed.
+Implement a "Model Readiness" check on startup. If a required model is missing, provide a UI to pull it. Use a "Loading Model..." state in the UI to manage user expectations during the first inference.
 
 **Warning signs:**
-High CPU usage even when the user is idle. The "Last Modified" time of files updating constantly in a loop.
+Timeouts on the first AI request of a session. 404 errors from the Ollama API when requesting a model.
 
 **Phase to address:**
-Phase 2 (AI Agent Implementation)
+Phase 1: Connectivity & Infrastructure
 
 ---
 
-### Pitfall 3: Automated Tag Bloat (Ontology Collapse)
+### Pitfall 3: Context Window Overflow
 
 **What goes wrong:**
-The AI generates slightly different tags for the same concept (e.g., "#artificial-intelligence", "#AI", "#MachineLearning"). Over time, the tag cloud becomes useless, and the "zero-friction" organization turns into a "high-friction" cleanup task for the user.
+When summarizing long notes, the text exceeds the local model's context window (often 2048 or 4096 tokens for smaller models like Phi-3 or TinyLlama).
 
 **Why it happens:**
-The LLM is prompted per-note without context of the existing global tag set (ontology).
+Developers assume local models have the same massive context windows (128k+) as cloud providers like Claude or GPT-4.
 
 **How to avoid:**
-Feed the AI a "known tags" list in the system prompt and instruct it to reuse existing tags unless a new category is strictly necessary. Implement a "tag merging" feature for the user.
+Implement token counting on the server side (using `tiktoken` or a simple word-count heuristic). If a note is too long, use a "Map-Reduce" summarization strategy (summarize chunks, then summarize the results).
 
 **Warning signs:**
-The number of unique tags growing linearly with the number of notes. Search results becoming cluttered with near-identical categories.
+Summaries that cut off mid-sentence. Model returning empty responses or "Out of memory" errors.
 
 **Phase to address:**
-Phase 2 (AI Agent Implementation)
-
----
-
-### Pitfall 4: Privacy/Local-First Value Conflict
-
-**What goes wrong:**
-The app is marketed as "local-first," but every note is sent to a cloud LLM provider (OpenAI/Anthropic) for tagging. Privacy-conscious users discover their sensitive notes are leaving their machine, leading to trust loss and churn.
-
-**Why it happens:**
-Integrating cloud APIs is faster and easier than shipping local models (WebLLM/Ollama).
-
-**How to avoid:**
-Clearly flag cloud-dependent features. Provide an "Opt-in" for cloud AI or support local LLM providers (e.g., Ollama or local Transformers.js) from day one.
-
-**Warning signs:**
-Negative feedback in "Privacy Policy" reviews or users asking "Where does my data go?" in initial onboarding.
-
-**Phase to address:**
-Phase 1 (Foundation/Setup)
-
----
-
-### Pitfall 5: Hardware/Model Mismatch (The "Stutter" Trap)
-
-**What goes wrong:**
-The local LLM (Transformers.js/WebGPU) works beautifully on a developer's M3 Mac but renders the app unusable on a user's older laptop or mobile device due to memory exhaustion or thermal throttling.
-
-**Why it happens:**
-Testing on high-end hardware without establishing minimum requirements or fallback "lite" models.
-
-**How to avoid:**
-Implement a hardware capability check on startup. Fall back to smaller, quantized models (e.g., 4-bit) or local CPU-only inference for low-end devices. Provide a "Battery Saver" mode that disables background AI.
-
-**Warning signs:**
-Reports of the app "freezing" the whole computer or draining battery at an alarming rate.
-
-**Phase to address:**
-Phase 2 (AI Agent Implementation)
+Phase 3: Context & Quality
 
 ---
 
 ## Technical Debt Patterns
 
-| Shortcut              | Immediate Benefit           | Long-term Cost                              | When Acceptable                              |
-| --------------------- | --------------------------- | ------------------------------------------- | -------------------------------------------- |
-| Simple File Writes    | Fast MVP development        | Data loss during concurrent AI/User edits   | Never - Sync must be robust from start       |
-| Cloud-Only AI         | No local model infra needed | High latency, high cost, privacy concerns   | Only for the first 1-2 weeks of prototyping  |
-| Full-text scan search | Easy to implement           | Search becomes unusable as note count grows | Only for < 500 notes                         |
-| No Link Tracking      | Faster note creation        | Renaming a file breaks all "atomic" links   | Never - links are the "graph" of note taking |
+Shortcuts that seem reasonable but create long-term problems.
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Direct Frontend calls | Faster implementation | CORS hell, security risks, no centralized token management. | Never |
+| Hardcoded Model Names | Quick prototyping | App breaks when the model is updated or if the user wants a different flavor. | Phase 1 only |
+| Skipping Token Counts | Less code to write | Frequent crashes on long notes; poor UX for power users. | MVP with short notes only |
 
 ## Integration Gotchas
 
-| Integration | Common Mistake                                              | Correct Approach                                                                  |
-| ----------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| LLM API     | Sending full note history for every small edit              | Only trigger AI tagging on "note closed" or "idle" events with a debounced timer. |
-| File System | Blocking the main thread with I/O                           | Use a worker thread for file system operations and AI processing.                 |
-| YAML Parser | Stripping user comments or custom formatting in frontmatter | Use a round-trip aware YAML parser that preserves comments and formatting.        |
+Common mistakes when connecting to external services.
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| Ollama API | Assuming it's always running | Polling a `/status` or `/api/tags` endpoint and showing a "Start Ollama" prompt. |
+| Vercel AI SDK | Not handling stream errors | Wrapping `streamText` in try/catch and providing fallback non-AI UI. |
+| Filesystem | Triggering AI on every keystroke | Debouncing AI tasks until the file has been idle for 2-5 seconds. |
 
 ## Performance Traps
 
-| Trap                    | Symptoms                     | Prevention                                                                   | When It Breaks |
-| ----------------------- | ---------------------------- | ---------------------------------------------------------------------------- | -------------- |
-| UI-Thread AI Parsing    | Frame drops during typing    | Move Markdown parsing and AI logic to a Web Worker.                          | > 1,000 words  |
-| Unindexed Tag Search    | Filtering tags takes > 100ms | Maintain a normalized `tags` table in a local database.                      | > 5,000 notes  |
-| Excessive File Watching | High CPU usage on startup    | Only watch the active "notes" directory; ignore `.git`, `node_modules`, etc. | > 50,000 files |
+Patterns that work at small scale but fail as usage grows.
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| Large Model on CPU | 1 token per second speed | Hardware check; recommend/require GPU or small (3B) models. | Immediately on non-M-series Mac / No-GPU PCs |
+| Blocking API Thread | UI lag while AI thinks | Use `p-queue` or background workers to ensure the Hono API remains responsive. | > 1 concurrent user/task |
+| Non-Streaming UI | "Dead" screen for 10s | Use SSE (Server-Sent Events) to stream tokens as they are generated. | > 50 word summaries |
 
 ## Security Mistakes
 
-| Mistake                    | Risk                                                                  | Prevention                                                                                            |
-| -------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| API Key Exposure           | Stealing the user's LLM credits                                       | Store keys in the OS keychain (Node-keytar) or secure environment variables, never plain text config. |
-| Prompt Injection via Notes | Note content could "trick" the AI into deleting files or leaking data | Sanitize input and use strict JSON schema for AI outputs.                                             |
-| Unencrypted Local Cache    | Sensitive AI-extracted metadata is visible in the local DB            | Use an encrypted database (SQLCipher) for the metadata cache.                                         |
+Domain-specific security issues beyond general web security.
+
+| Mistake | Risk | Prevention |
+|---------|------|------------|
+| Exposing Ollama Port | Unauthenticated users on the local network could use the user's GPU. | Bind Ollama to `127.0.0.1` and only allow access via the Hono proxy. |
+| Prompt Injection | User notes could "trick" the summarizer into executing commands. | Sanitize input and use strict System Prompts with structured output (Zod). |
 
 ## UX Pitfalls
 
-| Pitfall                  | User Impact                                        | Better Approach                                                                  |
-| ------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------------- |
-| "Magic" Tagging Ghosting | Tags appear and disappear without user knowing why | Provide an "Activity Feed" or subtle UI indicator when the AI is working.        |
-| Over-notification        | Constant "AI updated tags" popups are distracting  | Silent updates by default; only notify if the AI needs clarification.            |
-| Brittle Renaming         | Renaming a file breaks links in other notes        | Automatic backlink updates or use UUIDs for internal links instead of filenames. |
+Common user experience mistakes in this domain.
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| Hidden "Cold Start" | User thinks the app is broken during first load. | Explicit "Waking up AI..." progress bar. |
+| Over-Confidence | Inaccurate summaries presented as fact. | Add a "Generated by AI" disclaimer and an "Edit Summary" button. |
+| No "Stop" Button | User stuck waiting for a long, irrelevant summary. | Implement an AbortController to cancel inference. |
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Sync:** Often missing conflict resolution — verify edit collisions between User and AI.
-- [ ] **Tagging:** Often missing deduplication — verify AI doesn't create `#AI` and `#ai` as separate tags.
-- [ ] **Search:** Often missing index persistence — verify search works instantly after a restart without a full rescan.
-- [ ] **Links:** Often missing rename handling — verify links update when an atomic note's title changes.
+Things that appear complete but are missing critical pieces.
+
+- [ ] **Summarization:** Often missing token limits — verify long notes (10k+ words) don't crash the server.
+- [ ] **Ollama Setup:** Often missing "Model Not Found" handling — verify the app handles a clean Ollama install with no models.
+- [ ] **Streaming:** Often missing error recovery — verify the UI handles a broken stream mid-sentence.
+- [ ] **Privacy:** Often missing local-only guarantee — verify no data is sent to external APIs when "Local Mode" is on.
 
 ## Recovery Strategies
 
-| Pitfall             | Recovery Cost | Recovery Steps                                                               |
-| ------------------- | ------------- | ---------------------------------------------------------------------------- |
-| Data Loss (Sync)    | HIGH          | Restore from hidden `.backup` folder or Git history (if enabled).            |
-| Tag Bloat           | MEDIUM        | Run a "Tag Consolidation" script to merge similar tags using an LLM.         |
-| Corrupt Frontmatter | LOW           | Re-parse Markdown and use a regex fallback to extract content from the mess. |
+When pitfalls occur despite prevention, how to recover.
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| Connection Lost | LOW | Show "Reconnecting..." and retry with exponential backoff. |
+| Model Crash (OOM) | MEDIUM | Clear the AI context, notify the user, and suggest a smaller model. |
+| Hallucination | MEDIUM | Provide a "Regenerate" button with a different temperature or prompt. |
 
 ## Pitfall-to-Phase Mapping
 
-| Pitfall                     | Prevention Phase | Verification                                                        |
-| --------------------------- | ---------------- | ------------------------------------------------------------------- |
-| Frontmatter Race Conditions | Phase 1 (Sync)   | Stress test with concurrent automated writes and manual typing.     |
-| AI Write-Loops              | Phase 2 (AI)     | Log watcher events to ensure AI writes don't re-trigger processing. |
-| Privacy Value Conflict      | Phase 1 (Setup)  | Integration test with a local LLM mock to ensure no network calls.  |
-| Scale Performance           | Phase 3 (Search) | Load test with 10,000 markdown files and measure search latency.    |
+How roadmap phases should address these pitfalls.
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| CORS & Connectivity | Phase 1 | Success check: UI shows "Ollama Connected" on a fresh install. |
+| Model Cold Starts | Phase 1 | Success check: UI shows loading spinner, doesn't timeout. |
+| Context Overflow | Phase 3 | Success check: 50-page PDF/Note can be summarized without error. |
 
 ## Sources
 
-- [Local-first web development (Ink & Switch)](https://www.inkandswitch.com/local-first/)
-- [Obsidian Community Forum: Frontmatter Sync Issues](https://forum.obsidian.md/)
-- [Logseq GitHub Issues: Performance with many small files](https://github.com/logseq/logseq)
-- [Transformers.js WebGPU Performance Benchmarks 2026](https://github.com/xenova/transformers.js)
+- [Vercel AI SDK Error Handling](https://sdk.vercel.ai/docs/concepts/error-handling)
+- [Ollama FAQ: Common Issues](https://github.com/ollama/ollama/blob/main/docs/faq.md)
+- [Personal experience with Local-first AI projects 2024-2025]
 
 ---
-
-_Pitfalls research for: Local-first AI Note Taking App_
-_Researched: 2026-01-26_
+*Pitfalls research for: Local LLM Support & Summarization*
+*Researched: 2026-02-04*

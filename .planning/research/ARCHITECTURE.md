@@ -1,129 +1,62 @@
-# Architecture Research
+# Architecture Patterns
 
-**Domain:** Local-first AI Note-taking App
-**Researched:** 2026-01-26
-**Confidence:** HIGH
+**Domain:** Local AI Integration
+**Researched:** 2026-02-04
 
-## Recommended Architecture
+## Recommended Architecture: Backend Proxy Agent
 
-NoteTaiker follows a **Decoupled Background Agent** architecture. The UI remains reactive and "zero-friction" by offloading all intelligence tasks to a separate process.
+To maintain the local-first promise while ensuring UI responsiveness, NoteTaiker should use the **Backend Proxy Agent** pattern.
 
-### System Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   Tauri WebView (Frontend)                  │
-├─────────────────────────────────────────────────────────────┤
-│  ┌───────────┐      ┌──────────────┐      ┌──────────────┐  │
-│  │ Editor    │ <──> │ State        │ <──> │ Search UI    │  │
-│  │ (React)   │      │ (TanStack)   │      │ (LanceDB)    │  │
-│  └─────┬─────┘      └──────┬───────┘      └──────┬───────┘  │
-└────────┼───────────────────┼─────────────────────┼──────────┘
-         │                   │                     │
-┌────────┼───────────────────┼─────────────────────┼──────────┐
-│        │          Tauri Rust Core (Backend)      │          │
-├────────┼───────────────────┼─────────────────────┼──────────┤
-│  ┌─────▼─────┐      ┌──────▼──────┐      ┌───────▼──────┐  │
-│  │ FS Watcher│ ───> │ Event Bus   │ <──> │ Vector Store │  │
-│  │ (Notify)  │      │ (Commands)  │      │ (LanceDB)    │  │
-│  └─────┬─────┘      └──────┬──────┘      └───────┬──────┘  │
-└────────┼───────────────────┼─────────────────────┼──────────┘
-         │                   │                     │
-┌────────┼───────────────────┼─────────────────────┼──────────┐
-│        │          Background AI Worker           │          │
-├────────┼───────────────────┼─────────────────────┼──────────┤
-│  ┌─────▼─────┐      ┌──────▼──────┐      ┌───────▼──────┐  │
-│  │ Markdown  │      │ Transformers│      │ Tagging      │  │
-│  │ Parser    │ ───> │ .js (WebGPU)│ ───> │ Logic        │  │
-│  └───────────┘      └─────────────┘      └──────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Component Responsibilities
-
-| Component           | Responsibility                                 | Implementation               |
-| ------------------- | ---------------------------------------------- | ---------------------------- |
-| **Editor**          | Low-latency text entry and Markdown rendering. | React + CodeMirror/Lexical   |
-| **FS Watcher**      | Monitoring local `.md` files for changes.      | Tauri `fs` + `notify` (Rust) |
-| **AI Worker**       | Local LLM inference (Tagging/Embedding).       | Transformers.js v3 (WebGPU)  |
-| **Vector Store**    | Fast semantic retrieval and tag indexing.      | LanceDB (Node/Rust)          |
-| **Source of Truth** | Permanent storage.                             | Plain Markdown + YAML files  |
-
-## Recommended Project Structure
+### System Structure
 
 ```
-/
-├── src/
-│   ├── components/      # UI: Stream, Editor, Search
-│   ├── hooks/           # TanStack Query + FS bindings
-│   ├── worker/          # AI Worker (Transformers.js)
-│   │   ├── models/      # Local model management
-│   │   └── pipelines/   # Tagging & Embedding logic
-│   └── lib/
-│       ├── markdown.ts  # Unified/Remark processing
-│       └── vector.ts    # LanceDB client
-├── src-tauri/
-│   ├── src/             # Rust: Native FS, System Tray
-│   └── capabilities/    # Tauri 2.0 security scopes
-└── notes/               # User's Markdown store (SOT)
+┌───────────────┐       ┌───────────────┐       ┌───────────────┐
+│  React UI     │       │  Hono API     │       │  Ollama /     │
+│  (Editor)     │ <───> │  (Node.js)    │ <───> │  Llamafile    │
+└───────────────┘       └───────┬───────┘       └───────────────┘
+                                │
+                        ┌───────▼───────┐
+                        │  p-queue      │
+                        │  (Job Serial) │
+                        └───────────────┘
 ```
 
-## Architectural Patterns
+### Component Boundaries
 
-### Pattern 1: Optimistic FS Updates
+| Component | Responsibility | Communicates With |
+|-----------|---------------|-------------------|
+| **Web Client** | Captures input, displays AI status/results. | Hono API (SSE/JSON) |
+| **Hono API** | Routes requests, manages auth/context. | SQLite, File System, Ollama |
+| **Job Queue** | Ensures only one LLM task runs at a time. | Hono Handlers |
+| **Ollama** | Executes model inference. | Hono API (via Provider) |
 
-**What:** The UI updates its local state immediately when a user types, then debounces the write to the physical `.md` file.
-**When:** Essential for "Zero-Friction" capture.
-**Trade-offs:** If the app crashes before the debounce, the last few characters might be lost. (Mitigation: 500ms debounce + WAL-style temp file).
+### Data Flow (Summarization)
+1. **Trigger:** User saves a note or clicks "Summarize".
+2. **API:** Fetches full note from local disk.
+3. **Queue:** Task is added to `p-queue` (concurrency: 1).
+4. **Inference:** Calls `@ai-sdk/ollama` with a structured prompt.
+5. **Update:** Result is written to Markdown frontmatter using `gray-matter`.
+6. **Sync:** Frontend is notified of update (Websocket or Poll).
 
-### Pattern 2: Sidecar Metadata Indexing
+## Patterns to Follow
 
-**What:** While Markdown is the Source of Truth, a transient LanceDB index is maintained in the background for fast search.
-**When:** When the note count exceeds ~100.
-**Trade-offs:** The index must be "re-hydrated" if deleted; it's a derived view, not the primary data.
+### Pattern 1: Token-Aware Truncation
+Before sending text to a local model, use `tiktoken` to ensure it fits in the context window (typically 2048-4096 tokens for small models).
 
-### Pattern 3: Worker Isolation
+### Pattern 2: Server-Sent Events (SSE)
+Use SSE for streaming AI responses to the UI. This provides immediate feedback and prevents timeouts on slow local hardware.
 
-**What:** Running the LLM in a separate Web Worker with a dedicated WebGPU context.
-**When:** Always.
-**Trade-offs:** Slight overhead in message passing (postMessage), but prevents UI jank.
+## Anti-Patterns to Avoid
 
-## Data Flow
+### Anti-Pattern 1: Direct Client-to-Ollama
+**Why bad:** Requires users to manually set `OLLAMA_ORIGINS` (CORS), which breaks the "Zero-Config" goal.
+**Instead:** Always proxy through the Hono API.
 
-### The "Magic" Tagging Flow
-
-1. **User saves note** → Tauri triggers `fs-notify`.
-2. **Event Bus** → Sends `FILE_CHANGED` message to AI Worker.
-3. **AI Worker** → Reads content, runs SLM (Small Language Model) to extract tags.
-4. **Markdown Parser** → Merges new tags into YAML frontmatter.
-5. **FS Write** → Tauri writes the updated `.md` back to disk.
-6. **UI Refresh** → State updates to show the new "Smart Tags."
-
-## Suggested Build Order
-
-Based on component dependencies, the recommended implementation sequence is:
-
-1.  **Foundation (Tauri + FS Bridge):** Implement basic file reading/writing and the "Zero-Friction" editor stream. The app must work as a basic note-taker first.
-2.  **Metadata Layer (Unified/Remark):** Build the logic to programmatically parse and update YAML frontmatter without destroying user content.
-3.  **AI Integration (Transformers.js):** Set up the Web Worker and local model loading. Implement simple keyword-based tagging as a fallback before full SLM tagging.
-4.  **Discovery Layer (LanceDB):** Implement vector indexing and semantic search once there is AI-generated metadata to query.
-5.  **Smart Views:** Build the UI for "Virtual Folders" that rely on the metadata/vector layers.
-
-## Scaling Considerations
-
-| Concern           | At 100 notes | At 10k notes     | At 100k notes             |
-| ----------------- | ------------ | ---------------- | ------------------------- |
-| **Search**        | Grep is fine | LanceDB Required | LanceDB + IVF-PQ Index    |
-| **AI Processing** | Real-time    | Batch/Queue      | Distant-Background (Idle) |
-| **Memory**        | < 200MB      | ~500MB (Index)   | ~1GB+ (Vector Cache)      |
+### Anti-Pattern 2: Large Model Default
+**Why bad:** Defaulting to an 8B or 13B model on an 8GB laptop will crash the app.
+**Instead:** Default to 1B/3B (e.g., Llama 3.2 1B) and allow upgrading.
 
 ## Sources
-
-- [Tauri 2.0 Reference](https://v2.tauri.app/)
-- [LanceDB Architecture Guide](https://lancedb.github.io/lancedb/concepts/architecture/)
-- [Local-first Web Patterns (Ink & Switch)](https://www.inkandswitch.com/local-first/)
-
----
-
-_Architecture research for: NoteTaiker_
-_Researched: 2026-01-26_
+- [Vercel AI SDK Core Concepts](https://sdk.vercel.ai/docs/concepts/architecture)
+- [Ink & Switch: Local-first Software](https://www.inkandswitch.com/local-first/)
+- [Hono Streaming Helpers](https://hono.dev/helpers/streaming)
