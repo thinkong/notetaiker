@@ -1,39 +1,45 @@
 # External Integrations
 
-**Analysis Date:** 2026-02-03
+**Analysis Date:** 2026-02-04
 
 ## APIs & External Services
 
 **AI Providers:**
-- Anthropic - Used for AI-enhanced note analysis and tagging.
-  - SDK/Client: `@ai-sdk/anthropic`
-  - Auth: `apiKey` in `.notetaiker/secrets.json`
-- OpenAI - Used as alternative AI provider.
-  - SDK/Client: `@ai-sdk/openai`
-  - Auth: `apiKey` in `.notetaiker/secrets.json`
-- Google Gemini - Used as alternative AI provider.
-  - SDK/Client: `@ai-sdk/google`
-  - Auth: `apiKey` in `.notetaiker/secrets.json`
+- OpenAI - Used for note analysis and tag generation.
+  - SDK: `@ai-sdk/openai`
+  - Auth: API Key stored in `.notetaiker/secrets.json`
+- Anthropic - Used for note analysis and tag generation.
+  - SDK: `@ai-sdk/anthropic`
+  - Auth: API Key stored in `.notetaiker/secrets.json`
+- Google Gemini - Used for note analysis and tag generation.
+  - SDK: `@ai-sdk/google`
+  - Auth: API Key stored in `.notetaiker/secrets.json`
+- Ollama (Local) - Default local AI provider for privacy-focused analysis.
+  - SDK: `ai-sdk-ollama`, `ollama-ai-provider`
+  - Connection: `http://localhost:11434` (or `http://ollama:11434` in Docker)
 
 ## Data Storage
 
 **Databases:**
-- SQLite (via `better-sqlite3`)
-  - Connection: `.notetaiker/index.db`
-  - Purpose: Indexing note content and metadata; managing background job state.
+- SQLite (Local)
+  - Purpose: Indexing note metadata, content for search, and job queue management.
+  - Client: `better-sqlite3`
+  - Location: Managed via `IndexerService`
 
 **File Storage:**
-- Local filesystem
-  - Notes are stored as atomic Markdown files in the directory specified by `NOTES_DIR` (default: `./data/notes`).
+- Local Filesystem
+  - Purpose: Primary storage for notes as atomic Markdown files.
+  - Implementation: `StorageService` using `node:fs/promises` and `write-file-atomic`.
+  - Path: Configurable via `NOTES_DIR` (default: `./data/notes`).
 
 **Caching:**
-- None detected beyond TanStack Query's in-memory cache in the frontend.
+- None detected (relies on SQLite indexing for performance).
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Custom / Local-only
-  - Implementation: No user authentication system; secrets are managed locally in a `.notetaiker/secrets.json` file.
+- Custom / Local
+  - Implementation: Local-first application. Secrets (API keys) are stored locally in `.notetaiker/secrets.json` and managed by `SecretsService`.
 
 ## Monitoring & Observability
 
@@ -41,24 +47,24 @@
 - None detected.
 
 **Logs:**
-- Console logging in both API and Web components.
+- Console logging with standard `console.error`/`console.warn`.
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Intended for local execution.
+- Self-hosted via Docker.
 
 **CI Pipeline:**
-- None detected (no `.github/workflows` found).
+- None detected in repository root.
 
 ## Environment Configuration
 
 **Required env vars:**
-- `NODE_ENV`: development, production, or test.
-- `NOTES_DIR`: Path to the directory where notes are stored.
+- `NOTES_DIR`: Directory where markdown notes are stored.
+- `PORT`: Port for the API server (default 3001).
 
 **Secrets location:**
-- `.notetaiker/secrets.json` - Stores AI provider API keys and configuration. Managed by `SecretsService`.
+- `.notetaiker/secrets.json` (Automatically added to `.gitignore` by `SecretsService`).
 
 ## Webhooks & Callbacks
 
@@ -70,4 +76,4 @@
 
 ---
 
-*Integration audit: 2026-02-03*
+*Integration audit: 2026-02-04*

@@ -1,114 +1,94 @@
 # Architecture
 
-**Analysis Date:** 2026-02-03
+**Analysis Date:** 2026-02-04
 
 ## Pattern Overview
 
-**Overall:** Local-first Monorepo with AI-Enriched Indexing
+**Overall:** Local-first Monorepo with Service-Oriented Backend and Component-based Frontend.
 
 **Key Characteristics:**
-- **Local-First Persistence:** Notes are stored as individual Markdown files on the local filesystem.
-- **Asynchronous AI Enrichment:** Background workers process notes to generate tags and metadata without blocking the main thread.
-- **SQLite Search Index:** A local SQLite database maintains a searchable index of the Markdown files for performance.
-- **SSE Real-time Updates:** Server-Sent Events notify the frontend of background task completion (e.g., AI tag generation).
+- **Local-First Persistence:** Primary data storage is atomic Markdown files on the local filesystem.
+- **Hybrid Indexing:** SQLite is used as a secondary "view" layer for fast querying and full-text search, kept in sync with the filesystem.
+- **Asynchronous Processing:** AI analysis and indexing tasks are handled via a background worker and queue system to keep the UI responsive.
 
 ## Layers
 
-**API Layer:**
-- Purpose: Provides RESTful endpoints and real-time event streaming.
-- Location: `apps/api/src/routes`
-- Contains: Hono route definitions, request validation, and service orchestration.
+**API Layer (Backend):**
+- Purpose: Provides a RESTful interface for the frontend to interact with notes and settings.
+- Location: `apps/api/src/routes/`
+- Contains: Hono route definitions and input validation (Zod).
 - Depends on: Services Layer.
-- Used by: Web Frontend.
+- Used by: Web Client.
 
-**Services Layer:**
-- Purpose: Encapsulates core business logic and infrastructure access.
-- Location: `apps/api/src/services`
-- Contains: `StorageService`, `IndexerService`, `AIService`, `QueueService`, `WorkerService`.
-- Depends on: Node.js standard libraries (`fs`, `path`), `better-sqlite3`, `p-queue`.
-- Used by: API Layer, Background Workers.
+**Services Layer (Backend):**
+- Purpose: Encapsulates business logic, file I/O, and external integrations.
+- Location: `apps/api/src/services/`
+- Contains: `StorageService`, `IndexerService`, `AIService`, `WorkerService`, `QueueService`.
+- Depends on: Local filesystem, SQLite (via `better-sqlite3`), Vercel AI SDK.
+- Used by: API Layer, Worker Service.
 
-**Frontend Layer:**
-- Purpose: User interface for creating, editing, and visualizing notes.
-- Location: `apps/web/src`
-- Contains: React components, TanStack Query hooks, React Router definitions.
-- Depends on: API Layer (via Hono client).
-- Used by: End Users.
-
-**Shared Packages:**
-- Purpose: Shared configuration and environment management.
-- Location: `packages/`
-- Contains: `@notetaiker/env`, `@notetaiker/eslint-config`, `@notetaiker/tsconfig`.
-- Depends on: `zod`.
-- Used by: `apps/api`, `apps/web`.
+**UI Layer (Frontend):**
+- Purpose: User interface for capturing and managing notes.
+- Location: `apps/web/src/components/`
+- Contains: React components, hooks for state management and API interaction.
+- Depends on: TanStack Query, React Router, Hono Client.
+- Used by: End user.
 
 ## Data Flow
 
-**Note Capture & Enrichment:**
+**Note Creation/Update Flow:**
 
-1. User submits note content in `apps/web/src/App.tsx`.
-2. Frontend calls `/notes` endpoint in `apps/api/src/routes/notes.ts`.
-3. `StorageService` (`apps/api/src/services/storage.service.ts`) writes the Markdown file.
-4. `IndexerService` (`apps/api/src/services/indexer.service.ts`) updates the SQLite index.
-5. `QueueService` enqueues a job for AI processing.
-6. `WorkerService` (`apps/api/src/services/worker.service.ts`) picks up the job, calls `AIService`, and updates the note with tags.
-7. `EventsService` broadcasts a `note_updated` event via SSE to the frontend.
-
-**Search and Retrieval:**
-
-1. Frontend requests notes via `useTimeline` hook in `apps/web/src/hooks/useTimeline.ts`.
-2. API queries `IndexerService` which performs a SELECT on the SQLite database.
-3. Metadata and partial content are returned to the frontend.
+1. **User Input:** User types in the editor in `apps/web/src/App.tsx`.
+2. **Auto-save:** `useDebouncedSave` hook sends content to `POST/PATCH /notes`.
+3. **Persistence:** `StorageService` in `apps/api/src/services/storage.service.ts` writes the Markdown file to disk with frontmatter.
+4. **Indexing:** `StorageService` calls `IndexerService` to update the SQLite index immediately.
+5. **Background Task:** `QueueService` enqueues a job for AI processing.
+6. **AI Enhancement:** `WorkerService` picks up the job, calls `AIService` to generate tags/summaries, and updates the Markdown file via `StorageService`.
 
 **State Management:**
-- Server state managed via TanStack Query.
-- Local draft state managed via `useDraftPersistence` in `apps/web/src/hooks/useDraftPersistence.ts`.
-- Source of truth is the local filesystem.
+- **Server State:** Managed by TanStack Query in the frontend, synchronizing with the API.
+- **Local State:** React `useState` for UI-specific state (editor content, modal visibility).
+- **Draft Persistence:** `localStorage` via `useDraftPersistence` for unsaved changes.
 
 ## Key Abstractions
 
-**StorageService:**
-- Purpose: High-level API for reading/writing notes and coordinating index updates.
-- Examples: `apps/api/src/services/storage.service.ts`
-- Pattern: Repository Pattern.
+**Service Pattern:**
+- Purpose: Decouples business logic from the transport layer (Hono).
+- Examples: `apps/api/src/services/storage.service.ts`, `apps/api/src/services/indexer.service.ts`.
+- Pattern: Singleton-like services instantiated at startup and injected into the Hono context.
 
-**IndexerService:**
-- Purpose: Manages the SQLite database that acts as a cache/search index for the Markdown files.
-- Examples: `apps/api/src/services/indexer.service.ts`
-- Pattern: Search Index / Materialized View.
-
-**WorkerService:**
-- Purpose: Orchestrates background tasks using a priority queue.
-- Examples: `apps/api/src/services/worker.service.ts`
-- Pattern: Consumer / Task Processor.
+**Markdown with Frontmatter:**
+- Purpose: Unified format for content and metadata (tags, IDs, timestamps).
+- Examples: Files in `data/notes/`.
+- Pattern: `gray-matter` for parsing/stringifying metadata in Markdown files.
 
 ## Entry Points
 
-**Backend Server:**
+**Backend API:**
 - Location: `apps/api/src/index.ts`
-- Triggers: Starts the Node.js process.
-- Responsibilities: Initializes services, runs initial index sync, starts background workers, and listens for HTTP requests.
+- Triggers: Node.js startup.
+- Responsibilities: Service initialization, directory setup, initial index sync, starting the worker service, and serving the Hono app.
 
-**Frontend Application:**
+**Web Client:**
 - Location: `apps/web/src/main.tsx`
 - Triggers: Browser page load.
-- Responsibilities: Mounts the React application, initializes providers (QueryClient, Router).
+- Responsibilities: React root rendering, setting up QueryClient and Router.
 
-## Error Handling
+## Error Handling Strategy
 
-**Strategy:** Fail-soft with retries for background tasks.
+**Strategy:** Fail-safe local storage with background recovery.
 
 **Patterns:**
-- **p-retry:** Used in `WorkerService` for AI API calls.
-- **Validation:** Zod schemas for all environment variables and API payloads.
-- **Safe Writes:** `write-file-atomic` used in `StorageService` to prevent file corruption.
+- **Atomic Writes:** Using `write-file-atomic` to prevent data loss during file operations.
+- **Job Recovery:** `QueueService.resetProcessingJobs()` on startup to recover from crashes.
+- **Validation:** Zod schemas in `packages/env` and API routes to catch configuration and input errors early.
 
 ## Cross-Cutting Concerns
 
-**Logging:** Console logging with specific service prefixes.
-**Validation:** Zod-based runtime validation at the boundary (ENV and API).
-**Authentication:** Secret management for AI provider API keys.
+**Logging:** Standard console logging on the backend; handled by `WorkerService` for background tasks.
+**Validation:** Zod schemas used for environment variables and API request bodies.
+**Authentication:** Not currently implemented (local-only focus).
 
 ---
 
-*Architecture analysis: 2026-02-03*
+*Architecture analysis: 2026-02-04*

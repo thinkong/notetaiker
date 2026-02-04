@@ -1,113 +1,101 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-02-03
+**Analysis Date:** 2026-02-04
 
 ## Directory Layout
 
 ```
 notetaiker/
 ├── apps/
-│   ├── api/                # Hono backend + Background Workers
-│   │   ├── src/
-│   │   │   ├── lib/        # Shared backend utilities (markdown, etc.)
-│   │   │   ├── routes/     # Hono route definitions
-│   │   │   └── services/   # Business logic, DB access, AI, Workers
-│   │   └── dist/           # Compiled backend output
-│   └── web/                # React + Vite frontend
-│       ├── src/
-│       │   ├── components/ # React components (UI, Editor, Graph, etc.)
-│       │   ├── hooks/      # Custom React hooks (save, persistence, SSE)
-│       │   ├── lib/        # API client and utilities
-│       │   └── types/      # Frontend TypeScript definitions
-│       └── dist/           # Bundled frontend output
-├── packages/               # Shared monorepo packages
-│   ├── env/                # Zod environment schemas
-│   ├── eslint-config/      # Shared linting configuration
-│   └── tsconfig/           # Base TypeScript configurations
-├── data/                   # Default storage for Markdown notes (git-ignored)
-└── .notetaiker/            # App metadata and SQLite index database
+│   ├── api/            # Hono backend + background worker
+│   └── web/            # React + Vite frontend
+├── packages/
+│   ├── env/            # Shared environment configuration
+│   ├── eslint-config/  # Shared ESLint configuration
+│   └── tsconfig/       # Shared TypeScript configuration
+├── data/
+│   └── notes/          # Primary storage for .md note files
+└── .notetaiker/        # SQLite index and local system data
 ```
 
 ## Directory Purposes
 
-**apps/api/src/services:**
-- Purpose: Core infrastructure and logic encapsulation.
-- Contains: Services for storage, indexing, AI provider integration, and background task management.
-- Key files: `storage.service.ts`, `indexer.service.ts`, `ai.service.ts`, `worker.service.ts`.
+**apps/api:**
+- Purpose: Backend server and background processing.
+- Contains: Hono routes, business logic services, and database indexing.
+- Key files: `src/index.ts` (entry), `src/services/` (core logic).
 
-**apps/api/src/routes:**
-- Purpose: HTTP endpoint definitions and request handling.
-- Contains: Hono route modules.
-- Key files: `notes.ts`, `settings.ts`, `events.ts`.
+**apps/web:**
+- Purpose: Frontend user interface.
+- Contains: React components, hooks, and static assets.
+- Key files: `src/App.tsx` (main layout), `src/components/` (UI elements).
 
-**apps/web/src/components:**
-- Purpose: User interface modules.
-- Contains: Atomic components and complex views like the graph and editor extensions.
-- Key files: `editor/Editor.tsx`, `graph/ForceGraph.tsx`, `sidebar/Sidebar.tsx`.
+**packages/env:**
+- Purpose: Unified environment variable management.
+- Contains: Zod schemas for validating system configuration.
+- Key files: `index.ts`.
 
-**apps/web/src/hooks:**
-- Purpose: Shared React logic and state management.
-- Contains: Logic for debounced saving, local persistence, and SSE event handling.
-- Key files: `useDebouncedSave.ts`, `useTimeline.ts`, `useSSE.ts`.
+**data/notes:**
+- Purpose: Local-first data storage.
+- Contains: Atomic Markdown files with YAML frontmatter.
 
 ## Key File Locations
 
 **Entry Points:**
-- `apps/api/src/index.ts`: Backend entry point (Node.js server).
-- `apps/web/src/main.tsx`: Frontend entry point (React mount).
+- `apps/api/src/index.ts`: Backend server entry and service initialization.
+- `apps/web/src/main.tsx`: Frontend React root mounting.
 
 **Configuration:**
-- `package.json`: Workspace-level dependencies and scripts.
-- `turbo.json`: Turbo build pipeline definition.
-- `pnpm-workspace.yaml`: Monorepo workspace setup.
+- `turbo.json`: Monorepo build pipeline configuration.
+- `pnpm-workspace.yaml`: Workspace package definitions.
+- `packages/env/index.ts`: Environment variable schema and validation.
 
 **Core Logic:**
-- `apps/api/src/services/storage.service.ts`: Note persistence and index coordination.
-- `apps/api/src/services/worker.service.ts`: Background enrichment process.
-- `apps/api/src/lib/markdown.ts`: Markdown parsing and frontmatter extraction.
+- `apps/api/src/services/storage.service.ts`: File-based note persistence.
+- `apps/api/src/services/indexer.service.ts`: SQLite indexing logic.
+- `apps/api/src/services/worker.service.ts`: Background task orchestration.
 
 **Testing:**
-- `apps/api/src/**/*.test.ts`: Backend unit and service tests.
+- `apps/api/src/**/*.test.ts`: Vitest unit and integration tests for backend services.
 
 ## Naming Conventions
 
 **Files:**
-- API Services: `*.service.ts`
-- API Routes: Plural resource names (e.g., `notes.ts`).
-- React Components: `PascalCase.tsx`.
-- React Hooks: `use*.ts` (camelCase).
-- Test Files: `*.test.ts`.
+- Components: `PascalCase.tsx` (e.g., `Editor.tsx`).
+- Services: `kebab-case.service.ts` (e.g., `ai.service.ts`).
+- Hooks: `useCamelCase.ts` (e.g., `useDebouncedSave.ts`).
+- Routes: `kebab-case.ts` (e.g., `notes.ts`).
 
 **Directories:**
-- Kebab-case: `eslint-config`, `apps/api`, `apps/web`.
+- Feature-based in `apps/web/src/components/` (e.g., `editor/`, `search/`).
+- Layer-based in `apps/api/src/` (e.g., `services/`, `routes/`).
 
 ## Where to Add New Code
 
 **New Feature:**
-- API logic: `apps/api/src/services/`
-- API Route: `apps/api/src/routes/`
-- Frontend Hook: `apps/web/src/hooks/`
-- Frontend View: `apps/web/src/components/`
+- API Route: `apps/api/src/routes/[feature].ts`
+- Service Logic: `apps/api/src/services/[feature].service.ts`
+- UI Component: `apps/web/src/components/[feature]/`
+- Shared Type: `apps/web/src/types/index.ts` or a new package if shared with API.
 
 **New Component/Module:**
-- Implementation: `apps/web/src/components/[category]/`
+- Implementation: `apps/web/src/components/[category]/[Name].tsx`
 
 **Utilities:**
-- Shared API logic: `apps/api/src/lib/`
-- Shared Web logic: `apps/web/src/lib/`
+- Shared helpers: `apps/api/src/lib/` or `apps/web/src/lib/`.
 
 ## Special Directories
 
-**data/:**
-- Purpose: Default directory for user Markdown notes.
-- Generated: No (configured via ENV, created on startup if missing).
-- Committed: No.
-
 **.notetaiker/:**
-- Purpose: Persistent application metadata and search index.
-- Generated: Yes (on first run).
-- Committed: No.
+- Purpose: Stores the SQLite index database (`index.db`) and other local system state.
+- Generated: Yes
+- Committed: No
+
+**data/notes/:**
+- Purpose: Default directory for user-created notes.
+- Generated: Yes (if missing)
+- Committed: Optional (usually contains user data)
 
 ---
 
-*Structure analysis: 2026-02-03*
+*Structure analysis: 2026-02-04*

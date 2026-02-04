@@ -1,91 +1,100 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-02-03
+**Analysis Date:** 2026-02-04
 
 ## Naming Patterns
 
 **Files:**
-- API Services: `kebab-case.service.ts` (e.g., `apps/api/src/services/ai.service.ts`)
-- API Routes: `kebab-case.ts` (e.g., `apps/api/src/routes/notes.ts`)
-- Web Components: `PascalCase.tsx` (e.g., `apps/web/src/components/common/Tag.tsx`)
-- Web Hooks: `useCamelCase.ts` (e.g., `apps/web/src/hooks/useSSE.ts`)
-- Utilities: `kebab-case.ts` (e.g., `apps/api/src/lib/markdown.ts`)
-- Tests: `[name].test.ts` or `[name].spec.ts` co-located with implementation.
+- TypeScript files: kebab-case (e.g., `ai.service.ts`, `storage.service.ts`)
+- React components: PascalCase (e.g., `Editor.tsx`, `SettingsPage.tsx`)
+- Routes: kebab-case (e.g., `notes.ts`, `settings.ts`)
 
 **Functions:**
-- camelCase for standard functions and methods: `generateTags`, `saveNote`, `parseMarkdown`.
-- PascalCase for React components: `Tag`, `Editor`.
+- camelCase for standard functions (e.g., `generateTags`, `saveNote`)
+- camelCase for React hooks (e.g., `useDebouncedSave`, `useTimeline`)
 
 **Variables:**
-- camelCase for local variables and class properties: `storagePath`, `mergedTags`, `workspaceRoot`.
-- UPPER_SNAKE_CASE for constants: `DEFAULT_MODELS`.
+- camelCase for variables and instances (e.g., `storageService`, `allNotes`)
+- UPPER_SNAKE_CASE for constants (e.g., `DEFAULT_BASE_URLS`, `DEFAULT_MODELS`)
 
-**Types:**
-- PascalCase for interfaces and type aliases: `NoteMetadata`, `SSEOptions`, `ParsedNote`.
-- Schemas: PascalCase + "Schema" suffix (e.g., `NoteFrontmatterSchema` in `apps/api/src/lib/markdown.ts`).
+**Types & Interfaces:**
+- PascalCase (e.g., `NoteMetadata`, `ParsedNote`, `EditorHandle`)
+- Suffixes: `Service` for classes, `Props` for component inputs
 
 ## Code Style
 
 **Formatting:**
-- Prettier is used for consistent formatting across the monorepo.
-- Standard settings: 2-space indentation, trailing commas.
-- Run via `pnpm format`.
+- **Prettier**: Enforced via `pnpm format` and ESLint plugin.
+- Key settings: Single quotes (implied), semi-colons (implied), 2-space indentation.
 
 **Linting:**
-- ESLint with flat config (`eslint.config.js`).
-- Root configuration in `packages/eslint-config`.
-- App-specific rules in `apps/api/eslint.config.js` and `apps/web/eslint.config.js`.
-- Rules sometimes require using `console.warn` instead of `console.log` for debug information (e.g., `apps/web/src/hooks/useSSE.ts`).
+- **ESLint**: Shared configuration in `packages/eslint-config/base.js`.
+- Key rules:
+  - `prettier/prettier`: "error"
+  - `@typescript-eslint/no-unused-vars`: "warn"
+  - `no-console`: "warn" (except for `warn` and `error`)
+  - `@typescript-eslint/consistent-type-imports`: "error" (prefers `import type`)
 
 ## Import Organization
 
 **Order:**
-1. Node.js built-ins (`import path from "node:path"`)
-2. React/Framework imports (in web)
-3. External library imports (`zod`, `hono`, `ai`)
-4. Internal workspace packages (`@notetaiker/env`, `@notetaiker/api`)
-5. Internal relative imports (`../services/...`)
+1. Standard library (e.g., `node:path`, `node:fs/promises`)
+2. External dependencies (e.g., `hono`, `zod`, `ai`)
+3. Workspace packages (e.g., `@notetaiker/env`, `@notetaiker/api`)
+4. Internal modules (relative paths: `../services/...`, `./markdown`)
 
 **Path Aliases:**
-- `@notetaiker/env`: Shared environment configuration.
-- `@notetaiker/api`: API types and client shared with the web app.
+- `@notetaiker/env`: Shared environment config
+- `@notetaiker/api`: API types and client shared with web
 
 ## Error Handling
 
 **Patterns:**
-- **Zod Validation**: Used for runtime validation of API requests and frontmatter (e.g., `NoteFrontmatterSchema.parse(data)`).
-- **Hono Context**: Return JSON error responses in routes: `return c.json({ error: "Note not found" }, 404)`.
-- **Try/Catch**: Used around file system operations and external calls. Services often return `null` or empty arrays to indicate failure safely.
-- **Validation**: `zValidator` middleware for Hono routes.
+- **Defensive IO**: Extensive use of `try-catch` around filesystem and database operations.
+- **Graceful Failure**: Returning `null` or empty arrays `[]` instead of throwing for expected "not found" or "failed to parse" scenarios (e.g., `StorageService.getNote`).
+- **Console Warning**: Logging warnings with context when non-critical operations fail (e.g., reading existing metadata during a save).
+- **Zod Validation**: Using `zValidator` in Hono routes to catch input errors at the edge.
 
 ## Logging
 
-**Framework:** `console`
+**Framework:** `console` (standard)
 
 **Patterns:**
-- `console.error`: Used for critical failures in catch blocks.
-- `console.warn`: Used for debug information or to bypass linting rules against `console.log`.
+- `console.error` for critical failures in services or routes.
+- `console.warn` for non-breaking issues (e.g., "Ollama not available").
+- Avoid `console.log` in production code (enforced by lint).
 
 ## Comments
 
 **When to Comment:**
-- To explain complex logic or directory traversal (e.g., calculating `workspaceRoot` in routes).
-- To satisfy linting (e.g., `void notesDir`).
+- Explaining complex logic or regex (e.g., hashtag extraction).
+- Documenting directory structure and workspace root resolution logic.
+- TODOs for pending features or improvements.
 
 **JSDoc/TSDoc:**
-- Used sparingly for complex parameters; not strictly enforced.
+- Minimal usage; types are primarily used for documentation.
 
 ## Function Design
 
-**Size:** Most functions are focused and modular.
-**Parameters:** Destructuring or object parameters (e.g., `QueryOptions`) are preferred for complex arguments.
-**Return Values:** Explicit return types are preferred in services and critical logic.
+**Size:** Generally focused and modular. Service methods are kept under 100 lines.
+
+**Parameters:**
+- Prefers named parameters via objects for complex signatures (e.g., `saveNote(content, metadata)`).
+- Optional parameters used with defaults where appropriate.
+
+**Return Values:**
+- Explicit return types in services.
+- Promises used for all async IO operations.
 
 ## Module Design
 
-**Exports:** Named exports are preferred for services, components, and hooks. Default exports are occasionally used for React components.
-**Barrel Files:** Used in specific locations like `apps/web/src/types/index.ts`.
+**Exports:**
+- Named exports preferred for routes and services.
+- Default exports used for main entry points like `App.tsx`.
+
+**Barrel Files:**
+- Limited usage; direct imports preferred for clarity.
 
 ---
 
-*Convention analysis: 2026-02-03*
+*Convention analysis: 2026-02-04*

@@ -1,85 +1,89 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-02-03
+**Analysis Date:** 2026-02-04
 
 ## Tech Debt
 
-**Naive Tag Filtering:**
-- Issue: `IndexerService` uses `metadata LIKE ?` with `%tag%` to filter notes by tags. Since `metadata` is a JSON string, this can lead to false positives (e.g., searching for "AI" might match a note with "Maintainer" in its metadata).
+**Indexer Tag Filtering:**
+- Issue: Tag filtering is implemented using naive `LIKE` queries against a JSON string column in SQLite.
 - Files: `apps/api/src/services/indexer.service.ts`
-- Impact: Inaccurate search results for tags and poor performance as the codebase grows.
-- Fix approach: Use SQLite's JSON1 extension functions (like `json_each`) or a proper join table for tags.
+- Impact: Performance will degrade linearly with the number of notes and tags. Filtering for "tag1" might incorrectly match "tag10".
+- Fix approach: Use a separate `note_tags` junction table or SQLite's JSON1 extension for proper querying.
 
-**Duplicated Workspace Root Logic:**
-- Issue: Multiple files calculate the workspace root using hardcoded relative paths from `__dirname` (e.g., `../../../..`).
-- Files: `apps/api/src/index.ts`, `apps/api/src/routes/settings.ts`, `apps/api/src/routes/notes.ts`
-- Impact: Fragile path resolution; if files are moved, the logic breaks.
-- Fix approach: Centralize workspace root detection in a utility or use a reliable project-root detection library.
-
-**Large Component Complexity (God Component):**
-- Issue: `App.tsx` has grown to over 400 lines, managing routing, layout, global state, and navigation guards.
+**Monolithic Main Component:**
+- Issue: `App.tsx` in the web app is over 400 lines and manages too much state and logic (drafts, saving, search, sidebar, hotkeys, navigation guards).
 - Files: `apps/web/src/App.tsx`
-- Impact: Harder to maintain, test, and understand the main application flow.
-- Fix approach: Refactor `App.tsx` by extracting the router configuration, layout components, and context providers into separate files.
+- Impact: Difficult to test in isolation, high risk of regression when changing unrelated features, and poor readability.
+- Fix approach: Extract logic into smaller, focused hooks and move UI sub-sections into dedicated container components.
 
-**SSE Keep-Alive Implementation:**
-- Issue: The SSE implementation uses a `while (true)` loop with a 1-second `setTimeout` to keep the connection alive.
-- Files: `apps/api/src/routes/events.ts`
-- Impact: Potential for resource leaks if client disconnects aren't handled perfectly across all environments.
-- Fix approach: Use a standard heartbeat interval and rely on Hono's streaming lifecycle hooks properly.
+**Storage and Indexing Coupling:**
+- Issue: `StorageService` is directly responsible for triggering index syncs and file path generation.
+- Files: `apps/api/src/services/storage.service.ts`
+- Impact: Harder to change storage backends or indexing strategies independently.
+- Fix approach: Use an event-driven architecture (e.g., `EventEmitter`) where `StorageService` emits a `noteSaved` event that `IndexerService` listens to.
 
 ## Known Bugs
 
-**Silent Indexing Failures:**
-- Symptoms: Notes without a valid UUID `id` in their frontmatter are silently skipped during the indexing process.
-- Files: `apps/api/src/services/indexer.service.ts` (line 104)
-- Trigger: Manually creating a markdown file without the required `id` metadata.
-- Workaround: Ensure all markdown files have a valid `id` in their YAML frontmatter.
+**Potential Filename Collisions:**
+- Symptoms: Extremely rare, but could cause file overwrites or save failures.
+- Files: `apps/api/src/services/storage.service.ts`
+- Trigger: Multiple saves occurring within the same millisecond with the same 4-character random suffix.
+- Workaround: The code has a counter-based retry loop, but the entropy is low.
 
 ## Security Considerations
 
-**Plaintext Secret Storage:**
-- Risk: AI provider API keys are stored in plaintext in a JSON file on disk.
-- Files: `apps/api/src/services/secrets.service.ts`, `apps/.notetaiker/secrets.json`
-- Current mitigation: The `.notetaiker` directory is added to `.gitignore` and file permissions are restricted to `0o600`.
-- Recommendations: Use the system's native keychain (e.g., `keytar`) or encrypt the secrets file with a user-provided master password.
-
-**Directory Traversal Potential:**
-- Risk: The `NOTES_DIR` environment variable can be configured to any path, and file operations do not strictly validate that they remain within this root.
-- Files: `apps/api/src/services/storage.service.ts`, `apps/api/src/index.ts`
-- Current mitigation: Basic `path.resolve` and `path.isAbsolute` checks.
-- Recommendations: Implement a "jail" check to ensure all resolved file paths start with the intended `NOTES_DIR`.
+**Secrets Stored in Plaintext:**
+- Risk: AI provider API keys are stored in plaintext on the local filesystem.
+- Files: `apps/api/src/services/secrets.service.ts`, `.notetaiker/secrets.json`
+- Current mitigation: The `.notetaiker` directory is automatically added to `.gitignore`, and the file is created with `0o600` permissions.
+- Recommendations: Encrypt secrets at rest using a machine-specific key or OS-level keychain integration (e.g., `keytar`).
 
 ## Performance Bottlenecks
 
-**Full Sync on Startup:**
-- Problem: The API performs a full scan and read of all markdown files in the notes directory every time it starts.
-- Files: `apps/api/src/index.ts`, `apps/api/src/services/indexer.service.ts`
-- Cause: `syncAll()` reads every file to verify metadata and content.
-- Improvement path: Implement incremental sync by checking file modification times (mtime) against the last indexed time in the database.
+**Startup Index Sync:**
+- Problem: The API performs a full filesystem scan and reads every markdown file to sync the SQLite index on every startup.
+- Files: `apps/api/src/services/indexer.service.ts`
+- Cause: Lack of a persistent file-watch or incremental sync state beyond just re-reading everything.
+- Improvement path: Implement a file watcher (like `chokidar`) for runtime updates and use file modification times (mtime) to perform incremental syncs on startup.
 
-**Force-Directed Graph Scaling:**
-- Problem: The D3-based force graph may experience performance degradation with hundreds of notes.
-- Files: `apps/web/src/components/graph/ForceGraph.tsx`
-- Cause: High CPU usage for physics calculations and React rendering overhead for many SVG elements.
-- Improvement path: Switch to Canvas-based rendering or implement node clustering/virtualization for large graphs.
+**SQLite Search:**
+- Problem: Note content search is likely using `LIKE` queries (though full-text search is not yet fully implemented).
+- Files: `apps/api/src/services/indexer.service.ts`
+- Cause: Basic SQLite table structure.
+- Improvement path: Implement SQLite FTS5 (Full-Text Search) for efficient searching across thousands of notes.
 
 ## Fragile Areas
 
-**Index/Filesystem Synchronization:**
-- Files: `apps/api/src/services/indexer.service.ts`, `apps/api/src/services/storage.service.ts`
-- Why fragile: If files are moved or renamed manually on the filesystem, the SQLite index becomes stale. The system heavily relies on the index for ID-to-filename resolution.
-- Safe modification: Always perform file operations through the `StorageService`.
-- Test coverage: Missing tests for manual filesystem interference and recovery.
+**AI Tag Merging Logic:**
+- Files: `apps/api/src/services/worker.service.ts`, `apps/api/src/services/storage.service.ts`
+- Why fragile: Complex rules about when to merge `tags` vs `ai_tags` vs `ignored_tags`. If the UI and Backend get out of sync on these definitions, AI might re-add deleted tags.
+- Safe modification: Ensure all tag manipulations go through a shared utility library with exhaustive tests.
+- Test coverage: Gaps in testing the interaction between manual tag removal and AI re-processing.
+
+## Missing Critical Features
+
+**Full-Text Search (FTS):**
+- Problem: No specialized full-text search capability.
+- Blocks: Efficient and relevant searching as the codebase grows.
+
+**Note Deletion (UI):**
+- Problem: While the backend supports deletion from the index, the primary storage and UI paths for deletion are not prominently featured or robustly tested.
+- Blocks: Basic CRUD lifecycle.
 
 ## Test Coverage Gaps
 
-**Real-time Event Flow:**
-- What's not tested: The end-to-end integration of background worker completion -> `EventsService` broadcast -> SSE transmission -> Frontend UI update.
-- Files: `apps/api/src/services/events.service.ts`, `apps/api/src/routes/events.ts`, `apps/web/src/hooks/useSSE.ts`
-- Risk: Changes to the event schema or SSE logic could break real-time updates unnoticed.
+**Frontend Components:**
+- What's not tested: Complex UI interactions in `App.tsx`, `Editor.tsx`, and `GraphView.tsx`.
+- Files: `apps/web/src/**/*`
+- Risk: UI regressions in critical paths like note capture and graph rendering.
 - Priority: Medium
+
+**AI Service Error Handling:**
+- What's not tested: Graceful degradation when AI providers are offline or rate-limited (though `p-retry` is used).
+- Files: `apps/api/src/services/ai.service.ts`
+- Risk: Background worker crashes or stalled queues.
+- Priority: Low
 
 ---
 
-*Concerns audit: 2026-02-03*
+*Concerns audit: 2026-02-04*
