@@ -20,6 +20,7 @@ Key risks involve hardware variability and the inherent latency of local inferen
 The stack builds upon the existing Hono/React/Vercel AI SDK foundation, adding specialized tools for local LLM orchestration.
 
 **Core technologies:**
+
 - **Ollama / Llamafile**: Local LLM Runtime — Industry standard for high-performance local inference.
 - **@ai-sdk/ollama**: Vercel AI SDK Provider — Seamless integration with existing backend AI patterns.
 - **tiktoken**: Token Counting — Essential for pre-flight context window validation to prevent crashes.
@@ -30,16 +31,19 @@ The stack builds upon the existing Hono/React/Vercel AI SDK foundation, adding s
 Users expect local AI to be transparent, fast (via streaming), and non-intrusive.
 
 **Must have (table stakes):**
+
 - **Manual Summarize Button** — User-triggered AI actions in the editor.
 - **Streaming Responses** — Prevents UI "hangs" during slow local generation.
 - **Model Download/Status UI** — Transparent feedback on model availability and loading.
 
 **Should have (competitive):**
+
 - **"Privacy Guard" Badge** — Visual reinforcement of the "100% Local" promise.
 - **Summary "Flavors"** — Options for bullet points, action items, or executive summaries.
 - **Zero-Config Discovery** — Automatic detection of local Ollama instances.
 
 **Defer (v2+):**
+
 - **Parallel Auto-Summarize** — Too resource-intensive for initial release.
 - **Local RAG (Search over all notes)** — High complexity, better suited for a dedicated future update.
 
@@ -48,6 +52,7 @@ Users expect local AI to be transparent, fast (via streaming), and non-intrusive
 A proxy-based approach ensures stability and avoids complex client-side configuration.
 
 **Major components:**
+
 1. **Hono Proxy Agent** — Acts as a secure bridge between the React frontend and the Ollama API.
 2. **Serialized Job Queue** — Manages LLM tasks to ensure only one model runs at a time.
 3. **Structured Response Handler** — Uses Zod to extract metadata/frontmatter from AI outputs.
@@ -64,24 +69,28 @@ A proxy-based approach ensures stability and avoids complex client-side configur
 Based on research, suggested phase structure:
 
 ### Phase 1: Connectivity & Infrastructure
+
 **Rationale:** Foundations must be solid before AI features can be reliably tested.
 **Delivers:** Backend proxy, Ollama discovery, and Model Management UI.
 **Addresses:** Local Runtime Discovery, Model Download Progress.
 **Avoids:** CORS & Connectivity blocks.
 
 ### Phase 2: Core Summarization
+
 **Rationale:** Delivers the primary value proposition with minimal complexity.
 **Delivers:** Streaming summarization button and basic frontmatter updates.
 **Uses:** @ai-sdk/ollama, streaming SSE.
 **Implements:** Editor Result Panel.
 
 ### Phase 3: Context & Quality
+
 **Rationale:** Ensures the system is robust for "power users" with long notes.
 **Delivers:** Token-aware truncation, Map-Reduce for long notes, and Summary "Flavors".
 **Addresses:** Context Window Overflow.
 **Avoids:** Model crashes on large files.
 
 ### Phase 4: Metadata & Automation
+
 **Rationale:** Enhances the ecosystem by turning summaries into searchable metadata.
 **Delivers:** Structured tag extraction and hybrid background tagging.
 **Uses:** Zod for structured output extraction.
@@ -96,21 +105,23 @@ Based on research, suggested phase structure:
 ### Research Flags
 
 Phases likely needing deeper research during planning:
+
 - **Phase 3 (Context):** Needs specific investigation into "Map-Reduce" summarization algorithms for optimal local performance.
 - **Phase 4 (Metadata):** Needs prompt engineering research for consistent tag extraction from diverse note types.
 
 Phases with standard patterns (skip research-phase):
+
 - **Phase 1 (Infrastructure):** Standard proxy and polling patterns are well-documented.
 - **Phase 2 (Summarization):** Basic streaming with Vercel AI SDK is a standard implementation.
 
 ## Confidence Assessment
 
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | Vercel AI SDK and Ollama are stable and widely used. |
-| Features | HIGH | Table stakes are consistent across the local AI ecosystem. |
-| Architecture | HIGH | Backend proxying is the standard for local-first web apps. |
-| Pitfalls | HIGH | Common Ollama issues are well-documented and predictable. |
+| Area         | Confidence | Notes                                                      |
+| ------------ | ---------- | ---------------------------------------------------------- |
+| Stack        | HIGH       | Vercel AI SDK and Ollama are stable and widely used.       |
+| Features     | HIGH       | Table stakes are consistent across the local AI ecosystem. |
+| Architecture | HIGH       | Backend proxying is the standard for local-first web apps. |
+| Pitfalls     | HIGH       | Common Ollama issues are well-documented and predictable.  |
 
 **Overall confidence:** HIGH
 
@@ -122,13 +133,16 @@ Phases with standard patterns (skip research-phase):
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Vercel AI SDK Docs](https://sdk.vercel.ai/docs) — Core integration patterns.
 - [Ollama API Docs](https://github.com/ollama/ollama/blob/main/docs/api.md) — Connectivity and model management.
 - [Hono Streaming](https://hono.dev/helpers/streaming) — Implementation of SSE for Hono.
 
 ### Secondary (MEDIUM confidence)
+
 - [Obsidian/Logseq Community Plugins] — Feature sets and user expectations for local AI.
 
 ---
-*Research completed: 2026-02-04*
-*Ready for roadmap: yes*
+
+_Research completed: 2026-02-04_
+_Ready for roadmap: yes_

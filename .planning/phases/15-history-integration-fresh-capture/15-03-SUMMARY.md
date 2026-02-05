@@ -11,7 +11,8 @@ tech-stack:
   patterns: [mode-aware-ui]
 key-files:
   created: []
-  modified: [apps/web/src/App.tsx, apps/web/src/components/layout/StatusIndicator.tsx]
+  modified:
+    [apps/web/src/App.tsx, apps/web/src/components/layout/StatusIndicator.tsx]
 metrics:
   duration: 320s
   completed: 2026-02-02
@@ -24,21 +25,28 @@ Polished the history integration experience with mode-specific visuals, dynamic 
 ## Accomplishments
 
 ### 1. Mode Status Badge
+
 Added a dedicated status badge in the header next to the application title. It clearly distinguishes between:
+
 - **Draft**: Displayed when creating a new, unsaved note.
 - **Editing**: Displayed when a historical note is loaded in the editor.
-The badge uses consistent Nord theme colors (polar3 for Draft, frost3 for Editing).
+  The badge uses consistent Nord theme colors (polar3 for Draft, frost3 for Editing).
 
 ### 2. Dynamic Action Labels
+
 Updated the primary action button to be context-aware:
+
 - In **Draft** mode, the button label is **"Capture"**, emphasizing the act of quick thought collection.
 - In **Editing** mode, the button label changes to **"Save"**, reflecting the intent to update existing records.
 
 ### 3. Keyboard Shortcut (Cmd+N / Ctrl+N)
+
 Registered a global hotkey for "New Note". Users can now press `Mod+N` to instantly reset the editor and start a fresh capture, even when the editor has focus. This significantly reduces friction for users who capture multiple thoughts in quick succession.
 
 ### 4. Enhanced Status Indicator
+
 Refined the fixed `StatusIndicator` to be color-coded:
+
 - **Saving**: Pulses in `nord-frost3`.
 - **Error**: High-visibility `nord-aurora0`.
 - **Saved/Idle**: Subtle `nord4/50`.

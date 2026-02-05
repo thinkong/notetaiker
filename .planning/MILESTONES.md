@@ -124,7 +124,7 @@
 
 **Key accomplishments:**
 
-- **Zero-friction Markdown capture with "Cmd+Enter" immediate save.
+- \*\*Zero-friction Markdown capture with "Cmd+Enter" immediate save.
 - Real-time AI processing pipeline using Server-Sent Events (SSE).
 - Automated tagging and YAML frontmatter injection.
 - Keyboard-driven navigation with "Cmd+K" command palette.

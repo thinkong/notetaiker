@@ -41,6 +41,7 @@ Output: Sidebar note cards that expand to show full tag list when clicked, with 
 ## Current Implementation
 
 The SidebarNoteCard currently:
+
 - Shows up to 3 tags with "+N" indicator if more exist (lines 72-86)
 - Has an expand button that shows/hides note preview (lines 89-116)
 - Uses `isExpanded` state to toggle preview content (line 19)
@@ -51,7 +52,7 @@ The SidebarNoteCard currently:
 2. Only show expand icon when `allTags.length > 3`
 3. Change expanded content from Markdown preview to full tag list
 4. Maintain hover-to-show behavior for expand icon
-</context>
+   </context>
 
 <tasks>
 
@@ -85,6 +86,7 @@ Modify the SidebarNoteCard component to replace preview expansion with tag expan
    - Keep clean separation between collapsed (3 tags) and expanded (all tags) states
 
 Expected structure:
+
 ```tsx
 {allTags.length > 0 && (
   <div className="flex items-start gap-1 mt-2">
@@ -103,6 +105,7 @@ Expected structure:
   </div>
 )}
 ```
+
   </action>
   <verify>
 1. Run `pnpm dev` and open web client
@@ -137,13 +140,14 @@ Run application and test sidebar note cards:
 </verification>
 
 <success_criteria>
+
 - [ ] Expand icon only visible when allTags.length > 3
 - [ ] Clicking expand icon toggles tag list (not preview)
 - [ ] Expanded view shows all tags with consistent styling
 - [ ] Collapsed view shows 3 tags + "+N" indicator
 - [ ] Smooth animation on expand/collapse
 - [ ] No console errors or warnings
-</success_criteria>
+      </success_criteria>
 
 <output>
 After completion, create `.planning/quick/003-replace-preview-with-expandable-tags-in-/003-SUMMARY.md`

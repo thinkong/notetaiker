@@ -42,6 +42,7 @@ Output: Sidebar note clicks will directly load notes into the editor, with autom
 @.planning/STATE.md
 
 # Current implementation files
+
 @apps/web/src/App.tsx
 @apps/web/src/components/sidebar/SidebarTimeline.tsx
 @apps/web/src/components/sidebar/SidebarNoteCard.tsx
@@ -76,6 +77,7 @@ Output: Sidebar note clicks will directly load notes into the editor, with autom
     - Focuses the editor
 
     Do NOT modify `handleEditNote` - it already works correctly.
+
   </action>
   <verify>
     1. Run `pnpm dev` and open http://localhost:5173
@@ -106,6 +108,7 @@ Output: Sidebar note clicks will directly load notes into the editor, with autom
     - Modified `handleNoteClick` in App.tsx to directly call `handleEditNote`
     - Removed NotePreviewOverlay from rendering (preview modal no longer shown)
     - Existing navigation guard system provides save/discard prompts
+
   </what-built>
   <how-to-verify>
     **Test 1: Clean editor (no unsaved changes)**
@@ -133,6 +136,7 @@ Output: Sidebar note clicks will directly load notes into the editor, with autom
     - Sidebar interaction feels smooth and direct
     - No unnecessary steps between clicking and editing
     - Save protection still works as expected
+
   </how-to-verify>
   <resume-signal>
     Type "approved" if all tests pass, or describe any issues found.
@@ -150,12 +154,13 @@ Manual testing confirms:
 </verification>
 
 <success_criteria>
+
 - Sidebar note clicks trigger direct note loading
 - No preview modal appears in the workflow
 - Save guard dialog appears only when editor has unsaved changes
 - User can save/discard/cancel as needed
 - Clean editor allows instant note loading
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/002-remove-preview-modal-and-load-note-direc/002-SUMMARY.md`

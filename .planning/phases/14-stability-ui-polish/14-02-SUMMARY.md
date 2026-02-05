@@ -21,7 +21,14 @@ tech-stack:
 
 key-files:
   created: []
-  modified: [packages/tsconfig/base.json, apps/web/tsconfig.app.json, packages/eslint-config/base.js, apps/api/src/routes/notes.ts, apps/api/src/services/worker.service.ts]
+  modified:
+    [
+      packages/tsconfig/base.json,
+      apps/web/tsconfig.app.json,
+      packages/eslint-config/base.js,
+      apps/api/src/routes/notes.ts,
+      apps/api/src/services/worker.service.ts,
+    ]
 
 key-decisions:
   - "Enable verbatimModuleSyntax in base TSConfig to ensure import/export correctness."
@@ -50,6 +57,7 @@ completed: 2026-01-31
 - **Files modified:** 10
 
 ## Accomplishments
+
 - **Enabled `verbatimModuleSyntax`**: Migrated this strictness to the base TypeScript configuration, ensuring all packages benefit from better module compliance and tree-shakability.
 - **Enforced Type Imports**: Added `@typescript-eslint/consistent-type-imports` to the shared ESLint configuration, ensuring type-only imports are clearly marked.
 - **Monorepo-wide Cleanup**: Automated the conversion of dozens of imports across `apps/api` and `apps/web` using `pnpm lint:fix`.
@@ -65,6 +73,7 @@ Each task was committed atomically:
 **Plan metadata:** `pending` (docs: complete plan)
 
 ## Files Created/Modified
+
 - `packages/tsconfig/base.json` - Enabled `verbatimModuleSyntax` centrally.
 - `apps/web/tsconfig.app.json` - Removed redundant setting.
 - `packages/eslint-config/base.js` - Integrated `typescript-eslint` and enforced type-only imports.
@@ -74,19 +83,24 @@ Each task was committed atomically:
 - `packages/eslint-config/package.json` - Added `typescript-eslint` dependency.
 
 ## Decisions Made
+
 - **Centralized TS-Linting**: Decided to put basic TypeScript rules in the shared package rather than repeating them in every app, following the "DRY" principle for infrastructure.
 - **separate-type-imports fixStyle**: Chose `separate-type-imports` over `inline-type-imports` for better readability and alignment with `verbatimModuleSyntax` best practices.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 - **ESLint Parser Configuration**: Initially, adding TS rules without explicitly setting the parser in the base config caused issues in `apps/api` which doesn't use the `tseslint.config` wrapper. Fixed by adding the parser and plugin to the shared `base.js`.
 
 ## Next Phase Readiness
+
 - Build system is more robust and ready for further UI stability work.
 - The monorepo now has a standardized way of handling TypeScript imports.
 
 ---
-*Phase: 14-stability-ui-polish*
-*Completed: 2026-01-31*
+
+_Phase: 14-stability-ui-polish_
+_Completed: 2026-01-31_

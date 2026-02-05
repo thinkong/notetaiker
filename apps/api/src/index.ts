@@ -115,7 +115,7 @@ if (env.NODE_ENV === "production") {
       serveStatic({
         root: webDistPath,
         rewriteRequestPath: (reqPath) => reqPath,
-      })
+      }),
     );
 
     // SPA fallback - serve index.html for non-API routes

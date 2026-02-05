@@ -46,6 +46,7 @@ completed: 2026-02-03
 - **Files modified:** 1
 
 ## Accomplishments
+
 - Removed Markdown preview expansion from sidebar note cards
 - Implemented tag expansion functionality with conditional visibility
 - Improved visual hierarchy by moving expand icon inline with tags
@@ -56,9 +57,11 @@ completed: 2026-02-03
 1. **Task 1: Refactor SidebarNoteCard to expand tags instead of preview** - `3610dff` (refactor)
 
 ## Files Created/Modified
+
 - `apps/web/src/components/sidebar/SidebarNoteCard.tsx` - Replaced preview expansion with tag expansion, removed Markdown dependency
 
 ## Decisions Made
+
 - **Conditional expand icon:** Only show expand button when `allTags.length > 3` to avoid UI clutter
 - **Inline positioning:** Move expand icon next to tags instead of top-right of card for better context
 - **Smaller icon size:** Use `w-3 h-3` instead of `w-4 h-4` for better visual fit with tag sizing
@@ -71,6 +74,7 @@ None - plan executed exactly as written.
 ## Issues Encountered
 
 **Prettier formatting issues:**
+
 - ESLint pre-commit hook failed due to formatting
 - Fixed with `pnpm lint:fix`
 - Re-committed successfully
@@ -82,5 +86,6 @@ None - plan executed exactly as written.
 - Component is simplified and more maintainable
 
 ---
-*Type: quick*
-*Completed: 2026-02-03*
+
+_Type: quick_
+_Completed: 2026-02-03_

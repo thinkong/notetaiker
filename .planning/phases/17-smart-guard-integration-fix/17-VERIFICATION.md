@@ -17,31 +17,31 @@ gaps: []
 
 ### Observable Truths
 
-| #   | Truth   | Status     | Evidence       |
-| --- | ------- | ---------- | -------------- |
-| 1   | Background saves update the baseline for dirty checks | ✓ VERIFIED | `App.tsx` (line 76-79) passes callback to `useDebouncedSave` which updates `originalContent`. |
+| #   | Truth                                                                             | Status     | Evidence                                                                                                                                                                          |
+| --- | --------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Background saves update the baseline for dirty checks                             | ✓ VERIFIED | `App.tsx` (line 76-79) passes callback to `useDebouncedSave` which updates `originalContent`.                                                                                     |
 | 2   | Navigation guard automatically proceeds when content becomes clean during a block | ✓ VERIFIED | `useNavigationGuard.ts` now calls the internal `proceed()` function in its watchdog effect, correctly handling both React Router navigation and manual actions (like "New Note"). |
 
 **Score:** 2/2 truths verified
 
 ### Required Artifacts
 
-| Artifact | Expected    | Status | Details |
-| -------- | ----------- | ------ | ------- |
-| `apps/web/src/App.tsx` | wiring for debounced save | ✓ VERIFIED | `handleContentChange` calls `save(newContent)` and updates baseline. |
+| Artifact                                   | Expected                    | Status     | Details                                                                             |
+| ------------------------------------------ | --------------------------- | ---------- | ----------------------------------------------------------------------------------- |
+| `apps/web/src/App.tsx`                     | wiring for debounced save   | ✓ VERIFIED | `handleContentChange` calls `save(newContent)` and updates baseline.                |
 | `apps/web/src/hooks/useNavigationGuard.ts` | auto-proceed watchdog logic | ✓ VERIFIED | Watchdog effect correctly monitors `isDirty`, `blocker.state`, and `pendingAction`. |
 
 ### Key Link Verification
 
-| From | To  | Via | Status | Details |
-| ---- | --- | --- | ------ | ------- |
+| From                            | To                        | Via           | Status  | Details                                     |
+| ------------------------------- | ------------------------- | ------------- | ------- | ------------------------------------------- |
 | `handleContentChange` (App.tsx) | `save` (useDebouncedSave) | function call | ✓ WIRED | Line 137 correctly triggers the save cycle. |
 
 ### Requirements Coverage
 
-| Requirement | Status | Blocking Issue |
-| ----------- | ------ | -------------- |
-| UX-05 | ✓ VERIFIED | Smart dirty check fully restores flow for both navigation and manual internal actions. |
+| Requirement | Status     | Blocking Issue                                                                         |
+| ----------- | ---------- | -------------------------------------------------------------------------------------- |
+| UX-05       | ✓ VERIFIED | Smart dirty check fully restores flow for both navigation and manual internal actions. |
 
 ### Anti-Patterns Found
 

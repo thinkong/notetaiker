@@ -11,7 +11,12 @@ tech-stack:
   patterns: [skeleton-loading]
 key-files:
   created: []
-  modified: [apps/web/src/components/sidebar/SidebarNoteCard.tsx, apps/web/src/components/sidebar/SidebarTimeline.tsx, apps/web/src/App.tsx]
+  modified:
+    [
+      apps/web/src/components/sidebar/SidebarNoteCard.tsx,
+      apps/web/src/components/sidebar/SidebarTimeline.tsx,
+      apps/web/src/App.tsx,
+    ]
 metrics:
   duration: 300s
   completed: 2026-02-02
@@ -24,19 +29,25 @@ Integrated the active note state with the sidebar to provide visual feedback on 
 ## Accomplishments
 
 ### 1. Active Note Highlighting
+
 Updated the sidebar components to reflect the currently active note:
+
 - `SidebarTimeline` now accepts an `activeNoteId` prop from the main application.
 - `SidebarNoteCard` uses this prop to apply a visual highlight (`border-nord-frost3`, `bg-nord-snow0/80`) when it matches the note's ID.
 - This provides immediate visual confirmation to the user about which historical note they are currently modifying.
 
 ### 2. Note Transition Loading States
+
 Improved the perceived performance and UX when loading notes from history:
+
 - Added `isLoadingNote` state to track background API fetches during note selection.
 - Implemented a skeleton loading UI in `App.tsx` that replaces the Editor while content is being fetched.
 - This prevents layout shifts and gives clear feedback that the system is responding to the user's click.
 
 ### 3. State Synchronization
+
 Ensured that the sidebar highlight correctly synchronizes with the application state:
+
 - When "New Note" is clicked, the `activeNoteId` becomes null, and the sidebar highlight is automatically removed.
 - When a note is successfully saved and the editor resets, the highlight is cleared.
 

@@ -15,8 +15,10 @@ key-files:
   deleted:
     - apps/web/src/hooks/useUnsavedChanges.ts
 decisions:
-  - [16-02-01]: Implemented a content-based dirty check (current vs original) instead of a simple boolean flag to reduce false positive prompts.
-  - [16-02-02]: Combined useBlocker (for SPA navigation) with beforeunload (for browser events) in a single unified hook.
+  - [16-02-01]:
+      Implemented a content-based dirty check (current vs original) instead of a simple boolean flag to reduce false positive prompts.
+  - [16-02-02]:
+      Combined useBlocker (for SPA navigation) with beforeunload (for browser events) in a single unified hook.
 metrics:
   duration: 450s
   completed: 2026-02-02

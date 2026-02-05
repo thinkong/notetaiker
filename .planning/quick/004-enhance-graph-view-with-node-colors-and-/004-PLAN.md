@@ -41,6 +41,7 @@ Output: Updated ForceGraph component with distinct node colors and auto-zoom beh
 @./apps/web/src/hooks/useGraphData.ts
 
 **Current Implementation:**
+
 - ForceGraph.tsx already has color definitions in COLORS object (lines 26-40)
 - Tag nodes use `#b48ead` (purple) and note nodes use `#88c0d0` (blue/frost)
 - The paintNode function already applies these colors based on node type
@@ -48,9 +49,10 @@ Output: Updated ForceGraph component with distinct node colors and auto-zoom beh
 - Physics setup happens in useEffect (lines 56-63)
 
 **What Needs Enhancement:**
+
 1. Colors are already defined but may need adjustment for better distinction
 2. Auto-zoom needs to be added to existing physics setup useEffect
-</context>
+   </context>
 
 <tasks>
 
@@ -77,22 +79,23 @@ Output: Updated ForceGraph component with distinct node colors and auto-zoom beh
    - Current useEffect has `[]` dependencies, which is correct for one-time setup
 
 4. Test that colors are visually distinct and zoom shows all nodes with appropriate padding.
-  </action>
-  <verify>
-1. Run dev server: `pnpm dev`
-2. Navigate to graph view at http://localhost:5173/graph
-3. Verify tag nodes and note nodes have distinct, easily distinguishable colors
-4. Verify graph automatically zooms to show all nodes with padding on initial load
-5. Verify zoom animation is smooth and completes within ~400ms
-6. Check browser console for any errors
-  </verify>
-  <done>
+   </action>
+   <verify>
+5. Run dev server: `pnpm dev`
+6. Navigate to graph view at http://localhost:5173/graph
+7. Verify tag nodes and note nodes have distinct, easily distinguishable colors
+8. Verify graph automatically zooms to show all nodes with padding on initial load
+9. Verify zoom animation is smooth and completes within ~400ms
+10. Check browser console for any errors
+    </verify>
+    <done>
+
 - Tag nodes and note nodes use clearly distinct colors within Nord theme
 - Graph view automatically zooms to fit all nodes with padding on initial load
 - Animation is smooth and does not re-trigger on hover/interaction
 - No console errors or TypeScript issues
   </done>
-</task>
+  </task>
 
 </tasks>
 
@@ -103,22 +106,25 @@ Output: Updated ForceGraph component with distinct node colors and auto-zoom beh
 - Confirm adequate padding around the graph boundaries
 
 **Interaction Check:**
+
 - Hover over nodes to ensure colors still respond correctly
 - Click nodes to verify highlighting still works
 - Pan and zoom manually to ensure controls still function properly
 
 **Code Quality:**
+
 - No TypeScript errors
 - Colors maintain Nord theme consistency
 - Auto-zoom only executes once on mount
-</verification>
+  </verification>
 
 <success_criteria>
+
 - Tag and note nodes are immediately distinguishable by color
 - Graph automatically fits all nodes in view on initial load with comfortable padding
 - Existing hover/highlight/interaction behaviors remain intact
 - No degradation in graph performance or responsiveness
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/004-enhance-graph-view-with-node-colors-and-/004-SUMMARY.md`

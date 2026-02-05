@@ -71,8 +71,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 ## Progress
 
-| Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
+| Phase | Milestone | Plans Complete | Status   | Completed  |
+| ----- | --------- | -------------- | -------- | ---------- |
 | 1-8   | v1.0      | 26/26          | Complete | 2026-01-29 |
 | 9-10  | v1.1      | 3/3            | Complete | 2026-01-30 |
 | 11    | v1.2      | 3/3            | Complete | 2026-01-30 |

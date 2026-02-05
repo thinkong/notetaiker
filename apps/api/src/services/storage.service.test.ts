@@ -117,7 +117,9 @@ describe("StorageService", () => {
       await storageService.saveNote(content, metadata);
 
       // We need to read the file to get the generated UUID
-      const files = (await fs.readdir(tempDir)).filter((f) => f.endsWith(".md"));
+      const files = (await fs.readdir(tempDir)).filter((f) =>
+        f.endsWith(".md"),
+      );
       const fileContent = await fs.readFile(
         path.join(tempDir, files[0]),
         "utf-8",
