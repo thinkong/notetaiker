@@ -32,6 +32,7 @@ Resume file: None
 
 | #   | Description                                                             | Date       | Commit  | Directory                                                                                             |
 | --- | ----------------------------------------------------------------------- | ---------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| 006 | Automated title generation for notes without headers                    | 2026-02-05 | 2fc217a | [006-when-a-note-doesn-t-contain-a-title-head](./quick/006-when-a-note-doesn-t-contain-a-title-head/) |
 | 005 | Add manual tags and display AI tags in editor                           | 2026-02-03 | 265d9b7 | [005-add-manual-tags-and-display-ai-tags-in-e](./quick/005-add-manual-tags-and-display-ai-tags-in-e/) |
 | 004 | Enhanced graph view with auto-zoom and node colors                      | 2026-02-03 | 2608dce | [004-enhance-graph-view-with-node-colors-and-](./quick/004-enhance-graph-view-with-node-colors-and-/) |
 | 003 | Replace preview with expandable tags in sidebar note cards              | 2026-02-03 | 3610dff | [003-replace-preview-with-expandable-tags-in-](./quick/003-replace-preview-with-expandable-tags-in-/) |
