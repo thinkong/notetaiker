@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import rehypeRaw from "rehype-raw";
 
 interface MarkdownProps {
   content: string;
@@ -18,26 +19,39 @@ export const Markdown: React.FC<MarkdownProps> = ({
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
+        rehypePlugins={[rehypeRaw]}
         components={{
           // Headers
-          h1: ({ children }) => (
-            <h1 className="text-xl font-bold text-nord-polar1 dark:text-nord-snow2 mt-4 mb-2 first:mt-0">
+          h1: ({ className, children, ...props }) => (
+            <h1
+              className={`text-xl font-bold text-nord-polar1 dark:text-nord-snow2 mt-4 mb-2 first:mt-0 ${className || ""}`}
+              {...props}
+            >
               {children}
             </h1>
           ),
-          h2: ({ children }) => (
-            <h2 className="text-lg font-semibold text-nord-polar1 dark:text-nord-snow2 mt-3 mb-2">
+          h2: ({ className, children, ...props }) => (
+            <h2
+              className={`text-lg font-semibold text-nord-polar1 dark:text-nord-snow2 mt-3 mb-2 ${className || ""}`}
+              {...props}
+            >
               {children}
             </h2>
           ),
-          h3: ({ children }) => (
-            <h3 className="text-base font-semibold text-nord-polar1 dark:text-nord-snow2 mt-2 mb-1">
+          h3: ({ className, children, ...props }) => (
+            <h3
+              className={`text-base font-semibold text-nord-polar1 dark:text-nord-snow2 mt-2 mb-1 ${className || ""}`}
+              {...props}
+            >
               {children}
             </h3>
           ),
           // Paragraphs
-          p: ({ children }) => (
-            <p className="text-nord-polar1 dark:text-nord-snow2 leading-relaxed mb-3 last:mb-0">
+          p: ({ className, children, ...props }) => (
+            <p
+              className={`text-nord-polar1 dark:text-nord-snow2 leading-relaxed mb-3 last:mb-0 ${className || ""}`}
+              {...props}
+            >
               {children}
             </p>
           ),
