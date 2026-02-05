@@ -10,7 +10,7 @@ import {
   Outlet,
   useNavigate,
 } from "react-router-dom";
-import { Settings, Save, Search, Share2 } from "lucide-react";
+import { Settings, Save, Search, Share2, Eye, Edit3 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Editor, type EditorHandle } from "./components/editor/Editor";
 import { TagManager } from "./components/editor/TagManager";
@@ -65,6 +65,7 @@ function MainCapture() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -323,6 +324,20 @@ function MainCapture() {
                 </span>
               </button>
               <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="flex items-center gap-2 px-4 py-2 bg-nord-snow1 dark:bg-nord-polar2 text-nord-polar3 dark:text-nord-snow1 rounded-full hover:bg-nord-snow0 dark:hover:bg-nord-polar1 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+                title={showPreview ? "Edit Mode" : "Preview Mode"}
+              >
+                {showPreview ? (
+                  <Edit3 className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+                <span className="hidden sm:inline">
+                  {showPreview ? "Edit" : "Preview"}
+                </span>
+              </button>
+              <button
                 onClick={() => setIsSearchOpen(true)}
                 className="p-2 text-nord-polar3 dark:text-nord-snow1 hover:text-nord-frost3 transition-all rounded-full hover:bg-nord-snow1 dark:hover:bg-nord-polar2 active:scale-95"
                 aria-label="Search (Cmd+K)"
@@ -363,6 +378,7 @@ function MainCapture() {
               onSave={handleSave}
               placeholder="Capture your thoughts..."
               availableTags={availableTags}
+              showPreview={showPreview}
             />
           </div>
         </div>
