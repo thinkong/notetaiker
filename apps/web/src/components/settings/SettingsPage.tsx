@@ -7,7 +7,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import type { Secrets } from "@notetaiker/env";
 import { ProviderSection } from "./ProviderSection";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -81,10 +81,9 @@ export const SettingsPage = () => {
     "idle",
   );
 
-  const { register, handleSubmit, reset, getValues, watch } =
+  const { register, handleSubmit, reset, getValues, control } =
     useForm<Secrets>();
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const selectedProvider = watch("selectedProvider");
+  const selectedProvider = useWatch({ control, name: "selectedProvider" });
 
   const { data: secrets, isLoading } = useQuery({
     queryKey: ["settings"],

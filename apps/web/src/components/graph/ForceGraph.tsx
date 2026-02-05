@@ -54,7 +54,9 @@ const NODE_R = {
 const LABEL_THRESHOLD = 3; // Zoom level to start showing labels
 
 export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
-  const fgRef = useRef<ForceGraphMethods | null>(null);
+  const fgRef = useRef<
+    ForceGraphMethods<InternalNode, InternalLink> | undefined
+  >(undefined);
   const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
   const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
   const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
@@ -214,11 +216,11 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
 
   return (
     <ForceGraph2D
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ref={fgRef as any}
+      ref={fgRef}
       graphData={data}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      nodeCanvasObject={paintNode as any}
+      nodeCanvasObject={(node, ctx, globalScale) =>
+        paintNode(node as InternalNode, ctx, globalScale)
+      }
       nodePointerAreaPaint={(nodeObject, color, ctx) => {
         const node = nodeObject as InternalNode;
         const r = NODE_R[node.type as NodeType] || 4;
@@ -228,8 +230,7 @@ export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
         ctx.fill();
       }}
       onNodeClick={onNodeClick}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onNodeHover={handleNodeHover as any}
+      onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
       linkColor={useCallback(
         (link: InternalLink) => {
           const source =
