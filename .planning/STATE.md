@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 Phase: Not started (defining requirements)
 Plan: —
 Status: Defining requirements
-Last activity: 2026-02-05 — Completed quick task 006: Automated title generation
+Last activity: 2026-02-05 — Completed quick task 007: Preview toggle button
 
 Progress: [----------] 0% (Fresh Milestone)
 
@@ -21,17 +21,19 @@ Progress: [----------] 0% (Fresh Milestone)
 - **v1.4 Accomplishments:** Fresh capture mode, Smart Navigation Guard, History integration, Pulse animation.
 - **Manual Tagging:** Users can now manually add/remove tags in the editor.
 - **AI Tag Interaction:** AI tags are visible and can be dismissed (ignored).
+- **Preview Mode:** Editor can toggle between edit and preview modes to view rendered markdown.
 
 ## Session Continuity
 
-Last session: 2026-02-03
-Stopped at: Quick task 005 completed
+Last session: 2026-02-05
+Stopped at: Quick task 007 completed
 Resume file: None
 
 ### Quick Tasks Completed
 
 | #   | Description                                                             | Date       | Commit  | Directory                                                                                             |
 | --- | ----------------------------------------------------------------------- | ---------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| 007 | Preview toggle button to switch between edit and preview modes          | 2026-02-05 | 31dd5db | [007-create-a-preview-toggle-button-to-previe](./quick/007-create-a-preview-toggle-button-to-previe/) |
 | 006 | Automated title generation for notes without headers                    | 2026-02-05 | 2fc217a | [006-when-a-note-doesn-t-contain-a-title-head](./quick/006-when-a-note-doesn-t-contain-a-title-head/) |
 | 005 | Add manual tags and display AI tags in editor                           | 2026-02-03 | 265d9b7 | [005-add-manual-tags-and-display-ai-tags-in-e](./quick/005-add-manual-tags-and-display-ai-tags-in-e/) |
 | 004 | Enhanced graph view with auto-zoom and node colors                      | 2026-02-03 | 2608dce | [004-enhance-graph-view-with-node-colors-and-](./quick/004-enhance-graph-view-with-node-colors-and-/) |
