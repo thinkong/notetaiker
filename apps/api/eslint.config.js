@@ -4,7 +4,7 @@ import baseConfig from "@notetaiker/eslint-config/base.js";
 export default [
   ...baseConfig,
   {
-    ignores: ["dist/**"],
+    ignores: ["dist/**", ".turbo/**"],
   },
   {
     rules: {

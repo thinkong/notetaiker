@@ -139,4 +139,27 @@ export class QueueService extends EventEmitter {
       | Job
       | undefined;
   }
+
+  getFailedJobCount(): number {
+    const stmt = this.db.prepare(
+      "SELECT COUNT(*) as count FROM jobs WHERE status = 'failed'",
+    );
+    const result = stmt.get() as { count: number };
+    return result.count;
+  }
+
+  retryFailedJobs(): number {
+    const now = new Date().toISOString();
+    const stmt = this.db.prepare(`
+        UPDATE jobs
+        SET status = 'queued',
+            attempts = 0,
+            updatedAt = ?
+        WHERE status = 'failed'
+      `);
+
+    const result = stmt.run(now);
+    this.emit("job:enqueued", "retry-batch"); // Trigger worker to pick up
+    return result.changes;
+  }
 }

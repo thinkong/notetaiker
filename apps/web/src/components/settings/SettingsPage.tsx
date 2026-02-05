@@ -5,6 +5,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import type { Secrets } from "@notetaiker/env";
@@ -13,6 +14,66 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { useEffect, useState } from "react";
 
+const DiagnosticsSection = () => {
+  const queryClient = useQueryClient();
+  const { data: failedJobs, isLoading: isLoadingJobs } = useQuery({
+    queryKey: ["failed-jobs"],
+    queryFn: async () => {
+      const res = await api.settings["failed-jobs"].$get();
+      if (!res.ok) throw new Error("Failed to fetch failed jobs");
+      return res.json();
+    },
+  });
+
+  const retryMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.settings["retry-jobs"].$post();
+      if (!res.ok) throw new Error("Failed to retry jobs");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["failed-jobs"] });
+    },
+  });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between p-4 bg-nord-snow0 dark:bg-nord-polar0 rounded-md">
+        <div>
+          <p className="font-medium text-nord-polar0 dark:text-nord-snow2">
+            AI Auto-Tagging Status
+          </p>
+          <p className="text-sm text-nord-polar3 dark:text-nord-snow1">
+            {isLoadingJobs
+              ? "Checking..."
+              : failedJobs?.count && failedJobs.count > 0
+                ? `${failedJobs.count} note(s) failed to process.`
+                : "All systems operational."}
+          </p>
+        </div>
+        {failedJobs?.count && failedJobs.count > 0 ? (
+          <button
+            type="button"
+            onClick={() => retryMutation.mutate()}
+            disabled={retryMutation.isPending}
+            className="flex items-center px-4 py-2 bg-nord-aurora0 hover:bg-nord-aurora0/90 text-white text-sm font-medium rounded-md shadow-sm transition-colors disabled:opacity-50"
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${retryMutation.isPending ? "animate-spin" : ""}`}
+            />
+            Retry Failed
+          </button>
+        ) : (
+          <div className="flex items-center text-nord-aurora4 text-sm">
+            <CheckCircle2 className="w-4 h-4 mr-2" />
+            Healthy
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const SettingsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -20,7 +81,10 @@ export const SettingsPage = () => {
     "idle",
   );
 
-  const { register, handleSubmit, reset, getValues } = useForm<Secrets>();
+  const { register, handleSubmit, reset, getValues, watch } =
+    useForm<Secrets>();
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const selectedProvider = watch("selectedProvider");
 
   const { data: secrets, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -33,7 +97,10 @@ export const SettingsPage = () => {
 
   useEffect(() => {
     if (secrets) {
-      reset(secrets);
+      reset({
+        ...secrets,
+        selectedProvider: secrets.selectedProvider || "ollama",
+      });
     }
   }, [secrets, reset]);
 
@@ -89,28 +156,83 @@ export const SettingsPage = () => {
       </header>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
+          <h3 className="text-lg font-semibold text-nord-polar0 dark:text-nord-snow2 mb-1">
+            Active Provider
+          </h3>
+          <p className="text-sm text-nord-polar3 dark:text-nord-snow1 mb-4">
+            Select which AI provider to use for all requests.
+          </p>
+
+          <select
+            {...register("selectedProvider")}
+            className="w-full bg-nord-snow2 dark:bg-nord-polar0 border border-nord-snow0 dark:border-nord-polar2 rounded-md px-3 py-2 focus:ring-2 focus:ring-nord-frost3 focus:border-transparent outline-none transition-all text-nord-polar0 dark:text-nord-snow2"
+          >
+            <option value="ollama">Local Ollama (Default)</option>
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+          <p className="text-xs text-nord-polar3 dark:text-nord-snow1 mt-2">
+            * Selected provider must have a valid configuration below.
+          </p>
+        </div>
+
         <div className="grid gap-6">
-          <ProviderSection
-            title="OpenAI"
-            provider="openai"
-            description="Use GPT-4, GPT-3.5, or compatible models."
-            register={register}
-            getValues={getValues}
-          />
-          <ProviderSection
-            title="Anthropic"
-            provider="anthropic"
-            description="Use Claude 3, Claude 2.1, etc."
-            register={register}
-            getValues={getValues}
-          />
-          <ProviderSection
-            title="Gemini"
-            provider="gemini"
-            description="Use Google's Gemini Pro or Ultra models."
-            register={register}
-            getValues={getValues}
-          />
+          {selectedProvider === "openai" && (
+            <ProviderSection
+              title="OpenAI"
+              provider="openai"
+              description="Use GPT-4, GPT-3.5, or compatible models."
+              register={register}
+              getValues={getValues}
+            />
+          )}
+
+          {selectedProvider === "anthropic" && (
+            <ProviderSection
+              title="Anthropic"
+              provider="anthropic"
+              description="Use Claude 3, Claude 2.1, etc."
+              register={register}
+              getValues={getValues}
+            />
+          )}
+
+          {selectedProvider === "gemini" && (
+            <ProviderSection
+              title="Gemini"
+              provider="gemini"
+              description="Use Google's Gemini Pro or Ultra models."
+              register={register}
+              getValues={getValues}
+            />
+          )}
+
+          {selectedProvider === "ollama" && (
+            <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
+              <h3 className="text-lg font-semibold text-nord-polar0 dark:text-nord-snow2">
+                Local Ollama
+              </h3>
+              <p className="text-sm text-nord-polar3 dark:text-nord-snow1 mt-2">
+                NoteTAIker will attempt to connect to your local Ollama instance
+                at <code>http://localhost:11434</code>.
+              </p>
+              <p className="text-sm text-nord-polar3 dark:text-nord-snow1 mt-2">
+                Ensure you have pulled the required model:
+                <code className="block mt-2 bg-nord-snow1 dark:bg-nord-polar0 p-2 rounded text-xs font-mono">
+                  ollama pull gemma3:4b
+                </code>
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
+          <h3 className="text-lg font-semibold text-nord-polar0 dark:text-nord-snow2 mb-4">
+            App Health
+          </h3>
+          <DiagnosticsSection />
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-nord-snow0 dark:border-nord-polar1">

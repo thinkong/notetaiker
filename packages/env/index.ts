@@ -29,6 +29,9 @@ export const SecretsSchema = z.object({
       model: z.string().optional(),
     })
     .optional(),
+  selectedProvider: z
+    .enum(["openai", "anthropic", "gemini", "ollama"])
+    .optional(),
 });
 
 export type Secrets = z.infer<typeof SecretsSchema>;

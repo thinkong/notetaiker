@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { AIService } from "../services/ai.service";
+import type { QueueService } from "../services/queue.service";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // apps/api/src/routes/settings.ts -> go up 4 levels to reach workspace root: src, api, apps, root
@@ -19,7 +20,11 @@ const ValidateSchema = z.object({
   baseUrl: z.string().optional(),
 });
 
-export const settings = new Hono()
+type Variables = {
+  queueService: QueueService;
+};
+
+export const settings = new Hono<{ Variables: Variables }>()
   .get("/", async (c) => {
     const secrets = await secretsService.getSecrets();
     return c.json(secrets);
@@ -94,4 +99,14 @@ export const settings = new Hono()
         500,
       );
     }
+  })
+  .get("/failed-jobs", (c) => {
+    const queueService = c.get("queueService");
+    const count = queueService.getFailedJobCount();
+    return c.json({ count });
+  })
+  .post("/retry-jobs", (c) => {
+    const queueService = c.get("queueService");
+    const count = queueService.retryFailedJobs();
+    return c.json({ count });
   });

@@ -30,8 +30,12 @@ export class AIService {
 
   private async getModel() {
     const secrets = await this.secretsService.getSecrets();
+    const provider = secrets.selectedProvider;
 
-    if (secrets.openai?.apiKey) {
+    if (
+      (provider === "openai" || !provider) &&
+      secrets.openai?.apiKey
+    ) {
       const openai = createOpenAI({
         apiKey: secrets.openai.apiKey,
         baseURL: secrets.openai.baseUrl || AIService.DEFAULT_BASE_URLS.openai,
@@ -39,7 +43,10 @@ export class AIService {
       return openai(secrets.openai.model || AIService.DEFAULT_MODELS.openai);
     }
 
-    if (secrets.anthropic?.apiKey) {
+    if (
+      (provider === "anthropic" || !provider) &&
+      secrets.anthropic?.apiKey
+    ) {
       const anthropic = createAnthropic({
         apiKey: secrets.anthropic.apiKey,
         baseURL:
@@ -50,24 +57,30 @@ export class AIService {
       );
     }
 
-    if (secrets.gemini?.apiKey) {
+    if (
+      (provider === "gemini" || !provider) &&
+      secrets.gemini?.apiKey
+    ) {
       const google = createGoogleGenerativeAI({
         apiKey: secrets.gemini.apiKey,
         baseURL: secrets.gemini.baseUrl || AIService.DEFAULT_BASE_URLS.gemini,
       });
       return google(secrets.gemini.model || AIService.DEFAULT_MODELS.gemini);
     }
-    // try ollama
-    try {
-      const ollama = createOllama({
-        baseURL: AIService.DEFAULT_BASE_URLS.ollama,
-      });
-      return ollama(AIService.DEFAULT_MODELS.ollama);
-    } catch (error) {
-      console.warn("❌ Ollama not available:", error);
+
+    if (provider === "ollama" || !provider) {
+      try {
+        const ollama = createOllama({
+          baseURL: AIService.DEFAULT_BASE_URLS.ollama,
+        });
+        return ollama(AIService.DEFAULT_MODELS.ollama);
+      } catch (error) {
+        console.warn("❌ Ollama not available:", error);
+      }
     }
+
     throw new Error(
-      "No AI provider configured. Please add an API key in settings.",
+      "No AI provider configured. Please add an API key in settings or ensure the selected provider is configured.",
     );
   }
 
