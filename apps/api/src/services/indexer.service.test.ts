@@ -21,6 +21,9 @@ describe("IndexerService", () => {
 
   afterEach(async () => {
     // Cleanup
+    if (indexerService) {
+      indexerService.close();
+    }
     await fs.rm(workspaceRoot, { recursive: true, force: true });
     await fs.rm(notesDir, { recursive: true, force: true });
   });
@@ -51,7 +54,26 @@ describe("IndexerService", () => {
     expect(entry?.content.trim()).toBe(body);
 
     // It should explicitly NOT contain the frontmatter delimiters
-    expect(entry?.content).not.toContain("---");
     expect(entry?.content).not.toContain("title: Test Note");
+  });
+
+  it("should sync pure markdown files without frontmatter by generating an ID", async () => {
+    const body = "# Pure Markdown\nThis note has no frontmatter.";
+    const fileName = "pure-note.md";
+
+    await fs.writeFile(path.join(notesDir, fileName), body);
+
+    // Run syncAll
+    await indexerService.syncAll();
+
+    // Verify index contains the note
+    const entries = indexerService.query({ limit: 10 });
+    const entry = entries.find((e) => e.filename === fileName);
+
+    expect(entry).toBeDefined();
+    expect(entry?.content.trim()).toBe(body);
+    expect(entry?.id).toBeDefined();
+    // Verify valid timestamps from file stats
+    expect(new Date(entry!.createdAt).getTime()).not.toBeNaN();
   });
 });

@@ -3,10 +3,10 @@ import { z } from "zod";
 
 export const NoteFrontmatterSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.string().optional(),
     title: z.string().optional(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+    createdAt: z.string().datetime().optional(),
+    updatedAt: z.string().datetime().optional(),
     tags: z.array(z.string()).optional(),
     ai_tags: z.array(z.string()).optional(),
     ignored_tags: z.array(z.string()).optional(),
@@ -24,7 +24,8 @@ export interface ParsedNote {
 export function parseMarkdown(fileContent: string): ParsedNote {
   const { content, data } = matter(fileContent);
 
-  const metadata = NoteFrontmatterSchema.parse(data);
+  const result = NoteFrontmatterSchema.safeParse(data);
+  const metadata = result.success ? result.data : {};
 
   return {
     content,

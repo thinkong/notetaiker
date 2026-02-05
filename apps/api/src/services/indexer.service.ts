@@ -2,6 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import Database from "better-sqlite3";
 import { parseMarkdown } from "../lib/markdown";
+import { v5 as uuidv5 } from "uuid";
 
 export interface IndexEntry {
   id: string;
@@ -95,16 +96,32 @@ export class IndexerService {
     ).map((r) => r.id);
     const seenIds = new Set<string>();
 
+    // UUID namespace for file-based IDs (generated randomly once)
+    const FILE_NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8"; // standard DNS namespace, just as a base
+
     for (const filename of validFiles) {
       try {
         const filePath = path.join(this.notesDir, filename);
+        const stats = await fs.promises.stat(filePath);
         const content = await fs.promises.readFile(filePath, "utf-8");
         const { content: parsedContent, metadata } = parseMarkdown(content);
 
-        if (metadata.id) {
-          this.syncNote(filename, parsedContent, metadata);
-          seenIds.add(metadata.id);
-        }
+        // If no ID in frontmatter, generate specific UUID based on filename
+        const id = metadata.id || uuidv5(filename, FILE_NAMESPACE);
+
+        // Fill in missing timestamps from file stats
+        const createdAt =
+          metadata.createdAt || stats.birthtime.toISOString();
+        const updatedAt =
+          metadata.updatedAt || stats.mtime.toISOString();
+
+        this.syncNote(filename, parsedContent, {
+          ...metadata,
+          id,
+          createdAt,
+          updatedAt,
+        });
+        seenIds.add(id);
       } catch (err) {
         console.error(
           `Failed to sync note ${filename}:`,
@@ -156,5 +173,9 @@ export class IndexerService {
     }
 
     return this.db.prepare(query).all(...params) as IndexEntry[];
+  }
+
+  close() {
+    this.db.close();
   }
 }
