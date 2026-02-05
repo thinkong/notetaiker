@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { NoteFrontmatterSchema, mergeTags, extractHashtags } from "./markdown";
+import {
+  NoteFrontmatterSchema,
+  mergeTags,
+  extractHashtags,
+  extractFirstHeader,
+} from "./markdown";
 
 describe("NoteFrontmatterSchema", () => {
   it("should parse valid frontmatter with tags", () => {
@@ -80,5 +85,37 @@ describe("extractHashtags", () => {
     const content = "This is a note with no hashtags.";
     const tags = extractHashtags(content);
     expect(tags).toEqual([]);
+  });
+});
+
+describe("extractFirstHeader", () => {
+  it("should extract first header when present", () => {
+    const content = "# My Title\n\nSome content";
+    expect(extractFirstHeader(content)).toBe("My Title");
+  });
+
+  it("should handle multiple # symbols (h2, h3)", () => {
+    const content = "## Second Level\n\nContent";
+    expect(extractFirstHeader(content)).toBe("Second Level");
+  });
+
+  it("should return null when no header present", () => {
+    const content = "Just some text without a header";
+    expect(extractFirstHeader(content)).toBeNull();
+  });
+
+  it("should handle empty content", () => {
+    const content = "";
+    expect(extractFirstHeader(content)).toBeNull();
+  });
+
+  it("should handle header with extra whitespace", () => {
+    const content = "#    Spaced Title   \n\nContent";
+    expect(extractFirstHeader(content)).toBe("Spaced Title");
+  });
+
+  it("should ignore content before first header", () => {
+    const content = "Some text\n# Actual Title\n## Subtitle";
+    expect(extractFirstHeader(content)).toBe("Actual Title");
   });
 });
