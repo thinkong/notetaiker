@@ -31,6 +31,9 @@ import { extractFallbackTitle } from "./lib/title";
 
 const queryClient = new QueryClient();
 
+const DEFAULT_NOTE_CONTENT =
+  "# Welcome to notetAIker\n\nStart typing your thoughts here...";
+
 function MainCapture() {
   const editorRef = useRef<EditorHandle>(null);
   const queryClient = useQueryClient();
@@ -49,11 +52,7 @@ function MainCapture() {
   }, [timelineData]);
 
   const { draft, setDraft, clearDraft } = useDraftPersistence();
-  const initialContent = useMemo(
-    () =>
-      draft || "# Welcome to notetAIker\n\nStart typing your thoughts here...",
-    [draft],
-  );
+  const initialContent = useMemo(() => draft || DEFAULT_NOTE_CONTENT, [draft]);
   const [content, setContent] = useState<string>(initialContent);
   const [originalContent, setOriginalContent] =
     useState<string>(initialContent);
@@ -87,6 +86,9 @@ function MainCapture() {
     if (!content.trim()) return;
 
     try {
+      // Cancel any pending debounced saves to prevent race conditions
+      cancelSave();
+
       await forceSave(content, {
         tags,
         ai_tags: aiTags,
@@ -158,6 +160,13 @@ function MainCapture() {
       ignored_tags: ignoredTags,
       title,
     }); // Trigger background save cycle
+  };
+
+  const handleEditorFocus = () => {
+    if (content === DEFAULT_NOTE_CONTENT) {
+      setContent("");
+      setDraft("");
+    }
   };
 
   const handleNoteClick = (noteId: string) => {
@@ -294,8 +303,9 @@ function MainCapture() {
 
       {/* Main Content */}
       <div
-        className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "lg:ml-80" : "ml-0"
-          }`}
+        className={`transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "lg:ml-80" : "ml-0"
+        }`}
       >
         <div className="max-w-3xl mx-auto w-full py-12 px-4">
           <header className="mb-12 flex justify-between items-start">
@@ -304,10 +314,11 @@ function MainCapture() {
                 notetAIker
               </h1>
               <span
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${noteId
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  noteId
                     ? "bg-nord-frost3/10 text-nord-frost3 border border-nord-frost3/20"
                     : "bg-nord-polar3/10 text-nord-polar3 border border-nord-polar3/20"
-                  }`}
+                }`}
               >
                 {noteId ? "Editing" : "Draft"}
               </span>
@@ -399,6 +410,7 @@ function MainCapture() {
                   title: newTitle,
                 });
               }}
+              onFocus={handleEditorFocus}
             />
           </div>
         </div>

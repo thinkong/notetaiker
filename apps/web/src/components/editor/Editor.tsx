@@ -35,6 +35,7 @@ export interface EditorProps {
   showPreview?: boolean;
   title?: string;
   onTitleChange?: (title: string) => void;
+  onFocus?: () => void;
 }
 
 export interface EditorHandle {
@@ -54,6 +55,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
       showPreview = false,
       title,
       onTitleChange,
+      onFocus,
     },
     ref,
   ) => {
@@ -163,6 +165,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
               tabSize: 2,
             }}
             placeholder={placeholder}
+            onFocus={onFocus}
           />
         )}
       </div>

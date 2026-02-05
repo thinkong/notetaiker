@@ -1,8 +1,8 @@
 export function extractFallbackTitle(content: string): string {
-    const contentTitle = content.trim().split("\n")[0] || "";
-    const hasContentTitle = contentTitle.startsWith("#");
+  const contentTitle = content.trim().split("\n")[0] || "";
+  const hasContentTitle = contentTitle.startsWith("#");
 
-    return hasContentTitle
-        ? contentTitle.replace(/^#+\s*/, "")
-        : content.trim().slice(0, 40) + (content.length > 40 ? "..." : "");
+  return hasContentTitle
+    ? contentTitle.replace(/^#+\s*/, "")
+    : content.trim().slice(0, 40) + (content.length > 40 ? "..." : "");
 }

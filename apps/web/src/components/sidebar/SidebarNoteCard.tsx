@@ -37,10 +37,11 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
   return (
     <div
       id={`note-${metadata.id}`}
-      className={`bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border transition-all duration-200 overflow-hidden group cursor-pointer ${active
-        ? "border-nord-frost3/60 ring-1 ring-nord-frost3/30 bg-nord-snow0/80 dark:bg-nord-polar1/80"
-        : "border-transparent hover:border-nord-frost3/30"
-        }`}
+      className={`bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border transition-all duration-200 overflow-hidden group cursor-pointer ${
+        active
+          ? "border-nord-frost3/60 ring-1 ring-nord-frost3/30 bg-nord-snow0/80 dark:bg-nord-polar1/80"
+          : "border-transparent hover:border-nord-frost3/30"
+      }`}
       onClick={() => {
         if (onClick && metadata.id) {
           onClick(metadata.id);
