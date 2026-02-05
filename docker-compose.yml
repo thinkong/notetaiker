@@ -32,6 +32,13 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia # Specify the driver (e.g., nvidia or amd)
+              count: all     # Request all available GPUs
+              capabilities: [gpu] # Ensure GPU capabilities are included
     ports:
       - "11434:11434"
     volumes:
@@ -41,5 +48,6 @@ services:
     environment:
       - OLLAMA_KEEP_ALIVE=24h  # Keeps Gemma 3 in RAM to avoid reload delays
       - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_CONTEXT_LENGTH=8192
     entrypoint: >
       /bin/sh -c "ollama serve & sleep 5 && ollama pull gemma3:4b && wait"
