@@ -59,3 +59,16 @@ export function mergeTags(
   const combined = [...existingArray, ...newTags].map((t) => toTitleCase(t));
   return Array.from(new Set(combined));
 }
+
+export function extractFirstHeader(content: string): string | null {
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#")) {
+      // Remove all leading # symbols and trim whitespace
+      const headerText = trimmed.replace(/^#+\s*/, "").trim();
+      return headerText || null;
+    }
+  }
+  return null;
+}

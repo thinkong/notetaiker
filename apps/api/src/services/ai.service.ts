@@ -106,4 +106,25 @@ ${content}`,
 
     return output.tags;
   }
+
+  async generateTitle(content: string): Promise<string> {
+    const model = await this.getModel();
+
+    const { output } = await generateText({
+      model,
+      output: Output.object({
+        schema: z.object({
+          title: z
+            .string()
+            .max(60)
+            .describe("Concise, descriptive title"),
+        }),
+      }),
+      prompt: `Generate a concise, descriptive title (max 60 chars) for this note content:
+
+${content}`,
+    });
+
+    return output.title;
+  }
 }
