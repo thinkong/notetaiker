@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { Note } from "../../types";
 import { Tag } from "../common/Tag";
+import { extractFallbackTitle } from "../../lib/title";
 
 interface SidebarNoteCardProps {
   note: Note;
@@ -21,13 +22,10 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
     ? new Date(metadata.createdAt)
     : new Date();
 
-  // Simple title extraction: first line if it starts with #, or just truncate content
-  const lines = content.trim().split("\n");
-  const firstLine = lines[0] || "";
-  const hasTitle = firstLine.startsWith("#");
-  const title = hasTitle
-    ? firstLine.replace(/^#+\s*/, "")
-    : content.trim().slice(0, 40) + (content.length > 40 ? "..." : "");
+  // Prioritize title from metadata, then fallback to first line logic
+  const fallbackTitle = extractFallbackTitle(content);
+
+  const title = metadata.title || fallbackTitle;
 
   const manualTags = (metadata.tags || []) as string[];
   const aiTags = (metadata.ai_tags || []) as string[];
@@ -39,11 +37,10 @@ export const SidebarNoteCard: React.FC<SidebarNoteCardProps> = ({
   return (
     <div
       id={`note-${metadata.id}`}
-      className={`bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border transition-all duration-200 overflow-hidden group cursor-pointer ${
-        active
-          ? "border-nord-frost3/60 ring-1 ring-nord-frost3/30 bg-nord-snow0/80 dark:bg-nord-polar1/80"
-          : "border-transparent hover:border-nord-frost3/30"
-      }`}
+      className={`bg-nord-snow1/50 dark:bg-nord-polar2/50 rounded-lg border transition-all duration-200 overflow-hidden group cursor-pointer ${active
+        ? "border-nord-frost3/60 ring-1 ring-nord-frost3/30 bg-nord-snow0/80 dark:bg-nord-polar1/80"
+        : "border-transparent hover:border-nord-frost3/30"
+        }`}
       onClick={() => {
         if (onClick && metadata.id) {
           onClick(metadata.id);

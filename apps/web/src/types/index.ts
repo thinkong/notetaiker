@@ -1,8 +1,8 @@
 export interface NoteMetadata {
-  id: string;
+  id?: string;
   title?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   tags?: string[];
   ai_tags?: string[];
   ignored_tags?: string[];

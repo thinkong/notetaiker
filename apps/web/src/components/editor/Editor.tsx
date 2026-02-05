@@ -33,6 +33,8 @@ export interface EditorProps {
   className?: string;
   availableTags?: string[];
   showPreview?: boolean;
+  title?: string;
+  onTitleChange?: (title: string) => void;
 }
 
 export interface EditorHandle {
@@ -50,6 +52,8 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
       className = "",
       availableTags = [],
       showPreview = false,
+      title,
+      onTitleChange,
     },
     ref,
   ) => {
@@ -118,7 +122,16 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
     );
 
     return (
-      <div className={`w-full h-full ${className}`}>
+      <div className={`w-full h-full flex flex-col ${className}`}>
+        {!showPreview && onTitleChange && (
+          <input
+            type="text"
+            value={title || ""}
+            onChange={(e) => onTitleChange(e.target.value)}
+            placeholder="Untitled Note"
+            className="w-full px-4 py-3 text-3xl font-bold bg-transparent border-none outline-none text-nord-polar0 dark:text-nord-snow2 placeholder-nord-polar3/30 dark:placeholder-nord-snow0/30 font-display"
+          />
+        )}
         {showPreview ? (
           <div className="h-full overflow-y-auto px-4 py-2">
             <Markdown content={value} />

@@ -27,6 +27,7 @@ import { Toast } from "./components/common/Toast";
 import { ConfirmDialog } from "./components/common/ConfirmDialog";
 import { useTimeline } from "./hooks/useTimeline";
 import { api } from "./lib/api";
+import { extractFallbackTitle } from "./lib/title";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ function MainCapture() {
   const [tags, setTags] = useState<string[]>([]);
   const [aiTags, setAiTags] = useState<string[]>([]);
   const [ignoredTags, setIgnoredTags] = useState<string[]>([]);
+  const [title, setTitle] = useState("");
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -89,6 +91,7 @@ function MainCapture() {
         tags,
         ai_tags: aiTags,
         ignored_tags: ignoredTags,
+        title,
       });
 
       // Store what we just saved as original
@@ -100,6 +103,7 @@ function MainCapture() {
       setTags([]);
       setAiTags([]);
       setIgnoredTags([]);
+      setTitle("");
       clearDraft();
       clearNoteId(); // Reset for new notes
 
@@ -139,6 +143,7 @@ function MainCapture() {
       setTags([]);
       setAiTags([]);
       setIgnoredTags([]);
+      setTitle("");
       clearDraft();
       setTimeout(() => editorRef.current?.focus(), 50);
     });
@@ -151,6 +156,7 @@ function MainCapture() {
       tags,
       ai_tags: aiTags,
       ignored_tags: ignoredTags,
+      title,
     }); // Trigger background save cycle
   };
 
@@ -173,6 +179,9 @@ function MainCapture() {
         setTags(note.metadata.tags || []);
         setAiTags(note.metadata.ai_tags || []);
         setIgnoredTags(note.metadata.ignored_tags || []);
+        setTitle(
+          note.metadata.title || extractFallbackTitle(note.content) || "",
+        );
         editorRef.current?.focus();
       }
     } catch (error) {
@@ -188,6 +197,7 @@ function MainCapture() {
         tags: newTags,
         ai_tags: aiTags,
         ignored_tags: ignoredTags,
+        title,
       });
     }
   };
@@ -199,6 +209,7 @@ function MainCapture() {
       tags: newTags,
       ai_tags: aiTags,
       ignored_tags: ignoredTags,
+      title,
     });
   };
 
@@ -211,6 +222,7 @@ function MainCapture() {
       tags,
       ai_tags: newAiTags,
       ignored_tags: newIgnoredTags,
+      title,
     });
   };
 
@@ -282,9 +294,8 @@ function MainCapture() {
 
       {/* Main Content */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "lg:ml-80" : "ml-0"
-        }`}
+        className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "lg:ml-80" : "ml-0"
+          }`}
       >
         <div className="max-w-3xl mx-auto w-full py-12 px-4">
           <header className="mb-12 flex justify-between items-start">
@@ -293,11 +304,10 @@ function MainCapture() {
                 notetAIker
               </h1>
               <span
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  noteId
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${noteId
                     ? "bg-nord-frost3/10 text-nord-frost3 border border-nord-frost3/20"
                     : "bg-nord-polar3/10 text-nord-polar3 border border-nord-polar3/20"
-                }`}
+                  }`}
               >
                 {noteId ? "Editing" : "Draft"}
               </span>
@@ -379,6 +389,16 @@ function MainCapture() {
               placeholder="Capture your thoughts..."
               availableTags={availableTags}
               showPreview={showPreview}
+              title={title}
+              onTitleChange={(newTitle) => {
+                setTitle(newTitle);
+                save(content, {
+                  tags,
+                  ai_tags: aiTags,
+                  ignored_tags: ignoredTags,
+                  title: newTitle,
+                });
+              }}
             />
           </div>
         </div>

@@ -82,9 +82,9 @@ export const SidebarTimeline: React.FC<SidebarTimelineProps> = ({
 
   return (
     <div className="p-3 space-y-2">
-      {allNotes.map((note) => (
+      {allNotes.map((note, idx) => (
         <SidebarNoteCard
-          key={note.metadata.id}
+          key={note.metadata.id || idx}
           note={note}
           active={note.metadata.id === activeNoteId}
           onClick={onNoteClick}
