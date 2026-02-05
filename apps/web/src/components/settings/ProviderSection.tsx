@@ -15,9 +15,12 @@ import type { Secrets } from "@notetaiker/env";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 
+// Only providers that have apiKey/baseUrl/model config (not selectedProvider)
+type ProviderWithConfig = "openai" | "anthropic" | "gemini";
+
 interface ProviderSectionProps {
   title: string;
-  provider: keyof Secrets;
+  provider: ProviderWithConfig;
   description: string;
   register: UseFormRegister<Secrets>;
   getValues: UseFormGetValues<Secrets>;
