@@ -4,7 +4,7 @@ import type { QueueService } from "./queue.service";
 import type { EventsService } from "./events.service";
 import type { AIService } from "./ai.service";
 import type { StorageService } from "./storage.service";
-import { toTitleCase } from "../lib/markdown";
+import { toTitleCase, extractFirstHeader } from "../lib/markdown";
 
 export class WorkerService {
   private queue: PQueue;
@@ -102,18 +102,48 @@ export class WorkerService {
             updatedAiTags.length !== existingAiTags.length ||
             !updatedAiTags.every((t) => existingAiTags.includes(t));
 
-          if (aiTagsChanged) {
+          // Title generation logic
+          let updatedTitle = note.metadata.title;
+          let titleChanged = false;
+
+          if (!updatedTitle) {
+            const header = extractFirstHeader(note.content);
+            if (header) {
+              updatedTitle = header;
+              titleChanged = true;
+              console.log(
+                `Worker: Extracted title from header for note ${noteId}: ${updatedTitle}`,
+              );
+            } else {
+              updatedTitle = await this.aiService.generateTitle(note.content);
+              titleChanged = true;
+              console.log(
+                `Worker: Generated AI title for note ${noteId}: ${updatedTitle}`,
+              );
+            }
+          }
+
+          if (aiTagsChanged || titleChanged) {
             const updatedMetadata = {
               ...note.metadata,
               ai_tags: updatedAiTags,
+              title: updatedTitle,
             };
 
             await this.storageService.saveNote(note.content, updatedMetadata);
-            console.log(
-              `Worker: Updated ai_tags for note ${noteId}: ${updatedAiTags.join(", ")}`,
-            );
+
+            if (aiTagsChanged) {
+              console.log(
+                `Worker: Updated ai_tags for note ${noteId}: ${updatedAiTags.join(", ")}`,
+              );
+            }
+            if (titleChanged) {
+              console.log(
+                `Worker: Updated title for note ${noteId}: ${updatedTitle}`,
+              );
+            }
           } else {
-            console.log(`Worker: No new AI tags for note ${noteId}`);
+            console.log(`Worker: No updates needed for note ${noteId}`);
           }
 
           console.log(`Worker: Completed job ${jobId}`);

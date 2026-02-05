@@ -19,6 +19,7 @@ describe("WorkerService", () => {
     };
     mockAiService = {
       generateTags: vi.fn(),
+      generateTitle: vi.fn(),
     };
     mockStorageService = {
       getNote: vi.fn(),
@@ -105,12 +106,13 @@ describe("WorkerService", () => {
     );
   });
 
-  it("should not save if ai_tags haven't changed", async () => {
+  it("should not save if ai_tags and title haven't changed", async () => {
     const noteId = "note-1";
     const note = {
       content: "Note content",
       metadata: {
         id: noteId,
+        title: "Existing Title",
         ai_tags: ["Existing Ai Tag"],
       },
     };
@@ -120,6 +122,74 @@ describe("WorkerService", () => {
 
     await (workerService as any).executeJob("job-1", noteId);
 
+    expect(mockStorageService.saveNote).not.toHaveBeenCalled();
+  });
+
+  it("should generate a title from header if missing in metadata", async () => {
+    const noteId = "note-1";
+    const note = {
+      content: "# My Header Title\nNote content",
+      metadata: {
+        id: noteId,
+        ai_tags: ["Existing Tag"],
+      },
+    };
+
+    mockStorageService.getNote.mockResolvedValue(note);
+    mockAiService.generateTags.mockResolvedValue(["existing tag"]);
+
+    await (workerService as any).executeJob("job-1", noteId);
+
+    expect(mockStorageService.saveNote).toHaveBeenCalledWith(
+      note.content,
+      expect.objectContaining({
+        title: "My Header Title",
+      }),
+    );
+  });
+
+  it("should generate a title using AI if no header is present and missing in metadata", async () => {
+    const noteId = "note-1";
+    const note = {
+      content: "Note content without header",
+      metadata: {
+        id: noteId,
+        ai_tags: ["Existing Tag"],
+      },
+    };
+
+    mockStorageService.getNote.mockResolvedValue(note);
+    mockAiService.generateTags.mockResolvedValue(["existing tag"]);
+    mockAiService.generateTitle.mockResolvedValue("AI Generated Title");
+
+    await (workerService as any).executeJob("job-1", noteId);
+
+    expect(mockAiService.generateTitle).toHaveBeenCalledWith(note.content);
+    expect(mockStorageService.saveNote).toHaveBeenCalledWith(
+      note.content,
+      expect.objectContaining({
+        title: "AI Generated Title",
+      }),
+    );
+  });
+
+  it("should preserve existing title in metadata", async () => {
+    const noteId = "note-1";
+    const note = {
+      content: "# Header\nNote content",
+      metadata: {
+        id: noteId,
+        title: "Original Title",
+        ai_tags: ["Existing Tag"],
+      },
+    };
+
+    mockStorageService.getNote.mockResolvedValue(note);
+    mockAiService.generateTags.mockResolvedValue(["existing tag"]);
+
+    await (workerService as any).executeJob("job-1", noteId);
+
+    // Should not call saveNote if only title would have changed but it's already there
     expect(mockStorageService.saveNote).not.toHaveBeenCalled();
   });
 });
