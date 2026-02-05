@@ -22,6 +22,7 @@ import { nordDark, nordLight } from "./theme";
 import { markdownStyleExtension } from "./extensions/markdownStyle";
 import { linkHandler } from "./extensions/links";
 import { hashtagExtensions } from "./extensions/hashtags";
+import { Markdown } from "../common/Markdown";
 
 export interface EditorProps {
   value: string;
@@ -31,6 +32,7 @@ export interface EditorProps {
   placeholder?: string;
   className?: string;
   availableTags?: string[];
+  showPreview?: boolean;
 }
 
 export interface EditorHandle {
@@ -47,6 +49,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
       placeholder = "Start typing...",
       className = "",
       availableTags = [],
+      showPreview = false,
     },
     ref,
   ) => {
@@ -116,33 +119,39 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(
 
     return (
       <div className={`w-full h-full ${className}`}>
-        <CodeMirror
-          ref={cmRef}
-          value={value}
-          height="100%"
-          theme={cmTheme}
-          extensions={extensions}
-          onChange={handleChange}
-          autoFocus
-          basicSetup={{
-            lineNumbers: false,
-            foldGutter: false,
-            highlightActiveLine: false,
-            highlightActiveLineGutter: false,
-            dropCursor: true,
-            allowMultipleSelections: true,
-            indentOnInput: true,
-            syntaxHighlighting: true,
-            bracketMatching: true,
-            closeBrackets: true,
-            autocompletion: true,
-            rectangularSelection: true,
-            crosshairCursor: true,
-            highlightSelectionMatches: true,
-            tabSize: 2,
-          }}
-          placeholder={placeholder}
-        />
+        {showPreview ? (
+          <div className="h-full overflow-y-auto px-4 py-2">
+            <Markdown content={value} />
+          </div>
+        ) : (
+          <CodeMirror
+            ref={cmRef}
+            value={value}
+            height="100%"
+            theme={cmTheme}
+            extensions={extensions}
+            onChange={handleChange}
+            autoFocus
+            basicSetup={{
+              lineNumbers: false,
+              foldGutter: false,
+              highlightActiveLine: false,
+              highlightActiveLineGutter: false,
+              dropCursor: true,
+              allowMultipleSelections: true,
+              indentOnInput: true,
+              syntaxHighlighting: true,
+              bracketMatching: true,
+              closeBrackets: true,
+              autocompletion: true,
+              rectangularSelection: true,
+              crosshairCursor: true,
+              highlightSelectionMatches: true,
+              tabSize: 2,
+            }}
+            placeholder={placeholder}
+          />
+        )}
       </div>
     );
   },
