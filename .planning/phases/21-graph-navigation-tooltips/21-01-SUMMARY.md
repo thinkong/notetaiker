@@ -22,15 +22,18 @@ Implemented graph state persistence and deep linking capabilities to ensure a se
 ## Technical Details
 
 ### Dependencies
+
 - **Requires**: Existing GraphView and Editor components.
 - **Provides**: `GraphStateProvider` and `useGraphState` hook.
 - **Affects**: `App.tsx`, `GraphView.tsx`, `ForceGraph.tsx`.
 
 ### Tech Stack
+
 - **Patterns**: React Context for global state, `useImperativeHandle` for exposing graph internal state, `useLocation` for navigation state handling.
 - **Libraries**: `react-force-graph-2d` (interaction via ref).
 
 ### File Tracking
+
 - **Created**:
   - `apps/web/src/contexts/GraphStateContext.tsx`
 - **Modified**:
@@ -47,5 +50,6 @@ Implemented graph state persistence and deep linking capabilities to ensure a se
 ## Deviations from Plan
 
 ### Auto-fixed Issues
+
 - **[Rule 1 - Bug] Linter errors in App.tsx**: Fixed a React hook dependency issue and a "setState in effect" warning by wrapping the state update in a `setTimeout` to push it to the next tick.
 - **[Rule 1 - Bug] Lint fixes**: Fixed various prettier and import formatting issues in the new files.

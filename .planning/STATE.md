@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Phase 21: Graph Navigation & Tooltips
+**Current focus:** Phase 22: Graph Filtering & Local View
 
 ## Current Position
 
-Phase: 21 of 24 (Graph Navigation & Tooltips)
-Plan: 02 of 02 (Interactive Graph Navigation)
-Status: Phase complete
-Last activity: 2026-02-06 — Completed 21-02-PLAN.md (Interactive Graph Navigation)
+Phase: 22 of 24 (Graph Filtering & Local View)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-06 — Completed Phase 21 (Graph Navigation & Tooltips)
 
 Progress: [▓▓▓▓▓▓▓▓▒░] 85%
 
