@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import type { StorageService } from "../services/storage.service";
+import type { EmbeddingsService } from "../services/embeddings.service";
 import { env } from "@notetaiker/env";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,6 +26,7 @@ type Bindings = {};
 type Variables = {
   queueService: QueueService;
   storageService: StorageService;
+  embeddingsService: EmbeddingsService;
 };
 
 export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -108,5 +110,43 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
       const savedNote = await storageService.getNote(fileName);
 
       return c.json(savedNote);
+    },
+  )
+  .get(
+    "/:id/related",
+    zValidator(
+      "query",
+      z.object({
+        limit: z
+          .string()
+          .optional()
+          .transform((v) => (v ? parseInt(v, 10) : 5)),
+      }),
+    ),
+    async (c) => {
+      const id = c.req.param("id");
+      const { limit } = c.req.valid("query");
+      const storageService = c.get("storageService");
+      const embeddingsService = c.get("embeddingsService");
+
+      const vector = embeddingsService.getVector(id);
+      if (!vector) {
+        return c.json([]);
+      }
+
+      const similar = embeddingsService.findSimilar(vector, limit, id);
+
+      const relatedNotes = await Promise.all(
+        similar.map(async (item) => {
+          const note = await storageService.getNote(item.noteId);
+          if (!note) return null;
+          return {
+            ...note.metadata,
+            distance: item.distance,
+          };
+        })
+      );
+
+      return c.json(relatedNotes.filter((n) => n !== null));
     },
   );
