@@ -8,9 +8,17 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: Planning Next
+## Current Milestone: v1.6 Smart Connections
 
-**Goal:** To be determined.
+**Goal:** Add semantic intelligence layer for automatic discovery of related notes without manual linking.
+
+**Target features:**
+
+- **Embeddings Infrastructure**: Vector embeddings for all notes using local Ollama
+- **Related Notes Panel**: Show semantically similar notes while viewing/editing
+- **Semantic Graph Clustering**: Visualize meaning-based clusters in graph view
+- **Semantic Search**: Find notes by meaning, not just keywords
+- **Link Suggestions**: AI proposes connections when saving a note
 
 ## Requirements
 
@@ -94,4 +102,4 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ---
 
-_Last updated: 2026-02-06 after v1.5 milestone completion_
+_Last updated: 2026-02-06 after start of v1.6 milestone_

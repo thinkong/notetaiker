@@ -5,27 +5,28 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** Planning next milestone
+**Current focus:** v1.6 Smart Connections
 
 ## Current Position
 
-Phase: —
+Phase: Not started (researching)
 Plan: —
-Status: Milestone v1.5 complete, planning next
-Last activity: 2026-02-06 — Completed v1.5 AI Enhancements
+Status: Researching semantic intelligence ecosystem
+Last activity: 2026-02-06 — Milestone v1.6 started
 
-Progress: [##########] 100% (v1.5 Complete)
+Progress: [----------] 0% (Fresh Milestone)
 
 ## Accumulated Context
 
 - **v1.5 Accomplishments:** Local Ollama integration, automated title generation, preview toggle, Docker GPU support.
 - **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph.
 - **LOC:** ~7123 TypeScript
+- **v1.6 Focus:** Semantic intelligence — embeddings, related notes, graph clustering, semantic search.
 
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Milestone v1.5 archived
+Stopped at: Starting v1.6 research phase
 Resume file: None
 
 ### Quick Tasks Completed
