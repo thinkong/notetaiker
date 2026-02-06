@@ -141,7 +141,7 @@ ${content}`,
       const ollamaProvider = createOllama({
         baseURL: AIService.DEFAULT_BASE_URLS.ollama,
       });
-      embeddingModel = ollamaProvider.embedding("nomic-embed-text");
+      embeddingModel = ollamaProvider.embedding("embeddinggemma:latest");
     } else {
       // Fallback to the provider's default model for embeddings
       // Note: This might need more specific model names for each provider later

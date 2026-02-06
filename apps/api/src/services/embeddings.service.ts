@@ -185,15 +185,19 @@ export class EmbeddingsService {
     const float32Vector = new Float32Array(vector);
 
     // sqlite-vec KNN search syntax
+    // We need to request more items if we're going to filter one out
+    const k = excludeNoteId ? limit + 1 : limit;
+
     let sql = `
       SELECT
         note_id,
         distance
       FROM vec_notes
       WHERE vector MATCH ?
+        AND k = ?
     `;
 
-    const params: any[] = [float32Vector];
+    const params: any[] = [float32Vector, k];
 
     if (excludeNoteId) {
       sql += " AND note_id != ?";
@@ -202,9 +206,11 @@ export class EmbeddingsService {
 
     sql += `
       ORDER BY distance
-      LIMIT ?
     `;
-    params.push(limit);
+
+    // LIMIT clause removed as it conflicts with k constraint in some sqlite-vec versions
+    // or causes "A LIMIT or 'k = ?' constraint is required" error despite k being present.
+    // relying on k is sufficient for the search bound.
 
     const stmt = this.db.prepare(sql);
     const results = stmt.all(...params) as {
@@ -212,10 +218,12 @@ export class EmbeddingsService {
       distance: number;
     }[];
 
-    return results.map((r) => ({
-      noteId: r.note_id,
-      distance: r.distance,
-    }));
+    return results
+      .map((r) => ({
+        noteId: r.note_id,
+        distance: r.distance,
+      }))
+      .slice(0, limit);
   }
 
   /**

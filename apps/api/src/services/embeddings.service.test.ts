@@ -12,7 +12,7 @@ describe("EmbeddingsService", () => {
       prepare: vi.fn().mockReturnValue({
         run: vi.fn(),
         get: vi.fn(),
-        all: vi.fn(),
+        all: vi.fn().mockReturnValue([]),
       }),
       transaction: vi.fn((cb) => cb),
     };
@@ -65,6 +65,40 @@ describe("EmbeddingsService", () => {
 
       expect(result.indexedNotes).toBe(5);
       expect(result.totalNotes).toBe(2); // Only notes with ai !== false
+    });
+  });
+
+  describe("findSimilar", () => {
+    it("should include k parameter in SQL query", () => {
+      const vector = [0.1, 0.2, 0.3];
+      const limit = 5;
+
+      service.findSimilar(vector, limit);
+
+      const prepareCall = db.prepare.mock.calls[0][0];
+      const stmt = db.prepare.mock.results[0].value;
+      const runCall = stmt.all.mock.calls[0];
+
+
+      expect(prepareCall).toContain("WHERE vector MATCH ?");
+      expect(prepareCall).toContain("AND k = ?");
+      // LIMIT removed from SQL
+      expect(runCall.length).toBe(2); // vector, k
+      expect(runCall[1]).toBe(limit); // k param
+    });
+
+    it("should adjust k when excluding note", () => {
+      const vector = [0.1, 0.2, 0.3];
+      const limit = 5;
+      const excludeId = "exclude-me";
+
+      service.findSimilar(vector, limit, excludeId);
+
+      const runCall = db.prepare().all.mock.calls[0];
+      // params: [vector, k, excludeId]
+      // k should be limit + 1
+      expect(runCall[1]).toBe(limit + 1);
+      expect(runCall.length).toBe(3); // vector, k, excludeId
     });
   });
 });

@@ -50,4 +50,4 @@ services:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_CONTEXT_LENGTH=8192
     entrypoint: >
-      /bin/sh -c "ollama serve & sleep 5 && ollama pull gemma3:4b && wait"
+      /bin/sh -c "ollama serve & sleep 5 && ollama pull gemma3:4b && ollama pull embeddinggemma:latest && wait"
