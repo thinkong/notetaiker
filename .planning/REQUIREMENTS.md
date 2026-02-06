@@ -42,8 +42,8 @@
 | NAV-01      | Phase 21 | Complete |
 | NAV-02      | Phase 21 | Complete |
 | NAV-03      | Phase 21 | Complete |
-| FILT-01     | Phase 22 | Pending |
-| FILT-02     | Phase 22 | Pending |
+| FILT-01     | Phase 22 | Complete |
+| FILT-02     | Phase 22 | Complete |
 | INTER-01    | Phase 23 | Pending |
 | INTER-02    | Phase 23 | Pending |
 | SMART-01    | Phase 24 | Pending |

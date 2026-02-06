@@ -137,9 +137,9 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 2. User can toggle a "Local Graph" view that isolates the active note and its immediate neighbors (1-2 hops).
    **Plans**: 3 plans
 
-- [ ] 22-01-PLAN.md — Graph State & Rendering Infrastructure
-- [ ] 22-02-PLAN.md — Filtering UI Components
-- [ ] 22-03-PLAN.md — Integration & Global Interactions
+- [x] 22-01-PLAN.md — Graph State & Rendering Infrastructure
+- [x] 22-02-PLAN.md — Filtering UI Components
+- [x] 22-03-PLAN.md — Integration & Global Interactions
 
 #### Phase 23: Spatial Interaction & Linking
 
@@ -177,6 +177,6 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 19       | v1.6      | 3/3            | Complete    | 2026-02-06 |
 | 20       | v1.6      | 3/3            | Complete    | 2026-02-06 |
 | 21       | v1.7      | 2/2            | Complete    | 2026-02-06 |
-| 22       | v1.7      | 0/TBD          | Not started | -          |
+| 22       | v1.7      | 3/3            | Complete    | 2026-02-06 |
 | 23       | v1.7      | 0/TBD          | Not started | -          |
 | 24       | v1.7      | 0/TBD          | Not started | -          |

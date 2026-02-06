@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 Phase: 22 of 24 (Graph Filtering & Local View)
 Plan: 3 of 3 in current phase
 Status: Phase complete
-Last activity: 2026-02-06 — Completed 22-03-PLAN.md
+Last activity: 2026-02-06 — Completed Phase 22 (Graph Filtering & Local View)
 
 Progress: [████████████████████████████████████████████████████████████] 100%
 
