@@ -1,6 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import Database from "better-sqlite3";
+import * as sqliteVec from "sqlite-vec";
 import { parseMarkdown } from "../lib/markdown";
 import { v5 as uuidv5 } from "uuid";
 
@@ -34,7 +35,12 @@ export class IndexerService {
 
     const dbPath = path.join(configDir, "index.db");
     this.db = new Database(dbPath);
+    sqliteVec.load(this.db);
     this.init();
+  }
+
+  getDb(): Database.Database {
+    return this.db;
   }
 
   private init() {
@@ -51,6 +57,26 @@ export class IndexerService {
 
     this.db.exec(`
       CREATE INDEX IF NOT EXISTS idx_notes_created ON notes_index(createdAt)
+    `);
+
+    // Initialize embeddings tables
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS embeddings_meta (
+        note_id TEXT PRIMARY KEY,
+        content_hash TEXT NOT NULL,
+        model TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(note_id) REFERENCES notes_index(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Virtual table for vector search
+    // Using vec0 from sqlite-vec
+    this.db.exec(`
+      CREATE VIRTUAL TABLE IF NOT EXISTS vec_notes USING vec0(
+        note_id TEXT PRIMARY KEY,
+        vector FLOAT[768]
+      )
     `);
   }
 
