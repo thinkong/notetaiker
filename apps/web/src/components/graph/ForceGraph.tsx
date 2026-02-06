@@ -8,6 +8,7 @@ import {
   useImperativeHandle,
 } from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
+import { GraphTooltip } from "./GraphTooltip";
 import {
   type GraphData,
   type GraphNode,
@@ -23,6 +24,7 @@ export interface ForceGraphHandle {
 interface ForceGraphProps {
   data: GraphData;
   onNodeClick?: (node: GraphNode) => void;
+  onNodeDoubleClick?: (node: GraphNode) => void;
   initialZoom?: number;
   initialCenter?: { x: number; y: number };
 }
@@ -70,13 +72,34 @@ const NODE_R = {
 const LABEL_THRESHOLD = 3; // Zoom level to start showing labels
 
 export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
-  ({ data, onNodeClick, initialZoom, initialCenter }, ref) => {
+  (
+    { data, onNodeClick, onNodeDoubleClick, initialZoom, initialCenter },
+    ref,
+  ) => {
     const fgRef = useRef<
       ForceGraphMethods<InternalNode, InternalLink> | undefined
     >(undefined);
     const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
+    const [tooltipPos, setTooltipPos] = useState<{
+      x: number;
+      y: number;
+    } | null>(null);
     const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
     const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
+    const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Cleanup click timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (clickTimeoutRef.current) {
+          clearTimeout(clickTimeoutRef.current);
+        }
+        if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+        }
+      };
+    }, []);
 
     useImperativeHandle(ref, () => ({
       getGraphState: () => {
@@ -137,34 +160,81 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
       return map;
     }, [data.links]);
 
+    const handleClick = useCallback(
+      (node: GraphNode) => {
+        if (clickTimeoutRef.current) {
+          // Double click detected
+          clearTimeout(clickTimeoutRef.current);
+          clickTimeoutRef.current = null;
+          onNodeDoubleClick?.(node);
+        } else {
+          // Single click logic (delayed)
+          clickTimeoutRef.current = setTimeout(() => {
+            onNodeClick?.(node);
+            clickTimeoutRef.current = null;
+          }, 300);
+        }
+      },
+      [onNodeClick, onNodeDoubleClick],
+    );
+
     const handleNodeHover = useCallback(
       (node: GraphNode | null) => {
+        // Clear any pending hover action
+        if (hoverTimeoutRef.current) {
+          clearTimeout(hoverTimeoutRef.current);
+          hoverTimeoutRef.current = null;
+        }
+
         if (!node) {
           setHoverNode(null);
+          setTooltipPos(null);
           setHighlightNodes(new Set());
           setHighlightLinks(new Set());
           return;
         }
 
-        const neighbors = new Set<string>();
-        const links = new Set<string>();
+        // Delay showing tooltip/highlighting to avoid flickering
+        hoverTimeoutRef.current = setTimeout(() => {
+          const neighbors = new Set<string>();
+          const links = new Set<string>();
 
-        neighbors.add(node.id); // Add self
+          neighbors.add(node.id); // Add self
 
-        const nodeNeighbors = neighborsMap.get(node.id);
-        if (nodeNeighbors) {
-          nodeNeighbors.forEach(({ neighbor, linkId }) => {
-            neighbors.add(neighbor);
-            links.add(linkId);
-          });
-        }
+          const nodeNeighbors = neighborsMap.get(node.id);
+          if (nodeNeighbors) {
+            nodeNeighbors.forEach(({ neighbor, linkId }) => {
+              neighbors.add(neighbor);
+              links.add(linkId);
+            });
+          }
 
-        setHoverNode(node);
-        setHighlightNodes(neighbors);
-        setHighlightLinks(links);
+          setHoverNode(node);
+          setHighlightNodes(neighbors);
+          setHighlightLinks(links);
+
+          // Initial position calculation
+          if (fgRef.current) {
+            const coords = fgRef.current.graph2ScreenCoords(
+              node.x ?? 0,
+              node.y ?? 0,
+            );
+            setTooltipPos(coords);
+          }
+        }, 200);
       },
       [neighborsMap],
     );
+
+    const onRenderFramePost = useCallback(() => {
+      if (hoverNode && fgRef.current) {
+        const coords = fgRef.current.graph2ScreenCoords(
+          hoverNode.x ?? 0,
+          hoverNode.y ?? 0,
+        );
+        setTooltipPos(coords);
+      }
+    }, [hoverNode]);
 
     const paintNode = useCallback(
       (
@@ -250,46 +320,52 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     );
 
     return (
-      <ForceGraph2D
-        ref={fgRef}
-        graphData={data}
-        nodeCanvasObject={(node, ctx, globalScale) =>
-          paintNode(node as InternalNode, ctx, globalScale)
-        }
-        nodePointerAreaPaint={(nodeObject, color, ctx) => {
-          const node = nodeObject as InternalNode;
-          const r = NODE_R[node.type as NodeType] || 4;
-          ctx.fillStyle = color;
-          ctx.beginPath();
-          ctx.arc(node.x ?? 0, node.y ?? 0, r + 2, 0, 2 * Math.PI, false);
-          ctx.fill();
-        }}
-        onNodeClick={onNodeClick}
-        onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
-        linkColor={useCallback(
-          (link: InternalLink) => {
-            const source =
-              typeof link.source === "object" ? link.source.id : link.source;
-            const target =
-              typeof link.target === "object" ? link.target.id : link.target;
-            const linkId = `${source}-${target}`;
-            if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
-            return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
-          },
-          [highlightLinks, highlightNodes.size],
+      <div className="relative w-full h-full">
+        <ForceGraph2D
+          ref={fgRef}
+          graphData={data}
+          nodeCanvasObject={(node, ctx, globalScale) =>
+            paintNode(node as InternalNode, ctx, globalScale)
+          }
+          nodePointerAreaPaint={(nodeObject, color, ctx) => {
+            const node = nodeObject as InternalNode;
+            const r = NODE_R[node.type as NodeType] || 4;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(node.x ?? 0, node.y ?? 0, r + 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+          }}
+          onNodeClick={(node) => handleClick(node as GraphNode)}
+          onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
+          onRenderFramePost={onRenderFramePost}
+          linkColor={useCallback(
+            (link: InternalLink) => {
+              const source =
+                typeof link.source === "object" ? link.source.id : link.source;
+              const target =
+                typeof link.target === "object" ? link.target.id : link.target;
+              const linkId = `${source}-${target}`;
+              if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
+              return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
+            },
+            [highlightLinks, highlightNodes.size],
+          )}
+          linkWidth={useCallback(
+            (link: InternalLink) => {
+              const source =
+                typeof link.source === "object" ? link.source.id : link.source;
+              const target =
+                typeof link.target === "object" ? link.target.id : link.target;
+              const linkId = `${source}-${target}`;
+              return highlightLinks.has(linkId) ? 2 : 1;
+            },
+            [highlightLinks],
+          )}
+        />
+        {hoverNode && tooltipPos && (
+          <GraphTooltip node={hoverNode} x={tooltipPos.x} y={tooltipPos.y} />
         )}
-        linkWidth={useCallback(
-          (link: InternalLink) => {
-            const source =
-              typeof link.source === "object" ? link.source.id : link.source;
-            const target =
-              typeof link.target === "object" ? link.target.id : link.target;
-            const linkId = `${source}-${target}`;
-            return highlightLinks.has(linkId) ? 2 : 1;
-          },
-          [highlightLinks],
-        )}
-      />
+      </div>
     );
   },
 );
