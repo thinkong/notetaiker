@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { notes } from "./routes/notes";
 import { settings } from "./routes/settings";
 import { events } from "./routes/events";
+import { embeddings } from "./routes/embeddings";
 import { QueueService } from "./services/queue.service";
 import { WorkerService } from "./services/worker.service";
 import { EventsService } from "./services/events.service";
@@ -26,6 +27,7 @@ type Variables = {
   aiService: AIService;
   storageService: StorageService;
   indexerService: IndexerService;
+  embeddingsService: EmbeddingsService;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -61,7 +63,11 @@ const storageService = new StorageService(
   indexerService,
   queueService,
 );
-const embeddingsService = new EmbeddingsService(indexerService.getDb());
+const embeddingsService = new EmbeddingsService(
+  indexerService.getDb(),
+  storageService,
+  queueService,
+);
 
 // Initial sync of notes
 console.log("Syncing notes index...");
@@ -91,6 +97,7 @@ app
     c.set("aiService", aiService);
     c.set("storageService", storageService);
     c.set("indexerService", indexerService);
+    c.set("embeddingsService", embeddingsService);
     await next();
   })
   .use("*", cors());
@@ -106,6 +113,7 @@ const routes = app
   })
   .route("/notes", notes)
   .route("/settings", settings)
+  .route("/embeddings", embeddings)
   .route("/api/events", events);
 
 // In production, serve the static web frontend
