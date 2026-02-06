@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 21 of 24 (Graph Navigation & Tooltips)
-Plan: 01 of 02 (Graph Persistence & Navigation)
-Status: In progress
-Last activity: 2026-02-06 — Completed 21-01-PLAN.md (Graph Persistence)
+Plan: 02 of 02 (Interactive Graph Navigation)
+Status: Phase complete
+Last activity: 2026-02-06 — Completed 21-02-PLAN.md (Interactive Graph Navigation)
 
-Progress: [▓▓▓▓▓▓▓▓░░] 84%
+Progress: [▓▓▓▓▓▓▓▓▒░] 85%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 54
+- Total plans completed: 55
 - Average duration: 15 min
 - Total execution time: 13.3 hours
 
@@ -31,11 +31,11 @@ Progress: [▓▓▓▓▓▓▓▓░░] 84%
 | 1-18  | 45    | 11.2h | 15m      |
 | 19    | 4     | 1.0h  | 15m      |
 | 20    | 4     | 1.0h  | 15m      |
-| 21    | 1     | 0.1h  | 8m       |
+| 21    | 2     | 0.3h  | 10m      |
 
 **Recent Trend:**
 
-- Last 5 plans: [12, 18, 14, 16, 8]
+- Last 5 plans: [18, 14, 16, 8, 12]
 - Trend: Accelerating
 
 _Updated after each plan completion_
@@ -52,6 +52,8 @@ Recent decisions affecting current work:
 - [Phase 20]: Semantic similarity updates are debounced to save CPU.
 - [Phase 21]: Graph state persistence uses React Context (session-only) rather than LocalStorage.
 - [Phase 21]: Navigation to notes uses `location.state` instead of URL params for cleaner URLs.
+- [Phase 21]: HTML Tooltips used for graph previews (DOM overlay on Canvas) for better styling.
+- [Phase 21]: Navigation triggered by double-click (300ms delay discriminator) with flash feedback.
 
 ### Pending Todos
 
@@ -64,5 +66,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06 09:27
-Stopped at: Completed 21-01-PLAN.md
+Stopped at: Completed 21-02-PLAN.md
 Resume file: None
