@@ -93,6 +93,10 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
     4. User can trigger a full "Rebuild Index" from settings.
 - [ ] **Phase 20: Related Notes Feature**
   - **Goal**: Users can discover semantically related notes while viewing or editing a note.
+  - **Plans**: 3 plans
+    - [ ] 20-01-PLAN.md — Backend API for similarity search
+    - [ ] 20-02-PLAN.md — Related Notes sidebar component
+    - [ ] 20-03-PLAN.md — UX Polish, debouncing, and labels
   - **Success Criteria**:
     1. "Related Notes" panel displays top 5-10 semantically similar notes in the sidebar.
     2. Panel updates automatically (debounced) as the current note context changes.
@@ -112,5 +116,5 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 14    | v1.3.1    | 2/2            | Complete    | 2026-01-31 |
 | 15-18 | v1.4      | 7/7            | Complete    | 2026-02-03 |
 | Q006-007 | v1.5   | 2/2 tasks      | Complete    | 2026-02-06 |
-| 19    | v1.6      | 0/1            | Planned     | -          |
-| 20    | v1.6      | 0/1            | Planned     | -          |
+| 19    | v1.6      | 3/3            | Complete    | 2026-02-06 |
+| 20    | v1.6      | 0/3            | Planned     | -          |
