@@ -125,7 +125,9 @@ export class WorkerService {
     const existingMeta = this.embeddingsService.getEmbeddingMeta(noteId);
 
     if (existingMeta && existingMeta.content_hash === hash) {
-      console.log(`Worker: Embedding for note ${noteId} is up to date, skipping`);
+      console.log(
+        `Worker: Embedding for note ${noteId} is up to date, skipping`,
+      );
       return;
     }
 

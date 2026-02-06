@@ -32,10 +32,7 @@ export class AIService {
     const secrets = await this.secretsService.getSecrets();
     const provider = secrets.selectedProvider;
 
-    if (
-      (provider === "openai" || !provider) &&
-      secrets.openai?.apiKey
-    ) {
+    if ((provider === "openai" || !provider) && secrets.openai?.apiKey) {
       const openai = createOpenAI({
         apiKey: secrets.openai.apiKey,
         baseURL: secrets.openai.baseUrl || AIService.DEFAULT_BASE_URLS.openai,
@@ -43,10 +40,7 @@ export class AIService {
       return openai(secrets.openai.model || AIService.DEFAULT_MODELS.openai);
     }
 
-    if (
-      (provider === "anthropic" || !provider) &&
-      secrets.anthropic?.apiKey
-    ) {
+    if ((provider === "anthropic" || !provider) && secrets.anthropic?.apiKey) {
       const anthropic = createAnthropic({
         apiKey: secrets.anthropic.apiKey,
         baseURL:
@@ -57,10 +51,7 @@ export class AIService {
       );
     }
 
-    if (
-      (provider === "gemini" || !provider) &&
-      secrets.gemini?.apiKey
-    ) {
+    if ((provider === "gemini" || !provider) && secrets.gemini?.apiKey) {
       const google = createGoogleGenerativeAI({
         apiKey: secrets.gemini.apiKey,
         baseURL: secrets.gemini.baseUrl || AIService.DEFAULT_BASE_URLS.gemini,
@@ -114,10 +105,7 @@ ${content}`,
       model,
       output: Output.object({
         schema: z.object({
-          title: z
-            .string()
-            .max(60)
-            .describe("Concise, descriptive title"),
+          title: z.string().max(60).describe("Concise, descriptive title"),
         }),
       }),
       prompt: `Generate a concise, descriptive title (max 60 chars) for this note content:

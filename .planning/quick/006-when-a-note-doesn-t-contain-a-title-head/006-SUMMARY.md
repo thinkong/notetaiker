@@ -55,6 +55,7 @@ completed: 2026-02-05
 - **Files modified:** 6
 
 ## Accomplishments
+
 - Implemented `extractFirstHeader` utility to reliably identify markdown headers as titles.
 - Added `generateTitle` method to `AIService` leveraging the Vercel AI SDK for concise title generation.
 - Integrated title generation into the background `WorkerService`, ensuring all notes get a title during indexing.
@@ -69,6 +70,7 @@ Each task was committed atomically:
 3. **Task 3: Add test coverage for title generation workflow** - `2fc217a` (test)
 
 ## Files Created/Modified
+
 - `apps/api/src/lib/markdown.ts` - Added `extractFirstHeader` function.
 - `apps/api/src/services/ai.service.ts` - Added `generateTitle` using LLM.
 - `apps/api/src/services/worker.service.ts` - Integrated title generation in background processing.
@@ -77,23 +79,29 @@ Each task was committed atomically:
 - `apps/api/src/services/worker.service.test.ts` - Added integration tests for title generation logic.
 
 ## Decisions Made
+
 - AI titles are stored in the `title` field of frontmatter. This ensures that once a title is generated (or extracted from a header at first process), it stays stable unless the user manually changes it.
 - Existing titles in metadata are strictly preserved.
-- The worker logic was updated to check for title existence *before* processing, similar to how it handles AI processing flags.
+- The worker logic was updated to check for title existence _before_ processing, similar to how it handles AI processing flags.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 - **AI Service Mocking:** The existing tests used `generateObject` while the new code and some existing logic were using `generateText`. Updated the test mocks to support both patterns and properly reset mocks between tests to avoid interference.
 
 ## User Setup Required
+
 None - no external service configuration required beyond existing AI provider keys.
 
 ## Next Phase Readiness
+
 - Core metadata enrichment (tags and titles) is now robust.
 - Ready for further UI enhancements that rely on reliable note titles (e.g., better search, improved graph visualization).
 
 ---
-*Phase: quick-006*
-*Completed: 2026-02-05*
+
+_Phase: quick-006_
+_Completed: 2026-02-05_

@@ -82,27 +82,27 @@ Tech Stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 
 ## Key Decisions
 
-| Decision                      | Rationale                                                                                                  | Outcome         |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------- |
-| **Local Server Architecture** | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | ✓ Good (v1.0)   |
-| **Atomic Notes**              | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes.          | ✓ Good (v1.0)   |
-| **YAML Frontmatter**          | Standard, portable way to attach metadata without polluting body content.                                  | ✓ Good (v1.0)   |
-| **Web Client First**          | Fastest path to validation; PWA capabilities can mimic desktop feel.                                       | ✓ Good (v1.0)   |
-| **Local Mirror Pattern**      | Store full note content in SQLite index for <5ms listing performance.                                      | ✓ Good (v1.0)   |
-| **Separate Index DB**         | Placed metadata index in its own database (index.db) to decouple from the task queue.                      | ✓ Good (v1.0)   |
-| **Immediate-feedback-save**   | Bypass debounce for Cmd+Enter to ensure user data safety.                                                  | ✓ Good (v1.0)   |
-| **Graph Visualization**       | Used `react-force-graph-2d` for performance and Canvas rendering for scalability.                          | ✓ Good (v1.2)   |
-| **Tag Hub Structure**         | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering.               | ✓ Good (v1.2)   |
-| **Side Panel Nav**            | Absolute-positioned panel avoids reflowing graph canvas on interaction.                                    | ✓ Good (v1.2)   |
-| **Guard-First Navigation**    | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes).                  | ✓ Good (v1.3)   |
-| **Schema Separation**         | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent.                       | ✓ Good (v1.3)   |
-| **Verbatim Module Syntax**    | Enabled in base TSConfig to ensure import/export correctness and tree-shakability.                         | ✓ Good (v1.3.1) |
-| **Synchronized Note ID**      | Used state+ref pattern to handle React reactivity vs closure staleness.                                    | ✓ Good (v1.4)   |
-| **Data Router Migration**     | Migrated to `createBrowserRouter` to enable robust `useBlocker` navigation guarding.                       | ✓ Good (v1.4)   |
-| **Smart Dirty Check**         | Content comparison (current vs original) instead of boolean flag reduces false positives.                  | ✓ Good (v1.4)   |
-| **Local Ollama Default**      | Privacy-first, zero-cost inference as default provider with cloud fallback.                               | ✓ Good (v1.5)   |
-| **Backend Proxy for Ollama**  | Hono proxies all Ollama requests to avoid CORS issues in browser.                                         | ✓ Good (v1.5)   |
-| **Header-First Title Extract**| Extract markdown headers before falling back to LLM, reducing API calls and honoring user intent.         | ✓ Good (v1.5)   |
+| Decision                       | Rationale                                                                                                  | Outcome         |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------- | --------------- |
+| **Local Server Architecture**  | Enables background processing, file system access, and future CLI/Desktop clients connecting to same core. | ✓ Good (v1.0)   |
+| **Atomic Notes**               | Reduces friction (no naming required) and fits "stream of thought" model better than daily notes.          | ✓ Good (v1.0)   |
+| **YAML Frontmatter**           | Standard, portable way to attach metadata without polluting body content.                                  | ✓ Good (v1.0)   |
+| **Web Client First**           | Fastest path to validation; PWA capabilities can mimic desktop feel.                                       | ✓ Good (v1.0)   |
+| **Local Mirror Pattern**       | Store full note content in SQLite index for <5ms listing performance.                                      | ✓ Good (v1.0)   |
+| **Separate Index DB**          | Placed metadata index in its own database (index.db) to decouple from the task queue.                      | ✓ Good (v1.0)   |
+| **Immediate-feedback-save**    | Bypass debounce for Cmd+Enter to ensure user data safety.                                                  | ✓ Good (v1.0)   |
+| **Graph Visualization**        | Used `react-force-graph-2d` for performance and Canvas rendering for scalability.                          | ✓ Good (v1.2)   |
+| **Tag Hub Structure**          | Notes link to shared tag nodes (instead of direct note-to-note) to create better clustering.               | ✓ Good (v1.2)   |
+| **Side Panel Nav**             | Absolute-positioned panel avoids reflowing graph canvas on interaction.                                    | ✓ Good (v1.2)   |
+| **Guard-First Navigation**     | Centralized `requestAction` guard prevents data loss during navigation (unsaved changes).                  | ✓ Good (v1.3)   |
+| **Schema Separation**          | `ai_tags` vs `tags` field separation ensures AI never overwrites manual user intent.                       | ✓ Good (v1.3)   |
+| **Verbatim Module Syntax**     | Enabled in base TSConfig to ensure import/export correctness and tree-shakability.                         | ✓ Good (v1.3.1) |
+| **Synchronized Note ID**       | Used state+ref pattern to handle React reactivity vs closure staleness.                                    | ✓ Good (v1.4)   |
+| **Data Router Migration**      | Migrated to `createBrowserRouter` to enable robust `useBlocker` navigation guarding.                       | ✓ Good (v1.4)   |
+| **Smart Dirty Check**          | Content comparison (current vs original) instead of boolean flag reduces false positives.                  | ✓ Good (v1.4)   |
+| **Local Ollama Default**       | Privacy-first, zero-cost inference as default provider with cloud fallback.                                | ✓ Good (v1.5)   |
+| **Backend Proxy for Ollama**   | Hono proxies all Ollama requests to avoid CORS issues in browser.                                          | ✓ Good (v1.5)   |
+| **Header-First Title Extract** | Extract markdown headers before falling back to LLM, reducing API calls and honoring user intent.          | ✓ Good (v1.5)   |
 
 ---
 

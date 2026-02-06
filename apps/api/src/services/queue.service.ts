@@ -86,7 +86,11 @@ export class QueueService extends EventEmitter {
     `);
   }
 
-  enqueue(noteId: string, type: JobType = "analysis", payload: any = {}): string {
+  enqueue(
+    noteId: string,
+    type: JobType = "analysis",
+    payload: any = {},
+  ): string {
     const id = uuidv4();
     const now = new Date().toISOString();
     const payloadStr = JSON.stringify(payload);

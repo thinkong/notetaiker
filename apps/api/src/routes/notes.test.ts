@@ -14,20 +14,22 @@ const { mockListNotes, mockSaveNote, mockGetNote, mockEnqueue } = vi.hoisted(
 
 vi.mock("../services/storage.service", () => {
   return {
-    StorageService: vi.fn().mockImplementation(function (_path, _indexer, queue) {
-      return {
-        listNotes: mockListNotes,
-        saveNote: vi.fn().mockImplementation(async (content, metadata) => {
-          const result = await mockSaveNote(content, metadata);
-          if (queue && metadata?.ai !== false) {
-            queue.enqueue(metadata?.id || "new-id", "analysis");
-            queue.enqueue(metadata?.id || "new-id", "embeddings");
-          }
-          return result;
-        }),
-        getNote: mockGetNote,
-      };
-    }),
+    StorageService: vi
+      .fn()
+      .mockImplementation(function (_path, _indexer, queue) {
+        return {
+          listNotes: mockListNotes,
+          saveNote: vi.fn().mockImplementation(async (content, metadata) => {
+            const result = await mockSaveNote(content, metadata);
+            if (queue && metadata?.ai !== false) {
+              queue.enqueue(metadata?.id || "new-id", "analysis");
+              queue.enqueue(metadata?.id || "new-id", "embeddings");
+            }
+            return result;
+          }),
+          getNote: mockGetNote,
+        };
+      }),
   };
 });
 
@@ -42,7 +44,10 @@ describe("Notes Routes", () => {
       const { StorageService } = await import("../services/storage.service");
       const mockQueue = { enqueue: mockEnqueue };
       c.set("queueService", mockQueue as any);
-      c.set("storageService", new StorageService("" as any, {} as any, mockQueue as any));
+      c.set(
+        "storageService",
+        new StorageService("" as any, {} as any, mockQueue as any),
+      );
       await next();
     });
     app.route("/notes", notes);

@@ -181,12 +181,13 @@ All manual tests pass:
 </verification>
 
 <success_criteria>
+
 - User can click toggle button to switch between edit and preview modes
 - Preview mode displays rendered markdown using existing Markdown component
 - Toggle button shows current mode (Eye for preview, Edit3 for edit)
 - Editor maintains content when switching modes
 - No regression in existing editor functionality
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/007-create-a-preview-toggle-button-to-previe/007-SUMMARY.md`

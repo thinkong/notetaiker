@@ -13,11 +13,7 @@ export class EmbeddingsService {
   private storage?: StorageService;
   private queue?: QueueService;
 
-  constructor(
-    db: Database,
-    storage?: StorageService,
-    queue?: QueueService,
-  ) {
+  constructor(db: Database, storage?: StorageService, queue?: QueueService) {
     this.db = db;
     this.storage = storage;
     this.queue = queue;
@@ -58,7 +54,9 @@ export class EmbeddingsService {
     }
 
     const indexedCount = (
-      this.db.prepare("SELECT COUNT(*) as count FROM embeddings_meta").get() as {
+      this.db
+        .prepare("SELECT COUNT(*) as count FROM embeddings_meta")
+        .get() as {
         count: number;
       }
     ).count;
@@ -79,7 +77,7 @@ export class EmbeddingsService {
     noteId: string,
     vector: number[],
     contentHash: string,
-    model: string = "nomic-embed-text"
+    model: string = "nomic-embed-text",
   ) {
     const float32Vector = new Float32Array(vector);
 
@@ -94,7 +92,9 @@ export class EmbeddingsService {
     `);
 
     // Update vector table
-    const deleteVector = this.db.prepare(`DELETE FROM vec_notes WHERE note_id = ?`);
+    const deleteVector = this.db.prepare(
+      `DELETE FROM vec_notes WHERE note_id = ?`,
+    );
     const insertVector = this.db.prepare(`
       INSERT INTO vec_notes (note_id, vector)
       VALUES (?, ?)
@@ -116,7 +116,14 @@ export class EmbeddingsService {
   getEmbeddingMeta(noteId: string) {
     return this.db
       .prepare("SELECT * FROM embeddings_meta WHERE note_id = ?")
-      .get(noteId) as { note_id: string; content_hash: string; model: string; createdAt: string } | undefined;
+      .get(noteId) as
+      | {
+          note_id: string;
+          content_hash: string;
+          model: string;
+          createdAt: string;
+        }
+      | undefined;
   }
 
   /**
@@ -142,10 +149,7 @@ export class EmbeddingsService {
   /**
    * Find semantically related notes for a given note
    */
-  async findRelated(
-    noteId: string,
-    limit: number = 5,
-  ): Promise<SimilarNote[]> {
+  async findRelated(noteId: string, limit: number = 5): Promise<SimilarNote[]> {
     const vector = this.getVector(noteId);
     if (!vector) return [];
 
@@ -230,8 +234,12 @@ export class EmbeddingsService {
    * Delete embedding for a note
    */
   deleteEmbedding(noteId: string) {
-    const deleteMeta = this.db.prepare("DELETE FROM embeddings_meta WHERE note_id = ?");
-    const deleteVec = this.db.prepare("DELETE FROM vec_notes WHERE note_id = ?");
+    const deleteMeta = this.db.prepare(
+      "DELETE FROM embeddings_meta WHERE note_id = ?",
+    );
+    const deleteVec = this.db.prepare(
+      "DELETE FROM vec_notes WHERE note_id = ?",
+    );
 
     const transaction = this.db.transaction(() => {
       deleteMeta.run(noteId);
