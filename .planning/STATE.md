@@ -9,12 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 
 ## Current Position
 
-Phase: Phase 20 - Related Notes Feature
-Plan: 03 - UX Polish
-Status: Completed
-Last activity: 2026-02-06 — Completed v1.6 Milestone
-
-Progress: [==========] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-06 — Milestone v1.7 started
 
 ## Accumulated Context
 
@@ -28,7 +26,7 @@ Progress: [==========] 100%
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed v1.6 Smart Connections
+Stopped at: Milestone v1.7 initialized
 Resume file: None
 
 ### Quick Tasks Completed
