@@ -19,6 +19,7 @@ export interface ForceGraphHandle {
   getGraphState: () =>
     | { zoom: number; center: { x: number; y: number } }
     | undefined;
+  flashNode: (nodeId: string) => void;
 }
 
 interface ForceGraphProps {
@@ -86,6 +87,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     } | null>(null);
     const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
     const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
+    const [flashNodeId, setFlashNodeId] = useState<string | null>(null);
     const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -108,6 +110,11 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
           zoom: fgRef.current.zoom(),
           center: fgRef.current.centerAt(),
         };
+      },
+      flashNode: (nodeId: string) => {
+        setFlashNodeId(nodeId);
+        // Reset after animation
+        setTimeout(() => setFlashNodeId(null), 300);
       },
     }));
 
@@ -246,23 +253,31 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         if (x === undefined || y === undefined) return;
 
         const isHovered = hoverNode === node;
+        const isFlashed = flashNodeId === node.id;
         const isHighlighted = highlightNodes.has(node.id);
-        const isDimmed = highlightNodes.size > 0 && !isHighlighted;
+        const isDimmed =
+          highlightNodes.size > 0 && !isHighlighted && !isFlashed;
 
         const r = NODE_R[type as NodeType] || 4;
         const nodeColors = COLORS[type as NodeType];
-        const color = isHovered
-          ? nodeColors.hover
-          : isDimmed
-            ? COLORS.dimmed
-            : nodeColors.base;
+        const color = isFlashed
+          ? "#ffffff" // White flash
+          : isHovered
+            ? nodeColors.hover
+            : isDimmed
+              ? COLORS.dimmed
+              : nodeColors.base;
 
-        // Draw glow effect for highlighted/hovered nodes
-        if ((isHighlighted || isHovered) && !isDimmed) {
+        // Draw glow effect for highlighted/hovered/flashed nodes
+        if ((isHighlighted || isHovered || isFlashed) && !isDimmed) {
           ctx.beginPath();
-          ctx.arc(x, y, r + 3, 0, 2 * Math.PI, false);
-          const gradient = ctx.createRadialGradient(x, y, r, x, y, r + 6);
-          gradient.addColorStop(0, nodeColors.glow);
+          const glowRadius = isFlashed ? r + 12 : r + 6;
+          ctx.arc(x, y, glowRadius, 0, 2 * Math.PI, false);
+          const gradient = ctx.createRadialGradient(x, y, r, x, y, glowRadius);
+          gradient.addColorStop(
+            0,
+            isFlashed ? "rgba(255, 255, 255, 0.8)" : nodeColors.glow,
+          );
           gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
           ctx.fillStyle = gradient;
           ctx.fill();
@@ -277,14 +292,15 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         // Draw border for all nodes (thicker for highlighted, using type-specific colors)
         ctx.strokeStyle = isDimmed
           ? "rgba(84, 110, 122, 0.5)"
-          : isHighlighted
+          : isHighlighted || isFlashed
             ? "#ffffff"
             : nodeColors.border;
-        ctx.lineWidth = isHighlighted ? 3 : 2;
+        ctx.lineWidth = isHighlighted || isFlashed ? 3 : 2;
         ctx.stroke();
 
         // Adaptive Labeling
-        const showLabel = globalScale > LABEL_THRESHOLD || isHovered;
+        const showLabel =
+          globalScale > LABEL_THRESHOLD || isHovered || isFlashed;
         if (showLabel) {
           const label = name;
           const fontSize = 12 / globalScale;
@@ -316,7 +332,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
           ctx.fillText(label, x, y + r + 3 + bckgDimensions[1] / 2);
         }
       },
-      [hoverNode, highlightNodes],
+      [hoverNode, highlightNodes, flashNodeId],
     );
 
     return (
