@@ -14,6 +14,7 @@ import {
   type GraphNode,
   type NodeType,
 } from "../../hooks/useGraphData";
+import { useGraphState } from "../../contexts/GraphStateContext";
 
 export interface ForceGraphHandle {
   getGraphState: () =>
@@ -77,6 +78,9 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     { data, onNodeClick, onNodeDoubleClick, initialZoom, initialCenter },
     ref,
   ) => {
+    const { graphState, setLocalNodeId } = useGraphState();
+    const { filterTags, filterLogic, localNodeId } = graphState;
+
     const fgRef = useRef<
       ForceGraphMethods<InternalNode, InternalLink> | undefined
     >(undefined);
@@ -167,22 +171,100 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
       return map;
     }, [data.links]);
 
+    // Calculate visibility for filtering and local view
+    const visibleNodes = useMemo(() => {
+      const visible = new Set<string>();
+
+      // 1. Initial Filtering by Tags
+      const passesFilter = (node: GraphNode) => {
+        if (filterTags.length === 0) return true;
+        const nodeTags = [...(node.tags || []), ...(node.ai_tags || [])].map(
+          (t) => t.toLowerCase(),
+        );
+        const searchTags = filterTags.map((t) => t.toLowerCase());
+
+        if (filterLogic === "AND") {
+          return searchTags.every((t) => nodeTags.includes(t));
+        } else {
+          return searchTags.some((t) => nodeTags.includes(t));
+        }
+      };
+
+      // 2. Local View Filter (1-hop)
+      if (localNodeId) {
+        visible.add(localNodeId);
+        const neighbors = neighborsMap.get(localNodeId);
+        if (neighbors) {
+          neighbors.forEach(({ neighbor }) => {
+            const node = data.nodes.find((n) => n.id === neighbor);
+            if (node && passesFilter(node)) {
+              visible.add(neighbor);
+            }
+          });
+        }
+        // If the center node itself doesn't pass the tag filter,
+        // we might still want to see it in local view, but usually we filter the whole graph.
+        // For now, let's say local view takes precedence on the center, but neighbors must match.
+      } else {
+        // Just global filter
+        data.nodes.forEach((node) => {
+          if (passesFilter(node)) {
+            visible.add(node.id);
+          }
+        });
+      }
+
+      return visible;
+    }, [data.nodes, filterTags, filterLogic, localNodeId, neighborsMap]);
+
     const handleClick = useCallback(
-      (node: GraphNode) => {
+      (node: GraphNode, event: MouseEvent) => {
         if (clickTimeoutRef.current) {
           // Double click detected
           clearTimeout(clickTimeoutRef.current);
           clickTimeoutRef.current = null;
-          onNodeDoubleClick?.(node);
+
+          if (event.altKey) {
+            // Local view toggle
+            if (localNodeId === node.id) {
+              setLocalNodeId(null);
+            } else {
+              setLocalNodeId(node.id);
+              if (fgRef.current) {
+                fgRef.current.centerAt(node.x, node.y, 1000);
+                fgRef.current.zoom(2.5, 1000);
+              }
+            }
+          } else {
+            onNodeDoubleClick?.(node);
+          }
         } else {
           // Single click logic (delayed)
           clickTimeoutRef.current = setTimeout(() => {
-            onNodeClick?.(node);
+            // "Walk the graph" if in local view and clicking a visible neighbor
+            if (
+              localNodeId &&
+              node.id !== localNodeId &&
+              visibleNodes.has(node.id)
+            ) {
+              setLocalNodeId(node.id);
+              if (fgRef.current) {
+                fgRef.current.centerAt(node.x, node.y, 1000);
+              }
+            } else {
+              onNodeClick?.(node);
+            }
             clickTimeoutRef.current = null;
           }, 300);
         }
       },
-      [onNodeClick, onNodeDoubleClick],
+      [
+        onNodeClick,
+        onNodeDoubleClick,
+        localNodeId,
+        visibleNodes,
+        setLocalNodeId,
+      ],
     );
 
     const handleNodeHover = useCallback(
@@ -255,8 +337,11 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         const isHovered = hoverNode === node;
         const isFlashed = flashNodeId === node.id;
         const isHighlighted = highlightNodes.has(node.id);
+        const isVisible = visibleNodes.size === 0 || visibleNodes.has(node.id);
+        const isGhosted = !isVisible;
         const isDimmed =
-          highlightNodes.size > 0 && !isHighlighted && !isFlashed;
+          (highlightNodes.size > 0 && !isHighlighted && !isFlashed) ||
+          isGhosted;
 
         const r = NODE_R[type as NodeType] || 4;
         const nodeColors = COLORS[type as NodeType];
@@ -267,6 +352,11 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
             : isDimmed
               ? COLORS.dimmed
               : nodeColors.base;
+
+        ctx.save();
+        if (isGhosted) {
+          ctx.globalAlpha = 0.15;
+        }
 
         // Draw glow effect for highlighted/hovered/flashed nodes
         if ((isHighlighted || isHovered || isFlashed) && !isDimmed) {
@@ -331,8 +421,9 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
           ctx.fillStyle = isDimmed ? "rgba(80, 90, 100, 0.8)" : "#eceff4";
           ctx.fillText(label, x, y + r + 3 + bckgDimensions[1] / 2);
         }
+        ctx.restore();
       },
-      [hoverNode, highlightNodes, flashNodeId],
+      [hoverNode, highlightNodes, flashNodeId, visibleNodes],
     );
 
     return (
@@ -351,7 +442,9 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
             ctx.arc(node.x ?? 0, node.y ?? 0, r + 2, 0, 2 * Math.PI, false);
             ctx.fill();
           }}
-          onNodeClick={(node) => handleClick(node as GraphNode)}
+          onNodeClick={(node, event) =>
+            handleClick(node as GraphNode, event as MouseEvent)
+          }
           onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
           onRenderFramePost={onRenderFramePost}
           linkColor={useCallback(
@@ -361,10 +454,19 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
               const target =
                 typeof link.target === "object" ? link.target.id : link.target;
               const linkId = `${source}-${target}`;
+
+              const sourceVisible =
+                visibleNodes.size === 0 || visibleNodes.has(source);
+              const targetVisible =
+                visibleNodes.size === 0 || visibleNodes.has(target);
+              const isGhosted = !sourceVisible || !targetVisible;
+
+              if (isGhosted) return "rgba(84, 110, 122, 0.1)";
+
               if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
               return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
             },
-            [highlightLinks, highlightNodes.size],
+            [highlightLinks, highlightNodes.size, visibleNodes],
           )}
           linkWidth={useCallback(
             (link: InternalLink) => {
