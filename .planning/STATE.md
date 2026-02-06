@@ -9,25 +9,26 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 
 ## Current Position
 
-Phase: Not started (researching)
-Plan: —
-Status: Researching semantic intelligence ecosystem
-Last activity: 2026-02-06 — Milestone v1.6 started
+Phase: Phase 19 - Embeddings Infrastructure
+Plan: .planning/phases/phase-19-embeddings-infrastructure.md (not yet created)
+Status: Roadmap updated for v1.6; ready to plan Phase 19
+Last activity: 2026-02-06 — Roadmap updated with Phases 19 & 20
 
 Progress: [----------] 0% (Fresh Milestone)
 
 ## Accumulated Context
 
 - **v1.5 Accomplishments:** Local Ollama integration, automated title generation, preview toggle, Docker GPU support.
-- **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph.
+- **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph, sqlite-vec.
 - **LOC:** ~7123 TypeScript
-- **v1.6 Focus:** Semantic intelligence — embeddings, related notes, graph clustering, semantic search.
+- **v1.6 Focus:** Semantic intelligence — embeddings, related notes.
+- **Key Decision:** Using `sqlite-vec` for local vector storage and Ollama `nomic-embed-text` for embeddings.
 
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Starting v1.6 research phase
-Resume file: None
+Stopped at: Roadmap updated for v1.6 Smart Connections
+Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
 

@@ -13,6 +13,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
 - ✅ **v1.4 UX Refinement** - Phases 15-18 (shipped 2026-02-03)
 - ✅ **v1.5 AI Enhancements** - Quick tasks 006-007 (shipped 2026-02-06)
+- [ ] **v1.6 Smart Connections** - Phases 19-20 (planned)
 
 ## Phases
 
@@ -80,17 +81,36 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
+<details open>
+<summary>⏳ v1.6 Smart Connections (Phases 19-20) - PLANNED</summary>
+
+- [ ] **Phase 19: Embeddings Infrastructure**
+  - **Goal**: System automatically generates and stores vector embeddings for all notes locally.
+  - **Success Criteria**:
+    1. New notes automatically trigger embedding generation in the background using Ollama (`nomic-embed-text`).
+    2. Embeddings are stored in the local SQLite database via `sqlite-vec`.
+    3. System detects significant content changes (via hash) to update embeddings efficiently.
+    4. User can trigger a full "Rebuild Index" from settings.
+- [ ] **Phase 20: Related Notes Feature**
+  - **Goal**: Users can discover semantically related notes while viewing or editing a note.
+  - **Success Criteria**:
+    1. "Related Notes" panel displays top 5-10 semantically similar notes in the sidebar.
+    2. Panel updates automatically (debounced) as the current note context changes.
+    3. Clicking a related note navigates to that note instantly.
+    4. Similarity levels (e.g., "High/Medium") are visually indicated rather than raw scores.
+
+</details>
+
 ## Progress
 
-| Phase | Milestone | Plans Complete | Status   | Completed  |
-| ----- | --------- | -------------- | -------- | ---------- |
-| 1-8   | v1.0      | 26/26          | Complete | 2026-01-29 |
-| 9-10  | v1.1      | 3/3            | Complete | 2026-01-30 |
-| 11    | v1.2      | 3/3            | Complete | 2026-01-30 |
-| 12-13 | v1.3      | 7/7            | Complete | 2026-01-31 |
-| 14    | v1.3.1    | 2/2            | Complete | 2026-01-31 |
-| 15    | v1.4      | 3/3            | Complete | 2026-02-02 |
-| 16    | v1.4      | 2/2            | Complete | 2026-02-02 |
-| 17    | v1.4      | 1/1            | Complete | 2026-02-03 |
-| 18    | v1.4      | 1/1            | Complete | 2026-02-02 |
-| Q006-007 | v1.5   | 2/2 tasks      | Complete | 2026-02-06 |
+| Phase | Milestone | Plans Complete | Status      | Completed  |
+| ----- | --------- | -------------- | ----------- | ---------- |
+| 1-8   | v1.0      | 26/26          | Complete    | 2026-01-29 |
+| 9-10  | v1.1      | 3/3            | Complete    | 2026-01-30 |
+| 11    | v1.2      | 3/3            | Complete    | 2026-01-30 |
+| 12-13 | v1.3      | 7/7            | Complete    | 2026-01-31 |
+| 14    | v1.3.1    | 2/2            | Complete    | 2026-01-31 |
+| 15-18 | v1.4      | 7/7            | Complete    | 2026-02-03 |
+| Q006-007 | v1.5   | 2/2 tasks      | Complete    | 2026-02-06 |
+| 19    | v1.6      | 0/1            | Planned     | -          |
+| 20    | v1.6      | 0/1            | Planned     | -          |
