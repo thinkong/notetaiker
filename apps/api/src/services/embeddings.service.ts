@@ -111,23 +111,59 @@ export class EmbeddingsService {
   }
 
   /**
+   * Get the vector embedding for a note
+   */
+  getVector(noteId: string): number[] | undefined {
+    const result = this.db
+      .prepare("SELECT vector FROM vec_notes WHERE note_id = ?")
+      .get(noteId) as { vector: Uint8Array | Buffer } | undefined;
+
+    if (!result) return undefined;
+
+    // better-sqlite3 returns Blobs as Buffers/Uint8Arrays
+    // We need to interpret it as Float32Array
+    const float32Array = new Float32Array(
+      result.vector.buffer,
+      result.vector.byteOffset,
+      result.vector.byteLength / 4,
+    );
+    return Array.from(float32Array);
+  }
+
+  /**
    * Find similar notes using KNN search
    */
-  findSimilar(vector: number[], limit: number = 10): SimilarNote[] {
+  findSimilar(
+    vector: number[],
+    limit: number = 10,
+    excludeNoteId?: string,
+  ): SimilarNote[] {
     const float32Vector = new Float32Array(vector);
 
     // sqlite-vec KNN search syntax
-    const stmt = this.db.prepare(`
+    let sql = `
       SELECT
         note_id,
         distance
       FROM vec_notes
       WHERE vector MATCH ?
+    `;
+
+    const params: any[] = [float32Vector];
+
+    if (excludeNoteId) {
+      sql += " AND note_id != ?";
+      params.push(excludeNoteId);
+    }
+
+    sql += `
       ORDER BY distance
       LIMIT ?
-    `);
+    `;
+    params.push(limit);
 
-    const results = stmt.all(float32Vector, limit) as {
+    const stmt = this.db.prepare(sql);
+    const results = stmt.all(...params) as {
       note_id: string;
       distance: number;
     }[];
