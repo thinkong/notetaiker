@@ -1,5 +1,32 @@
 # Project Milestones: NoteTaiker
 
+## v1.5 AI Enhancements (Shipped: 2026-02-06)
+
+**Delivered:** Local LLM integration with Ollama and automated title generation for privacy-focused, zero-cost AI processing.
+
+**Work completed:** Quick tasks 006-007, infrastructure improvements
+
+**Key accomplishments:**
+
+- **Local Ollama Integration**: Default AI provider with automatic fallback to cloud providers.
+- **Automated Title Generation**: LLM-powered titles for notes without markdown headers.
+- **Preview Toggle**: Switch between edit and rendered markdown views in the editor.
+- **Docker GPU Support**: Local inference with GPU acceleration via Docker Compose.
+- **Marketing Website**: New landing page showcasing NoteTaiker features.
+
+**Stats:**
+
+- 105 files modified
+- ~7123 LOC TypeScript
+- 24 commits
+- 3 days from start to ship
+
+**Git range:** `856f9ca` → `5c6c234`
+
+**What's next:** Plan Next Milestone
+
+---
+
 ## v1.4 UX Refinement (Shipped: 2026-02-03)
 
 **Delivered:** Improved editor flow with explicit creation, smarter navigation guards, and history integration.

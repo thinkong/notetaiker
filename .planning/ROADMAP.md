@@ -12,6 +12,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.3 UX Polish & Flow** - Phases 12-13 (shipped 2026-01-31)
 - ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
 - ✅ **v1.4 UX Refinement** - Phases 15-18 (shipped 2026-02-03)
+- ✅ **v1.5 AI Enhancements** - Quick tasks 006-007 (shipped 2026-02-06)
 
 ## Phases
 
@@ -69,6 +70,16 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
+<details>
+<summary>✅ v1.5 AI Enhancements (Quick Tasks) - SHIPPED 2026-02-06</summary>
+
+- [x] Quick 006: Automated Title Generation
+- [x] Quick 007: Preview Toggle Button
+- [x] Infrastructure: Local Ollama Integration
+- [x] Infrastructure: Docker GPU Support
+
+</details>
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status   | Completed  |
@@ -82,3 +93,4 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 16    | v1.4      | 2/2            | Complete | 2026-02-02 |
 | 17    | v1.4      | 1/1            | Complete | 2026-02-03 |
 | 18    | v1.4      | 1/1            | Complete | 2026-02-02 |
+| Q006-007 | v1.5   | 2/2 tasks      | Complete | 2026-02-06 |
