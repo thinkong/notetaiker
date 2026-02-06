@@ -1,4 +1,6 @@
 import type Database from "better-sqlite3";
+import type { StorageService } from "./storage.service";
+import type { QueueService } from "./queue.service";
 
 export interface SimilarNote {
   noteId: string;
@@ -6,7 +8,60 @@ export interface SimilarNote {
 }
 
 export class EmbeddingsService {
-  constructor(private db: Database.Database) {}
+  constructor(
+    private db: Database.Database,
+    private storage?: StorageService,
+    private queue?: QueueService,
+  ) {}
+
+  /**
+   * Rebuild the entire embedding index
+   */
+  async rebuildIndex() {
+    if (!this.storage || !this.queue) {
+      throw new Error("Storage and Queue services are required for rebuild");
+    }
+
+    // Run truncate in transaction
+    const transaction = this.db.transaction(() => {
+      this.db.prepare("DELETE FROM embeddings_meta").run();
+      this.db.prepare("DELETE FROM vec_notes").run();
+    });
+    transaction();
+
+    // Iterate all notes and enqueue embedding jobs
+    const notes = await this.storage.listNotes(10000, 0);
+    for (const note of notes) {
+      if (note.metadata.id && note.metadata.ai !== false) {
+        this.queue.enqueue(note.metadata.id, "embeddings");
+      }
+    }
+
+    return { enqueued: notes.length };
+  }
+
+  /**
+   * Get status of the embedding index
+   */
+  async getStatus() {
+    if (!this.storage) {
+      throw new Error("Storage service is required for status");
+    }
+
+    const indexedCount = (
+      this.db.prepare("SELECT COUNT(*) as count FROM embeddings_meta").get() as {
+        count: number;
+      }
+    ).count;
+
+    const notes = await this.storage.listNotes(10000, 0);
+    const totalNotes = notes.filter((n) => n.metadata.ai !== false).length;
+
+    return {
+      indexedNotes: indexedCount,
+      totalNotes,
+    };
+  }
 
   /**
    * Store or update an embedding for a note
