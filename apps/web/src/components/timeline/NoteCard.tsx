@@ -48,7 +48,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
 
   const handleDismissTag = async (tagToDismiss: string) => {
     const updatedAiTags = (metadata.ai_tags || []).filter(
-      (t) => t !== tagToDismiss,
+      (t: string) => t !== tagToDismiss,
     );
     const updatedIgnoredTags = Array.from(
       new Set([...(metadata.ignored_tags || []), tagToDismiss]),
@@ -133,10 +133,10 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
 
       {(manualTags.length > 0 || aiTags.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {manualTags.map((tag) => (
+          {manualTags.map((tag: string) => (
             <Tag key={`manual-${tag}`} label={tag} variant="manual" />
           ))}
-          {aiTags.map((tag) => (
+          {aiTags.map((tag: string) => (
             <Tag
               key={`ai-${tag}`}
               label={tag}

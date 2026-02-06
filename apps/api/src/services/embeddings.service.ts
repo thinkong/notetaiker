@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "better-sqlite3";
 import type { StorageService, NoteMetadata } from "./storage.service";
 import type { QueueService } from "./queue.service";
 
@@ -9,11 +9,19 @@ export interface SimilarNote extends NoteMetadata {
 }
 
 export class EmbeddingsService {
+  private db: Database;
+  private storage?: StorageService;
+  private queue?: QueueService;
+
   constructor(
-    private db: Database.Database,
-    private storage?: StorageService,
-    private queue?: QueueService,
-  ) {}
+    db: Database,
+    storage?: StorageService,
+    queue?: QueueService,
+  ) {
+    this.db = db;
+    this.storage = storage;
+    this.queue = queue;
+  }
 
   /**
    * Rebuild the entire embedding index

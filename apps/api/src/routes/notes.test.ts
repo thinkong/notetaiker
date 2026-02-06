@@ -14,7 +14,7 @@ const { mockListNotes, mockSaveNote, mockGetNote, mockEnqueue } = vi.hoisted(
 
 vi.mock("../services/storage.service", () => {
   return {
-    StorageService: vi.fn().mockImplementation(function (path, indexer, queue) {
+    StorageService: vi.fn().mockImplementation(function (_path, _indexer, queue) {
       return {
         listNotes: mockListNotes,
         saveNote: vi.fn().mockImplementation(async (content, metadata) => {

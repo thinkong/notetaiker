@@ -296,7 +296,7 @@ function MainCapture() {
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        activeNoteId={noteId}
+        activeNoteId={noteId || undefined}
         onNoteClick={handleNoteClick}
       />
 

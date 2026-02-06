@@ -10,24 +10,25 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: Phase 20 - Related Notes Feature
-Plan: 02 - Related Notes UI
-Status: In progress
-Last activity: 2026-02-06 — Completed 20-02-PLAN.md
+Plan: 03 - UX Polish
+Status: Completed
+Last activity: 2026-02-06 — Completed v1.6 Milestone
 
-Progress: [=========---] 75%
+Progress: [==========] 100%
 
 ## Accumulated Context
 
 - **v1.6 Semantic Intelligence:** Vector infrastructure initialized with `sqlite-vec`.
 - **Related Notes UI:** Integrated a tabbed sidebar with History and Related notes.
 - **Similarity Search:** Frontend now displays similarity matches using vector distance.
+- **UX Polish:** Added debouncing (400ms) and visual similarity labels (High/Medium/Low) to Related Notes panel.
 - **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph, sqlite-vec.
 - **Key Decision:** Using derived state for sidebar tabs to avoid React cascading render warnings.
 
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 20-02-PLAN.md
+Stopped at: Completed v1.6 Smart Connections
 Resume file: None
 
 ### Quick Tasks Completed

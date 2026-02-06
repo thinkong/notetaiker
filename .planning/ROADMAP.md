@@ -13,7 +13,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.3.1 Patch Fixes** - Phase 14 (shipped 2026-01-31)
 - ✅ **v1.4 UX Refinement** - Phases 15-18 (shipped 2026-02-03)
 - ✅ **v1.5 AI Enhancements** - Quick tasks 006-007 (shipped 2026-02-06)
-- [ ] **v1.6 Smart Connections** - Phases 19-20 (planned)
+- [x] **v1.6 Smart Connections** - Phases 19-20 (shipped 2026-02-06)
 
 ## Phases
 
@@ -81,8 +81,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-<details open>
-<summary>⏳ v1.6 Smart Connections (Phases 19-20) - IN PROGRESS</summary>
+<details>
+<summary>✅ v1.6 Smart Connections (Phases 19-20) - SHIPPED 2026-02-06</summary>
 
 - [x] **Phase 19: Embeddings Infrastructure**
   - **Goal**: System automatically generates and stores vector embeddings for all notes locally.
@@ -91,12 +91,12 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
     2. Embeddings are stored in the local SQLite database via `sqlite-vec`.
     3. System detects significant content changes (via hash) to update embeddings efficiently.
     4. User can trigger a full "Rebuild Index" from settings.
-- [ ] **Phase 20: Related Notes Feature**
+- [x] **Phase 20: Related Notes Feature**
   - **Goal**: Users can discover semantically related notes while viewing or editing a note.
   - **Plans**: 3 plans
-    - [ ] 20-01-PLAN.md — Backend API for similarity search
-    - [ ] 20-02-PLAN.md — Related Notes sidebar component
-    - [ ] 20-03-PLAN.md — UX Polish, debouncing, and labels
+    - [x] 20-01-PLAN.md — Backend API for similarity search
+    - [x] 20-02-PLAN.md — Related Notes sidebar component
+    - [x] 20-03-PLAN.md — UX Polish, debouncing, and labels
   - **Success Criteria**:
     1. "Related Notes" panel displays top 5-10 semantically similar notes in the sidebar.
     2. Panel updates automatically (debounced) as the current note context changes.
@@ -117,4 +117,4 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 15-18 | v1.4      | 7/7            | Complete    | 2026-02-03 |
 | Q006-007 | v1.5   | 2/2 tasks      | Complete    | 2026-02-06 |
 | 19    | v1.6      | 3/3            | Complete    | 2026-02-06 |
-| 20    | v1.6      | 0/3            | Planned     | -          |
+| 20    | v1.6      | 3/3            | Complete    | 2026-02-06 |

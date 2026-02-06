@@ -2,7 +2,7 @@ import { generateText, Output, embed } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createOllama, ollama } from "ai-sdk-ollama";
+import { createOllama } from "ai-sdk-ollama";
 import { z } from "zod";
 import type { SecretsService } from "./secrets.service";
 import { isDocker } from "@notetaiker/env";

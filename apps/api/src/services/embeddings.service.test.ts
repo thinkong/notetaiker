@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { EmbeddingsService } from "./embeddings.service";
-import type { Database } from "better-sqlite3";
 
 describe("EmbeddingsService", () => {
   let db: any;

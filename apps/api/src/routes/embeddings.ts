@@ -5,16 +5,14 @@ type Variables = {
   embeddingsService: EmbeddingsService;
 };
 
-export const embeddings = new Hono<{ Variables: Variables }>();
-
-embeddings.get("/status", async (c) => {
-  const embeddingsService = c.get("embeddingsService");
-  const status = await embeddingsService.getStatus();
-  return c.json(status);
-});
-
-embeddings.post("/rebuild", async (c) => {
-  const embeddingsService = c.get("embeddingsService");
-  const result = await embeddingsService.rebuildIndex();
-  return c.json({ message: "Rebuild started", ...result });
-});
+export const embeddings = new Hono<{ Variables: Variables }>()
+  .get("/status", async (c) => {
+    const embeddingsService = c.get("embeddingsService");
+    const status = await embeddingsService.getStatus();
+    return c.json(status);
+  })
+  .post("/rebuild", async (c) => {
+    const embeddingsService = c.get("embeddingsService");
+    const result = await embeddingsService.rebuildIndex();
+    return c.json({ message: "Rebuild started", ...result });
+  });

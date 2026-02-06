@@ -8,17 +8,17 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.6 Smart Connections
+## Current Milestone: v1.7 Graph Interactions
 
-**Goal:** Add semantic intelligence layer for automatic discovery of related notes without manual linking.
+**Goal:** Transform the static graph view into an interactive workspace for organizing thoughts.
 
 **Target features:**
 
-- **Embeddings Infrastructure**: Vector embeddings for all notes using local Ollama
-- **Related Notes Panel**: Show semantically similar notes while viewing/editing
-- **Semantic Graph Clustering**: Visualize meaning-based clusters in graph view
-- **Semantic Search**: Find notes by meaning, not just keywords
-- **Link Suggestions**: AI proposes connections when saving a note
+- **Interactive Nodes:** Click to expand/collapse, right-click context menu
+- **Drag & Drop Organization:** Manually position nodes (pinning)
+- **Cluster Management:** Name and color auto-detected clusters
+- **Filtering:** Filter graph by tag, date, or semantic similarity
+- **Graph-to-Editor:** Drag nodes into editor to insert links
 
 ## Requirements
 
@@ -53,6 +53,10 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **AI-LOCAL-01**: User can configure local LLM provider (Ollama) — v1.5
 - ✓ **AI-SUM-01**: System generates titles/summaries for notes automatically — v1.5
 - ✓ **UX-PREVIEW-01**: User can toggle between edit and preview modes in editor — v1.5
+- ✓ **EMBED-01**: System generates vector embeddings for notes using local Ollama — v1.6
+- ✓ **RELATED-01**: Sidebar displays semantically related notes based on vector similarity — v1.6
+- ✓ **RELATED-02**: Users can trigger manual index rebuilds from settings — v1.6
+- ✓ **RELATED-03**: Related notes are debounced and show similarity strength labels — v1.6
 
 ### Active
 
@@ -66,9 +70,9 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.5 AI Enhancements.
-System is stable with ~7123 LOC TypeScript.
-Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6 (Data Router), Ollama (local LLM).
+Shipped v1.6 Smart Connections.
+System is stable with ~7400 LOC TypeScript.
+Tech Stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6, Ollama, sqlite-vec.
 
 ## Constraints
 

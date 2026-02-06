@@ -65,7 +65,8 @@ export function extractFirstHeader(content: string): string | null {
   const lines = content.split("\n");
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.startsWith("# ")) {
+    // Match any header level (e.g. #, ##, ###) followed by space
+    if (/^#+\s/.test(trimmed)) {
       // Remove all leading # symbols and trim whitespace
       const headerText = trimmed.replace(/^#+\s*/, "").trim();
       return headerText || null;
