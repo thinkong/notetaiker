@@ -19,7 +19,6 @@ import { StatusIndicator } from "./components/layout/StatusIndicator";
 import { SettingsPage } from "./components/settings/SettingsPage";
 import { SearchPalette } from "./components/search/SearchPalette";
 import { Sidebar } from "./components/sidebar/Sidebar";
-import { SidebarTimeline } from "./components/sidebar/SidebarTimeline";
 import { GraphView } from "./components/graph/GraphView";
 import { useDraftPersistence } from "./hooks/useDraftPersistence";
 import { useNavigationGuard } from "./hooks/useNavigationGuard";
@@ -297,9 +296,9 @@ function MainCapture() {
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <SidebarTimeline onNoteClick={handleNoteClick} activeNoteId={noteId} />
-      </Sidebar>
+        activeNoteId={noteId}
+        onNoteClick={handleNoteClick}
+      />
 
       {/* Main Content */}
       <div
