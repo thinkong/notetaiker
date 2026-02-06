@@ -119,7 +119,9 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
   2. User can double-click a node to load that note into the editor instantly.
   3. User can click a node once to highlight its direct connections while dimming the rest of the graph.
   4. User can pan and zoom the canvas smoothly without physics "jitter" or stuttering.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 21-01-PLAN.md — Graph persistence & deep linking
+- [ ] 21-02-PLAN.md — Advanced interactions & tooltips
 
 #### Phase 22: Graph Filtering & Local View
 **Goal**: Users can reduce noise and focus on specific sub-sections of their knowledge base.
@@ -161,7 +163,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | Q006-007 | v1.5   | 2/2 tasks      | Complete    | 2026-02-06 |
 | 19    | v1.6      | 3/3            | Complete    | 2026-02-06 |
 | 20    | v1.6      | 3/3            | Complete    | 2026-02-06 |
-| 21    | v1.7      | 0/TBD          | Not started | -          |
+| 21    | v1.7      | 0/2            | Not started | -          |
 | 22    | v1.7      | 0/TBD          | Not started | -          |
 | 23    | v1.7      | 0/TBD          | Not started | -          |
 | 24    | v1.7      | 0/TBD          | Not started | -          |
