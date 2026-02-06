@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 22 of 24 (Graph Filtering & Local View)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-06 — Completed 22-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-02-06 — Completed 22-03-PLAN.md
 
-Progress: [██████████████████████████████████████████████████████████░] 98%
+Progress: [████████████████████████████████████████████████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 58
+- Total plans completed: 59
 - Average duration: 15 min
-- Total execution time: 14.0 hours
+- Total execution time: 14.2 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [███████████████████████
 | 19    | 4     | 1.0h  | 15m      |
 | 20    | 4     | 1.0h  | 15m      |
 | 21    | 2     | 0.3h  | 10m      |
-| 22    | 2     | 0.4h  | 11m      |
+| 22    | 3     | 0.6h  | 12m      |
 
 **Recent Trend:**
 
-- Last 5 plans: [16, 8, 12, 12, 11]
+- Last 5 plans: [8, 12, 12, 11, 12]
 - Trend: Stable high performance
 
 _Updated after each plan completion_
@@ -59,6 +59,8 @@ Recent decisions affecting current work:
 - [Phase 22]: Local view focus shifts on single-click to visible neighbor nodes.
 - [Phase 22]: Alt + Double-click used as the primary entry/exit toggle for local view.
 - [Phase 22]: Tag search in toolbar uses `cmdk` for consistency and searchable interface.
+- [Phase 22]: Selecting a hidden node (ghosted) clears all filters to reveal it.
+- [Phase 22]: Graph background tints slightly when filters are active for visual context.
 
 ### Pending Todos
 
@@ -70,6 +72,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-06 17:15
-Stopped at: Completed 22-02-PLAN.md
+Last session: 2026-02-06 17:35
+Stopped at: Completed 22-03-PLAN.md
 Resume file: None
