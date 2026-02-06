@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
 import {
   type GraphData,
@@ -6,9 +14,17 @@ import {
   type NodeType,
 } from "../../hooks/useGraphData";
 
+export interface ForceGraphHandle {
+  getGraphState: () =>
+    | { zoom: number; center: { x: number; y: number } }
+    | undefined;
+}
+
 interface ForceGraphProps {
   data: GraphData;
   onNodeClick?: (node: GraphNode) => void;
+  initialZoom?: number;
+  initialCenter?: { x: number; y: number };
 }
 
 interface InternalNode extends GraphNode {
@@ -53,207 +69,227 @@ const NODE_R = {
 
 const LABEL_THRESHOLD = 3; // Zoom level to start showing labels
 
-export function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
-  const fgRef = useRef<
-    ForceGraphMethods<InternalNode, InternalLink> | undefined
-  >(undefined);
-  const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
-  const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
-  const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
+export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
+  ({ data, onNodeClick, initialZoom, initialCenter }, ref) => {
+    const fgRef = useRef<
+      ForceGraphMethods<InternalNode, InternalLink> | undefined
+    >(undefined);
+    const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
+    const [highlightNodes, setHighlightNodes] = useState(new Set<string>());
+    const [highlightLinks, setHighlightLinks] = useState(new Set<string>());
 
-  // Physics setup and auto-zoom
-  useEffect(() => {
-    if (!fgRef.current) return;
+    useImperativeHandle(ref, () => ({
+      getGraphState: () => {
+        if (!fgRef.current) return undefined;
+        return {
+          zoom: fgRef.current.zoom(),
+          center: fgRef.current.centerAt(),
+        };
+      },
+    }));
 
-    // Increase charge strength for better separation
-    fgRef.current.d3Force("charge")?.strength(-150);
-    // Increase link distance
-    fgRef.current.d3Force("link")?.distance(50);
+    // Physics setup and auto-zoom
+    useEffect(() => {
+      if (!fgRef.current) return;
 
-    // Auto-zoom to fit all nodes on initial load
-    // Small delay ensures graph is rendered before zoom
-    setTimeout(() => {
-      fgRef.current?.zoomToFit(400, 80);
-    }, 200);
-  }, []);
+      // Increase charge strength for better separation
+      fgRef.current.d3Force("charge")?.strength(-150);
+      // Increase link distance
+      fgRef.current.d3Force("link")?.distance(50);
 
-  // Pre-calculate favorites for O(1) lookup
-  const neighborsMap = useMemo(() => {
-    const map = new Map<string, { neighbor: string; linkId: string }[]>();
+      // Initial positioning
+      setTimeout(() => {
+        if (!fgRef.current) return;
 
-    data.links.forEach((link) => {
-      const source =
-        typeof link.source === "object"
-          ? (link.source as GraphNode).id
-          : link.source;
-      const target =
-        typeof link.target === "object"
-          ? (link.target as GraphNode).id
-          : link.target;
-      const linkId = `${source}-${target}`;
+        if (initialZoom !== undefined && initialCenter) {
+          // Restore saved state
+          fgRef.current.centerAt(initialCenter.x, initialCenter.y, 0);
+          fgRef.current.zoom(initialZoom, 0);
+        } else {
+          // Auto-zoom to fit all nodes on initial load
+          fgRef.current.zoomToFit(400, 80);
+        }
+      }, 200);
+    }, [initialZoom, initialCenter]);
 
-      if (!map.has(source)) map.set(source, []);
-      if (!map.has(target)) map.set(target, []);
+    // Pre-calculate favorites for O(1) lookup
+    const neighborsMap = useMemo(() => {
+      const map = new Map<string, { neighbor: string; linkId: string }[]>();
 
-      map.get(source)?.push({ neighbor: target, linkId });
-      map.get(target)?.push({ neighbor: source, linkId });
-    });
+      data.links.forEach((link) => {
+        const source =
+          typeof link.source === "object"
+            ? (link.source as GraphNode).id
+            : link.source;
+        const target =
+          typeof link.target === "object"
+            ? (link.target as GraphNode).id
+            : link.target;
+        const linkId = `${source}-${target}`;
 
-    return map;
-  }, [data.links]);
+        if (!map.has(source)) map.set(source, []);
+        if (!map.has(target)) map.set(target, []);
 
-  const handleNodeHover = useCallback(
-    (node: GraphNode | null) => {
-      if (!node) {
-        setHoverNode(null);
-        setHighlightNodes(new Set());
-        setHighlightLinks(new Set());
-        return;
-      }
+        map.get(source)?.push({ neighbor: target, linkId });
+        map.get(target)?.push({ neighbor: source, linkId });
+      });
 
-      const neighbors = new Set<string>();
-      const links = new Set<string>();
+      return map;
+    }, [data.links]);
 
-      neighbors.add(node.id); // Add self
+    const handleNodeHover = useCallback(
+      (node: GraphNode | null) => {
+        if (!node) {
+          setHoverNode(null);
+          setHighlightNodes(new Set());
+          setHighlightLinks(new Set());
+          return;
+        }
 
-      const nodeNeighbors = neighborsMap.get(node.id);
-      if (nodeNeighbors) {
-        nodeNeighbors.forEach(({ neighbor, linkId }) => {
-          neighbors.add(neighbor);
-          links.add(linkId);
-        });
-      }
+        const neighbors = new Set<string>();
+        const links = new Set<string>();
 
-      setHoverNode(node);
-      setHighlightNodes(neighbors);
-      setHighlightLinks(links);
-    },
-    [neighborsMap],
-  );
+        neighbors.add(node.id); // Add self
 
-  const paintNode = useCallback(
-    (
-      node: InternalNode,
-      ctx: CanvasRenderingContext2D,
-      globalScale: number,
-    ) => {
-      const { x, y, type, name } = node;
-      if (x === undefined || y === undefined) return;
+        const nodeNeighbors = neighborsMap.get(node.id);
+        if (nodeNeighbors) {
+          nodeNeighbors.forEach(({ neighbor, linkId }) => {
+            neighbors.add(neighbor);
+            links.add(linkId);
+          });
+        }
 
-      const isHovered = hoverNode === node;
-      const isHighlighted = highlightNodes.has(node.id);
-      const isDimmed = highlightNodes.size > 0 && !isHighlighted;
+        setHoverNode(node);
+        setHighlightNodes(neighbors);
+        setHighlightLinks(links);
+      },
+      [neighborsMap],
+    );
 
-      const r = NODE_R[type as NodeType] || 4;
-      const nodeColors = COLORS[type as NodeType];
-      const color = isHovered
-        ? nodeColors.hover
-        : isDimmed
-          ? COLORS.dimmed
-          : nodeColors.base;
+    const paintNode = useCallback(
+      (
+        node: InternalNode,
+        ctx: CanvasRenderingContext2D,
+        globalScale: number,
+      ) => {
+        const { x, y, type, name } = node;
+        if (x === undefined || y === undefined) return;
 
-      // Draw glow effect for highlighted/hovered nodes
-      if ((isHighlighted || isHovered) && !isDimmed) {
+        const isHovered = hoverNode === node;
+        const isHighlighted = highlightNodes.has(node.id);
+        const isDimmed = highlightNodes.size > 0 && !isHighlighted;
+
+        const r = NODE_R[type as NodeType] || 4;
+        const nodeColors = COLORS[type as NodeType];
+        const color = isHovered
+          ? nodeColors.hover
+          : isDimmed
+            ? COLORS.dimmed
+            : nodeColors.base;
+
+        // Draw glow effect for highlighted/hovered nodes
+        if ((isHighlighted || isHovered) && !isDimmed) {
+          ctx.beginPath();
+          ctx.arc(x, y, r + 3, 0, 2 * Math.PI, false);
+          const gradient = ctx.createRadialGradient(x, y, r, x, y, r + 6);
+          gradient.addColorStop(0, nodeColors.glow);
+          gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = gradient;
+          ctx.fill();
+        }
+
+        // Draw node circle
         ctx.beginPath();
-        ctx.arc(x, y, r + 3, 0, 2 * Math.PI, false);
-        const gradient = ctx.createRadialGradient(x, y, r, x, y, r + 6);
-        gradient.addColorStop(0, nodeColors.glow);
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
-
-      // Draw node circle
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-      ctx.fillStyle = color;
-      ctx.fill();
-
-      // Draw border for all nodes (thicker for highlighted, using type-specific colors)
-      ctx.strokeStyle = isDimmed
-        ? "rgba(84, 110, 122, 0.5)"
-        : isHighlighted
-          ? "#ffffff"
-          : nodeColors.border;
-      ctx.lineWidth = isHighlighted ? 3 : 2;
-      ctx.stroke();
-
-      // Adaptive Labeling
-      const showLabel = globalScale > LABEL_THRESHOLD || isHovered;
-      if (showLabel) {
-        const label = name;
-        const fontSize = 12 / globalScale;
-        ctx.font = `600 ${fontSize}px Inter, system-ui, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        // Add a small background for better readability
-        const textWidth = ctx.measureText(label).width;
-        const padding = fontSize * 0.3;
-        const bckgDimensions = [textWidth + padding * 2, fontSize + padding];
-
-        // Darker background for better contrast
-        ctx.fillStyle = isDimmed
-          ? "rgba(200, 200, 200, 0.6)"
-          : "rgba(30, 35, 45, 0.85)";
-        ctx.beginPath();
-        ctx.roundRect(
-          x - bckgDimensions[0] / 2,
-          y + r + 3,
-          bckgDimensions[0],
-          bckgDimensions[1],
-          3,
-        );
-        ctx.fill();
-
-        // Light text on dark background for contrast
-        ctx.fillStyle = isDimmed ? "rgba(80, 90, 100, 0.8)" : "#eceff4";
-        ctx.fillText(label, x, y + r + 3 + bckgDimensions[1] / 2);
-      }
-    },
-    [hoverNode, highlightNodes],
-  );
-
-  return (
-    <ForceGraph2D
-      ref={fgRef}
-      graphData={data}
-      nodeCanvasObject={(node, ctx, globalScale) =>
-        paintNode(node as InternalNode, ctx, globalScale)
-      }
-      nodePointerAreaPaint={(nodeObject, color, ctx) => {
-        const node = nodeObject as InternalNode;
-        const r = NODE_R[node.type as NodeType] || 4;
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
         ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(node.x ?? 0, node.y ?? 0, r + 2, 0, 2 * Math.PI, false);
         ctx.fill();
-      }}
-      onNodeClick={onNodeClick}
-      onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
-      linkColor={useCallback(
-        (link: InternalLink) => {
-          const source =
-            typeof link.source === "object" ? link.source.id : link.source;
-          const target =
-            typeof link.target === "object" ? link.target.id : link.target;
-          const linkId = `${source}-${target}`;
-          if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
-          return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
-        },
-        [highlightLinks, highlightNodes.size],
-      )}
-      linkWidth={useCallback(
-        (link: InternalLink) => {
-          const source =
-            typeof link.source === "object" ? link.source.id : link.source;
-          const target =
-            typeof link.target === "object" ? link.target.id : link.target;
-          const linkId = `${source}-${target}`;
-          return highlightLinks.has(linkId) ? 2 : 1;
-        },
-        [highlightLinks],
-      )}
-    />
-  );
-}
+
+        // Draw border for all nodes (thicker for highlighted, using type-specific colors)
+        ctx.strokeStyle = isDimmed
+          ? "rgba(84, 110, 122, 0.5)"
+          : isHighlighted
+            ? "#ffffff"
+            : nodeColors.border;
+        ctx.lineWidth = isHighlighted ? 3 : 2;
+        ctx.stroke();
+
+        // Adaptive Labeling
+        const showLabel = globalScale > LABEL_THRESHOLD || isHovered;
+        if (showLabel) {
+          const label = name;
+          const fontSize = 12 / globalScale;
+          ctx.font = `600 ${fontSize}px Inter, system-ui, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          // Add a small background for better readability
+          const textWidth = ctx.measureText(label).width;
+          const padding = fontSize * 0.3;
+          const bckgDimensions = [textWidth + padding * 2, fontSize + padding];
+
+          // Darker background for better contrast
+          ctx.fillStyle = isDimmed
+            ? "rgba(200, 200, 200, 0.6)"
+            : "rgba(30, 35, 45, 0.85)";
+          ctx.beginPath();
+          ctx.roundRect(
+            x - bckgDimensions[0] / 2,
+            y + r + 3,
+            bckgDimensions[0],
+            bckgDimensions[1],
+            3,
+          );
+          ctx.fill();
+
+          // Light text on dark background for contrast
+          ctx.fillStyle = isDimmed ? "rgba(80, 90, 100, 0.8)" : "#eceff4";
+          ctx.fillText(label, x, y + r + 3 + bckgDimensions[1] / 2);
+        }
+      },
+      [hoverNode, highlightNodes],
+    );
+
+    return (
+      <ForceGraph2D
+        ref={fgRef}
+        graphData={data}
+        nodeCanvasObject={(node, ctx, globalScale) =>
+          paintNode(node as InternalNode, ctx, globalScale)
+        }
+        nodePointerAreaPaint={(nodeObject, color, ctx) => {
+          const node = nodeObject as InternalNode;
+          const r = NODE_R[node.type as NodeType] || 4;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(node.x ?? 0, node.y ?? 0, r + 2, 0, 2 * Math.PI, false);
+          ctx.fill();
+        }}
+        onNodeClick={onNodeClick}
+        onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
+        linkColor={useCallback(
+          (link: InternalLink) => {
+            const source =
+              typeof link.source === "object" ? link.source.id : link.source;
+            const target =
+              typeof link.target === "object" ? link.target.id : link.target;
+            const linkId = `${source}-${target}`;
+            if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
+            return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
+          },
+          [highlightLinks, highlightNodes.size],
+        )}
+        linkWidth={useCallback(
+          (link: InternalLink) => {
+            const source =
+              typeof link.source === "object" ? link.source.id : link.source;
+            const target =
+              typeof link.target === "object" ? link.target.id : link.target;
+            const linkId = `${source}-${target}`;
+            return highlightLinks.has(linkId) ? 2 : 1;
+          },
+          [highlightLinks],
+        )}
+      />
+    );
+  },
+);

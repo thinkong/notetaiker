@@ -1,14 +1,30 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGraphData } from "../../hooks/useGraphData";
-import { ForceGraph } from "./ForceGraph";
+import { ForceGraph, type ForceGraphHandle } from "./ForceGraph";
 import { NoteSidePanel } from "./NoteSidePanel";
+import { useGraphState } from "../../contexts/GraphStateContext";
 
 export function GraphView() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useGraphData();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const { graphState, updateGraphState } = useGraphState();
+  const graphRef = useRef<ForceGraphHandle>(null);
+
+  // Save state on unmount
+  useEffect(() => {
+    const graph = graphRef.current;
+    return () => {
+      if (graph) {
+        const state = graph.getGraphState();
+        if (state) {
+          updateGraphState({ zoom: state.zoom, center: state.center });
+        }
+      }
+    };
+  }, [updateGraphState]);
 
   const selectedNode = useMemo(() => {
     if (!selectedNodeId || !data) return null;
@@ -44,10 +60,13 @@ export function GraphView() {
             </div>
           ) : data ? (
             <ForceGraph
+              ref={graphRef}
               data={data}
               onNodeClick={(node) => {
                 setSelectedNodeId(node.id);
               }}
+              initialZoom={graphState.zoom}
+              initialCenter={graphState.center}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
