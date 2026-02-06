@@ -2,31 +2,30 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-04)
+See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** v1.5 AI Enhancements
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: —
 Plan: —
-Status: Defining requirements
-Last activity: 2026-02-05 — Completed quick task 007: Preview toggle button
+Status: Milestone v1.5 complete, planning next
+Last activity: 2026-02-06 — Completed v1.5 AI Enhancements
 
-Progress: [----------] 0% (Fresh Milestone)
+Progress: [##########] 100% (v1.5 Complete)
 
 ## Accumulated Context
 
-- **v1.4 Accomplishments:** Fresh capture mode, Smart Navigation Guard, History integration, Pulse animation.
-- **Manual Tagging:** Users can now manually add/remove tags in the editor.
-- **AI Tag Interaction:** AI tags are visible and can be dismissed (ignored).
-- **Preview Mode:** Editor can toggle between edit and preview modes to view rendered markdown.
+- **v1.5 Accomplishments:** Local Ollama integration, automated title generation, preview toggle, Docker GPU support.
+- **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph.
+- **LOC:** ~7123 TypeScript
 
 ## Session Continuity
 
-Last session: 2026-02-05
-Stopped at: Quick task 007 completed
+Last session: 2026-02-06
+Stopped at: Milestone v1.5 archived
 Resume file: None
 
 ### Quick Tasks Completed

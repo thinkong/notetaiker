@@ -8,14 +8,9 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.5 AI Enhancements
+## Current Milestone: Planning Next
 
-**Goal:** Enhance AI capabilities with local LLM support for privacy/cost and automated summarization.
-
-**Target features:**
-
-- **Local LLM Support**: Integration with Ollama/Llamafile for offline inference.
-- **Summarization**: Auto-generate titles or summaries for notes.
+**Goal:** To be determined.
 
 ## Requirements
 
@@ -47,11 +42,13 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **UX-04**: Explicit "New Note" button clears editor for fresh capture — v1.4
 - ✓ **UX-05**: Navigation guard checks for actual content changes before prompting (Smart Dirty Check) — v1.4
 - ✓ **UX-06**: Clicking note in history stream loads content into editor — v1.4
+- ✓ **AI-LOCAL-01**: User can configure local LLM provider (Ollama) — v1.5
+- ✓ **AI-SUM-01**: System generates titles/summaries for notes automatically — v1.5
+- ✓ **UX-PREVIEW-01**: User can toggle between edit and preview modes in editor — v1.5
 
 ### Active
 
-- [ ] **AI-LOCAL-01**: User can configure local LLM provider (Ollama)
-- [ ] **AI-SUM-01**: System generates titles/summaries for notes automatically
+(None yet — planning next milestone)
 
 ### Out of Scope
 
@@ -61,9 +58,9 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.4 UX Refinement.
-System is stable with ~5500 LOC TypeScript.
-Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6 (Data Router).
+Shipped v1.5 AI Enhancements.
+System is stable with ~7123 LOC TypeScript.
+Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6 (Data Router), Ollama (local LLM).
 
 ## Constraints
 
@@ -91,7 +88,10 @@ Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 | **Synchronized Note ID**      | Used state+ref pattern to handle React reactivity vs closure staleness.                                    | ✓ Good (v1.4)   |
 | **Data Router Migration**     | Migrated to `createBrowserRouter` to enable robust `useBlocker` navigation guarding.                       | ✓ Good (v1.4)   |
 | **Smart Dirty Check**         | Content comparison (current vs original) instead of boolean flag reduces false positives.                  | ✓ Good (v1.4)   |
+| **Local Ollama Default**      | Privacy-first, zero-cost inference as default provider with cloud fallback.                               | ✓ Good (v1.5)   |
+| **Backend Proxy for Ollama**  | Hono proxies all Ollama requests to avoid CORS issues in browser.                                         | ✓ Good (v1.5)   |
+| **Header-First Title Extract**| Extract markdown headers before falling back to LLM, reducing API calls and honoring user intent.         | ✓ Good (v1.5)   |
 
 ---
 
-_Last updated: 2026-02-04 after start of v1.5 milestone_
+_Last updated: 2026-02-06 after v1.5 milestone completion_
