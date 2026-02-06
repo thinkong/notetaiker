@@ -35,17 +35,17 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | - | Pending |
-| NAV-02 | - | Pending |
-| NAV-03 | - | Pending |
-| FILT-01 | - | Pending |
-| FILT-02 | - | Pending |
-| INTER-01 | - | Pending |
-| INTER-02 | - | Pending |
-| SMART-01 | - | Pending |
-| SMART-02 | - | Pending |
+| NAV-01 | Phase 21 | Pending |
+| NAV-02 | Phase 21 | Pending |
+| NAV-03 | Phase 21 | Pending |
+| FILT-01 | Phase 22 | Pending |
+| FILT-02 | Phase 22 | Pending |
+| INTER-01 | Phase 23 | Pending |
+| INTER-02 | Phase 23 | Pending |
+| SMART-01 | Phase 24 | Pending |
+| SMART-02 | Phase 24 | Pending |
 
 **Coverage:**
 - v1 requirements: 9 total
-- Mapped to phases: 0
-- Unmapped: 9 ⚠️
+- Mapped to phases: 9
+- Unmapped: 0 ✓

@@ -5,37 +5,59 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Zero-friction capture with intelligent, automated organization.
-**Current focus:** v1.6 Smart Connections
+**Current focus:** Phase 21: Graph Navigation & Tooltips
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-06 — Milestone v1.7 started
+Phase: 21 of 24 (Graph Navigation & Tooltips)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-06 — Shipped v1.6, initialized v1.7 roadmap.
+
+Progress: [▓▓▓▓▓▓▓▓░░] 83%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 53
+- Average duration: 15 min
+- Total execution time: 13.2 hours
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 1-18  | 45    | 11.2h | 15m      |
+| 19    | 4     | 1.0h  | 15m      |
+| 20    | 4     | 1.0h  | 15m      |
+
+**Recent Trend:**
+- Last 5 plans: [15, 12, 18, 14, 16]
+- Trend: Stable
+
+*Updated after each plan completion*
 
 ## Accumulated Context
 
-- **v1.6 Semantic Intelligence:** Vector infrastructure initialized with `sqlite-vec`.
-- **Related Notes UI:** Integrated a tabbed sidebar with History and Related notes.
-- **Similarity Search:** Frontend now displays similarity matches using vector distance.
-- **UX Polish:** Added debouncing (400ms) and visual similarity labels (High/Medium/Low) to Related Notes panel.
-- **Tech Stack:** Hono, React 19, Tailwind v4, SQLite, CodeMirror 6, Ollama, React Force Graph, sqlite-vec.
-- **Key Decision:** Using derived state for sidebar tabs to avoid React cascading render warnings.
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- [Phase 11]: Used `react-force-graph-2d` (Canvas) for performance.
+- [Phase 19]: Standardized on `sqlite-vec` for local vector storage.
+- [Phase 20]: Semantic similarity updates are debounced to save CPU.
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-06
-Stopped at: Milestone v1.7 initialized
+Last session: 2026-02-06 14:00
+Stopped at: Roadmap creation for v1.7 complete.
 Resume file: None
-
-### Quick Tasks Completed
-
-| #   | Description                                                             | Date       | Commit  | Directory                                                                                             |
-| --- | ----------------------------------------------------------------------- | ---------- | ------- | ----------------------------------------------------------------------------------------------------- |
-| 007 | Preview toggle button to switch between edit and preview modes          | 2026-02-05 | 31dd5db | [007-create-a-preview-toggle-button-to-previe](./quick/007-create-a-preview-toggle-button-to-previe/) |
-| 006 | Automated title generation for notes without headers                    | 2026-02-05 | 2fc217a | [006-when-a-note-doesn-t-contain-a-title-head](./quick/006-when-a-note-doesn-t-contain-a-title-head/) |
-| 005 | Add manual tags and display AI tags in editor                           | 2026-02-03 | 265d9b7 | [005-add-manual-tags-and-display-ai-tags-in-e](./quick/005-add-manual-tags-and-display-ai-tags-in-e/) |
-| 004 | Enhanced graph view with auto-zoom and node colors                      | 2026-02-03 | 2608dce | [004-enhance-graph-view-with-node-colors-and- silicate/](./quick/004-enhance-graph-view-with-node-colors-and-/) |
-| 003 | Replace preview with expandable tags in sidebar note cards              | 2026-02-03 | 3610dff | [003-replace-preview-with-expandable-tags-in-](./quick/003-replace-preview-with-expandable-tags-in-/) |
-| 002 | Remove preview modal and load note directly into editor with save guard | 2026-02-03 | f1be556 | [002-remove-preview-modal-and-load-note-direc](./quick/002-remove-preview-modal-and-load-note-direc/) |
