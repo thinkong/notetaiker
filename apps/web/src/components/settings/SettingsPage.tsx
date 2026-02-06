@@ -6,6 +6,8 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  BrainCircuit,
+  Database,
 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import type { Secrets } from "@notetaiker/env";
@@ -69,6 +71,80 @@ const DiagnosticsSection = () => {
             Healthy
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+const SmartConnectionsSection = () => {
+  const queryClient = useQueryClient();
+  const { data: status, isLoading: isLoadingStatus } = useQuery({
+    queryKey: ["embeddings-status"],
+    queryFn: async () => {
+      const res = await api.embeddings.status.$get();
+      if (!res.ok) throw new Error("Failed to fetch embeddings status");
+      return res.json();
+    },
+    refetchInterval: 5000, // Refresh every 5s while page is open
+  });
+
+  const rebuildMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.embeddings.rebuild.$post();
+      if (!res.ok) throw new Error("Failed to start rebuild");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["embeddings-status"] });
+    },
+  });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between p-4 bg-nord-snow0 dark:bg-nord-polar0 rounded-md">
+        <div className="flex items-center space-x-4">
+          <div className="p-2 bg-nord-frost3/10 rounded-lg">
+            <BrainCircuit className="w-6 h-6 text-nord-frost3" />
+          </div>
+          <div>
+            <p className="font-medium text-nord-polar0 dark:text-nord-snow2">
+              Semantic Search Index
+            </p>
+            <p className="text-sm text-nord-polar3 dark:text-nord-snow1">
+              {isLoadingStatus ? (
+                "Loading status..."
+              ) : (
+                <>
+                  <span className="font-semibold text-nord-frost3">
+                    {status?.indexedNotes || 0}
+                  </span>{" "}
+                  of {status?.totalNotes || 0} notes indexed for smart
+                  connections.
+                </>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (
+              confirm(
+                "Are you sure you want to rebuild the entire semantic index? This may take some time depending on your number of notes and AI provider.",
+              )
+            ) {
+              rebuildMutation.mutate();
+            }
+          }}
+          disabled={rebuildMutation.isPending}
+          className="flex items-center px-4 py-2 bg-nord-polar1 hover:bg-nord-polar2 text-nord-snow2 text-sm font-medium rounded-md shadow-sm transition-colors disabled:opacity-50 border border-nord-polar3"
+        >
+          <Database
+            className={`w-4 h-4 mr-2 ${rebuildMutation.isPending ? "animate-spin" : ""}`}
+          />
+          {rebuildMutation.isPending ? "Starting..." : "Rebuild Index"}
+        </button>
       </div>
     </div>
   );
@@ -225,6 +301,13 @@ export const SettingsPage = () => {
               </p>
             </div>
           )}
+        </div>
+
+        <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
+          <h3 className="text-lg font-semibold text-nord-polar0 dark:text-nord-snow2 mb-4">
+            Smart Connections
+          </h3>
+          <SmartConnectionsSection />
         </div>
 
         <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
