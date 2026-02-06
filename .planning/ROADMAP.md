@@ -82,9 +82,9 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 </details>
 
 <details open>
-<summary>⏳ v1.6 Smart Connections (Phases 19-20) - PLANNED</summary>
+<summary>⏳ v1.6 Smart Connections (Phases 19-20) - IN PROGRESS</summary>
 
-- [ ] **Phase 19: Embeddings Infrastructure**
+- [x] **Phase 19: Embeddings Infrastructure**
   - **Goal**: System automatically generates and stores vector embeddings for all notes locally.
   - **Success Criteria**:
     1. New notes automatically trigger embedding generation in the background using Ollama (`nomic-embed-text`).
