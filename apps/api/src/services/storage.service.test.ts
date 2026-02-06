@@ -18,7 +18,8 @@ describe("StorageService", () => {
     // For unit tests of StorageService, we can just use a real one pointed at tempDir
     // as it just updates the SQLite DB
     indexerService = new IndexerService(tempDir, tempDir);
-    storageService = new StorageService(tempDir, indexerService);
+    const mockQueue = { enqueue: vi.fn() };
+    storageService = new StorageService(tempDir, indexerService, mockQueue as any);
   });
 
   afterEach(async () => {
@@ -44,6 +45,30 @@ describe("StorageService", () => {
       expect(parsed.data.id).toBeDefined();
       expect(parsed.data.createdAt).toBeDefined();
       expect(parsed.data.updatedAt).toBeDefined();
+    });
+
+    it("should save a note and enqueue background jobs", async () => {
+      const content = "Hello world";
+      const metadata = { title: "Test Note", id: "test-id" };
+
+      const mockQueue = (storageService as any).queue;
+
+      await storageService.saveNote(content, metadata);
+
+      expect(mockQueue.enqueue).toHaveBeenCalledWith("test-id", "analysis");
+      expect(mockQueue.enqueue).toHaveBeenCalledWith("test-id", "embeddings");
+    });
+
+    it("should not enqueue jobs if AI is disabled", async () => {
+      const content = "Hello world";
+      const metadata = { title: "Test Note", id: "test-id", ai: false };
+
+      const mockQueue = (storageService as any).queue;
+      vi.clearAllMocks();
+
+      await storageService.saveNote(content, metadata);
+
+      expect(mockQueue.enqueue).not.toHaveBeenCalled();
     });
 
     it("should handle filename collisions by appending a suffix", async () => {

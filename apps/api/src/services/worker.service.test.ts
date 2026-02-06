@@ -7,6 +7,7 @@ describe("WorkerService", () => {
   let mockEventsService: any;
   let mockAiService: any;
   let mockStorageService: any;
+  let mockEmbeddingsService: any;
 
   beforeEach(() => {
     mockQueueService = {
@@ -20,10 +21,15 @@ describe("WorkerService", () => {
     mockAiService = {
       generateTags: vi.fn(),
       generateTitle: vi.fn(),
+      generateEmbedding: vi.fn(),
     };
     mockStorageService = {
       getNote: vi.fn(),
       saveNote: vi.fn(),
+    };
+    mockEmbeddingsService = {
+      getEmbeddingMeta: vi.fn(),
+      storeEmbedding: vi.fn(),
     };
 
     workerService = new WorkerService(
@@ -31,6 +37,7 @@ describe("WorkerService", () => {
       mockEventsService as any,
       mockAiService as any,
       mockStorageService as any,
+      mockEmbeddingsService as any,
     );
   });
 
@@ -52,14 +59,11 @@ describe("WorkerService", () => {
       "New AI Tag",
     ]);
 
-    // Force execution of the private executeJob method via any casting or just trigger processNext
-    // For simplicity in this test, we'll test the logic by calling the private method if possible
-    // or just mock getNextJob and trigger the event.
-
-    mockQueueService.getNextJob.mockReturnValue({ id: "job-1", noteId });
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    mockQueueService.getNextJob.mockReturnValue(job);
 
     // Trigger processing
-    await (workerService as any).executeJob("job-1", noteId);
+    await (workerService as any).executeJob(job);
 
     expect(mockAiService.generateTags).toHaveBeenCalledWith("Note content");
 
@@ -96,7 +100,8 @@ describe("WorkerService", () => {
       "new ai tag",
     ]);
 
-    await (workerService as any).executeJob("job-1", noteId);
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    await (workerService as any).executeJob(job);
 
     expect(mockStorageService.saveNote).toHaveBeenCalledWith(
       "Note content",
@@ -120,7 +125,8 @@ describe("WorkerService", () => {
     mockStorageService.getNote.mockResolvedValue(note);
     mockAiService.generateTags.mockResolvedValue(["existing ai tag"]);
 
-    await (workerService as any).executeJob("job-1", noteId);
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    await (workerService as any).executeJob(job);
 
     expect(mockStorageService.saveNote).not.toHaveBeenCalled();
   });
@@ -138,7 +144,8 @@ describe("WorkerService", () => {
     mockStorageService.getNote.mockResolvedValue(note);
     mockAiService.generateTags.mockResolvedValue(["existing tag"]);
 
-    await (workerService as any).executeJob("job-1", noteId);
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    await (workerService as any).executeJob(job);
 
     expect(mockStorageService.saveNote).toHaveBeenCalledWith(
       note.content,
@@ -162,7 +169,8 @@ describe("WorkerService", () => {
     mockAiService.generateTags.mockResolvedValue(["existing tag"]);
     mockAiService.generateTitle.mockResolvedValue("AI Generated Title");
 
-    await (workerService as any).executeJob("job-1", noteId);
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    await (workerService as any).executeJob(job);
 
     expect(mockAiService.generateTitle).toHaveBeenCalledWith(note.content);
     expect(mockStorageService.saveNote).toHaveBeenCalledWith(
@@ -187,9 +195,59 @@ describe("WorkerService", () => {
     mockStorageService.getNote.mockResolvedValue(note);
     mockAiService.generateTags.mockResolvedValue(["existing tag"]);
 
-    await (workerService as any).executeJob("job-1", noteId);
+    const job = { id: "job-1", noteId, type: "analysis" } as any;
+    await (workerService as any).executeJob(job);
 
     // Should not call saveNote if only title would have changed but it's already there
     expect(mockStorageService.saveNote).not.toHaveBeenCalled();
+  });
+
+  it("should generate and store embeddings when they are out of date", async () => {
+    const noteId = "note-1";
+    const content = "Embedding content";
+    const note = {
+      content,
+      metadata: { id: noteId },
+    };
+
+    mockStorageService.getNote.mockResolvedValue(note);
+    mockEmbeddingsService.getEmbeddingMeta.mockReturnValue({
+      content_hash: "old-hash",
+    });
+    const mockVector = [0.1, 0.2];
+    mockAiService.generateEmbedding.mockResolvedValue(mockVector);
+
+    const job = { id: "job-2", noteId, type: "embeddings" } as any;
+    await (workerService as any).executeJob(job);
+
+    expect(mockAiService.generateEmbedding).toHaveBeenCalledWith(content);
+    expect(mockEmbeddingsService.storeEmbedding).toHaveBeenCalledWith(
+      noteId,
+      mockVector,
+      expect.any(String),
+    );
+  });
+
+  it("should skip embedding generation if hash matches", async () => {
+    const noteId = "note-1";
+    const content = "Same content";
+    const note = {
+      content,
+      metadata: { id: noteId },
+    };
+
+    const crypto = await import("node:crypto");
+    const hash = crypto.createHash("sha256").update(content).digest("hex");
+
+    mockStorageService.getNote.mockResolvedValue(note);
+    mockEmbeddingsService.getEmbeddingMeta.mockReturnValue({
+      content_hash: hash,
+    });
+
+    const job = { id: "job-2", noteId, type: "embeddings" } as any;
+    await (workerService as any).executeJob(job);
+
+    expect(mockAiService.generateEmbedding).not.toHaveBeenCalled();
+    expect(mockEmbeddingsService.storeEmbedding).not.toHaveBeenCalled();
   });
 });

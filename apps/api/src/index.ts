@@ -16,6 +16,7 @@ import { AIService } from "./services/ai.service";
 import { StorageService } from "./services/storage.service";
 import { SecretsService } from "./services/secrets.service";
 import { IndexerService } from "./services/indexer.service";
+import { EmbeddingsService } from "./services/embeddings.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 type Bindings = {};
@@ -55,7 +56,12 @@ const eventsService = new EventsService();
 const secretsService = new SecretsService(workspaceRoot);
 const aiService = new AIService(secretsService);
 const indexerService = new IndexerService(workspaceRoot, notesDir);
-const storageService = new StorageService(notesDir, indexerService);
+const storageService = new StorageService(
+  notesDir,
+  indexerService,
+  queueService,
+);
+const embeddingsService = new EmbeddingsService(indexerService.getDb());
 
 // Initial sync of notes
 console.log("Syncing notes index...");
@@ -73,6 +79,7 @@ const workerService = new WorkerService(
   eventsService,
   aiService,
   storageService,
+  embeddingsService,
 );
 workerService.start();
 

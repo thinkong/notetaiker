@@ -34,8 +34,21 @@ describe("QueueService", () => {
     const job = queueService.getJob(jobId);
     expect(job).toBeDefined();
     expect(job?.noteId).toBe(noteId);
+    expect(job?.type).toBe("analysis");
     expect(job?.status).toBe("queued");
     expect(job?.attempts).toBe(0);
+  });
+
+  it("should enqueue an embeddings job", () => {
+    const noteId = "test-note-1";
+    const jobId = queueService.enqueue(noteId, "embeddings", { hash: "abc" });
+
+    expect(jobId).toBeDefined();
+    const job = queueService.getJob(jobId);
+    expect(job).toBeDefined();
+    expect(job?.noteId).toBe(noteId);
+    expect(job?.type).toBe("embeddings");
+    expect(JSON.parse(job?.payload || "{}")).toEqual({ hash: "abc" });
   });
 
   it("should get next job and transition it to processing", () => {

@@ -12,6 +12,7 @@ import {
   toTitleCase,
 } from "../lib/markdown";
 import type { IndexerService } from "./indexer.service";
+import type { QueueService } from "./queue.service";
 
 export interface NoteMetadata {
   id?: string;
@@ -24,10 +25,16 @@ export interface NoteMetadata {
 export class StorageService {
   private storagePath: string;
   private indexer: IndexerService;
+  private queue: QueueService;
 
-  constructor(storagePath: string, indexer: IndexerService) {
+  constructor(
+    storagePath: string,
+    indexer: IndexerService,
+    queue: QueueService,
+  ) {
     this.storagePath = storagePath;
     this.indexer = indexer;
+    this.queue = queue;
   }
 
   async saveNote(
@@ -106,6 +113,12 @@ export class StorageService {
 
     // Sync to index
     this.indexer.syncNote(fileName, content, fullMetadata);
+
+    // Enqueue jobs
+    if (fullMetadata.ai !== false) {
+      this.queue.enqueue(id, "analysis");
+      this.queue.enqueue(id, "embeddings");
+    }
 
     return fileName;
   }

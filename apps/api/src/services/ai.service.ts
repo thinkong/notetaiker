@@ -1,8 +1,8 @@
-import { generateText, Output } from "ai";
+import { generateText, Output, embed } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createOllama } from "ai-sdk-ollama";
+import { createOllama, ollama } from "ai-sdk-ollama";
 import { z } from "zod";
 import type { SecretsService } from "./secrets.service";
 import { isDocker } from "@notetaiker/env";
@@ -126,5 +126,33 @@ ${content}`,
     });
 
     return output.title;
+  }
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    // For embeddings, we specifically want to use Ollama with nomic-embed-text if possible,
+    // as it is the local standard for embeddings in this project.
+    // If Ollama isn't selected, we fallback to the default model of the selected provider.
+    const secrets = await this.secretsService.getSecrets();
+    const provider = secrets.selectedProvider;
+
+    let embeddingModel;
+
+    if (provider === "ollama" || !provider) {
+      const ollamaProvider = createOllama({
+        baseURL: AIService.DEFAULT_BASE_URLS.ollama,
+      });
+      embeddingModel = ollamaProvider.embedding("nomic-embed-text");
+    } else {
+      // Fallback to the provider's default model for embeddings
+      // Note: This might need more specific model names for each provider later
+      embeddingModel = await this.getModel();
+    }
+
+    const { embedding } = await embed({
+      model: embeddingModel as any,
+      value: text,
+    });
+
+    return embedding;
   }
 }

@@ -70,12 +70,6 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
       });
       const savedNote = await storageService.getNote(fileName);
 
-      // Enqueue background processing job
-      const queueService = c.get("queueService");
-      if (savedNote && savedNote.metadata.id) {
-        queueService.enqueue(savedNote.metadata.id);
-      }
-
       return c.json(savedNote, 201);
     },
   )
@@ -112,11 +106,6 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
       });
 
       const savedNote = await storageService.getNote(fileName);
-
-      const queueService = c.get("queueService");
-      if (savedNote && savedNote.metadata.id) {
-        queueService.enqueue(savedNote.metadata.id);
-      }
 
       return c.json(savedNote);
     },

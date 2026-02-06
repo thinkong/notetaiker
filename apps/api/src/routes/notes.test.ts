@@ -14,10 +14,17 @@ const { mockListNotes, mockSaveNote, mockGetNote, mockEnqueue } = vi.hoisted(
 
 vi.mock("../services/storage.service", () => {
   return {
-    StorageService: vi.fn().mockImplementation(function () {
+    StorageService: vi.fn().mockImplementation(function (path, indexer, queue) {
       return {
         listNotes: mockListNotes,
-        saveNote: mockSaveNote,
+        saveNote: vi.fn().mockImplementation(async (content, metadata) => {
+          const result = await mockSaveNote(content, metadata);
+          if (queue && metadata?.ai !== false) {
+            queue.enqueue(metadata?.id || "new-id", "analysis");
+            queue.enqueue(metadata?.id || "new-id", "embeddings");
+          }
+          return result;
+        }),
         getNote: mockGetNote,
       };
     }),
@@ -33,8 +40,9 @@ describe("Notes Routes", () => {
     // Inject mock services into context
     app.use("*", async (c, next) => {
       const { StorageService } = await import("../services/storage.service");
-      c.set("queueService", { enqueue: mockEnqueue });
-      c.set("storageService", new StorageService("" as any, {} as any));
+      const mockQueue = { enqueue: mockEnqueue };
+      c.set("queueService", mockQueue as any);
+      c.set("storageService", new StorageService("" as any, {} as any, mockQueue as any));
       await next();
     });
     app.route("/notes", notes);
@@ -104,8 +112,9 @@ describe("Notes Routes", () => {
     const data = await res.json();
     expect(data).toEqual(savedNote);
 
-    // Verify job was enqueued
-    expect(mockEnqueue).toHaveBeenCalledWith("new-id");
+    // Verify jobs were enqueued via StorageService
+    expect(mockEnqueue).toHaveBeenCalledWith("new-id", "analysis");
+    expect(mockEnqueue).toHaveBeenCalledWith("new-id", "embeddings");
   });
 
   it("POST /notes with invalid body should return 400", async () => {

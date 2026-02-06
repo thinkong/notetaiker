@@ -1,10 +1,12 @@
 import PQueue from "p-queue";
 import pRetry from "p-retry";
-import type { QueueService } from "./queue.service";
+import type { QueueService, Job } from "./queue.service";
 import type { EventsService } from "./events.service";
 import type { AIService } from "./ai.service";
 import type { StorageService } from "./storage.service";
+import type { EmbeddingsService } from "./embeddings.service";
 import { toTitleCase, extractFirstHeader } from "../lib/markdown";
+import { createHash } from "node:crypto";
 
 export class WorkerService {
   private queue: PQueue;
@@ -12,6 +14,7 @@ export class WorkerService {
   private eventsService: EventsService;
   private aiService: AIService;
   private storageService: StorageService;
+  private embeddingsService: EmbeddingsService;
   private isRunning: boolean = false;
 
   constructor(
@@ -19,11 +22,13 @@ export class WorkerService {
     eventsService: EventsService,
     aiService: AIService,
     storageService: StorageService,
+    embeddingsService: EmbeddingsService,
   ) {
     this.queueService = queueService;
     this.eventsService = eventsService;
     this.aiService = aiService;
     this.storageService = storageService;
+    this.embeddingsService = embeddingsService;
     // Concurrency limited to 2 as per requirements
     this.queue = new PQueue({ concurrency: 2 });
 
@@ -52,17 +57,20 @@ export class WorkerService {
     console.log(`Worker: Picked up job ${job.id} for note ${job.noteId}`);
 
     // Add to p-queue
-    this.queue.add(() => this.executeJob(job.id, job.noteId));
+    this.queue.add(() => this.executeJob(job));
 
     // Try to pick up another one if we have capacity
     this.processNext();
   }
 
-  private async executeJob(jobId: string, noteId: string) {
+  private async executeJob(job: Job) {
+    const { id: jobId, noteId, type } = job;
     try {
       await pRetry(
         async () => {
-          console.log(`Worker: Processing job ${jobId} (note: ${noteId})...`);
+          console.log(
+            `Worker: Processing job ${jobId} (type: ${type}, note: ${noteId})...`,
+          );
 
           const note = await this.storageService.getNote(noteId);
           if (!note) {
@@ -79,71 +87,10 @@ export class WorkerService {
             return;
           }
 
-          const generatedTags = await this.aiService.generateTags(note.content);
-
-          const manualTags = note.metadata.tags || [];
-          const ignoredTags = note.metadata.ignored_tags || [];
-
-          // Filter out tags that are already in manual tags or ignored tags
-          const filteredGenerated = generatedTags.filter((t) => {
-            const titleCased = toTitleCase(t);
-            return (
-              !manualTags.includes(titleCased) &&
-              !ignoredTags.includes(titleCased)
-            );
-          });
-
-          // Replace old AI tags with fresh list (not merge) to avoid accumulation
-          const updatedAiTags = filteredGenerated.map(toTitleCase);
-
-          // Only save if ai_tags actually changed
-          const existingAiTags = note.metadata.ai_tags || [];
-          const aiTagsChanged =
-            updatedAiTags.length !== existingAiTags.length ||
-            !updatedAiTags.every((t) => existingAiTags.includes(t));
-
-          // Title generation logic
-          let updatedTitle = note.metadata.title;
-          let titleChanged = false;
-
-          if (!updatedTitle) {
-            const header = extractFirstHeader(note.content);
-            if (header) {
-              updatedTitle = header;
-              titleChanged = true;
-              console.log(
-                `Worker: Extracted title from header for note ${noteId}: ${updatedTitle}`,
-              );
-            } else {
-              updatedTitle = await this.aiService.generateTitle(note.content);
-              titleChanged = true;
-              console.log(
-                `Worker: Generated AI title for note ${noteId}: ${updatedTitle}`,
-              );
-            }
-          }
-
-          if (aiTagsChanged || titleChanged) {
-            const updatedMetadata = {
-              ...note.metadata,
-              ai_tags: updatedAiTags,
-              title: updatedTitle,
-            };
-
-            await this.storageService.saveNote(note.content, updatedMetadata);
-
-            if (aiTagsChanged) {
-              console.log(
-                `Worker: Updated ai_tags for note ${noteId}: ${updatedAiTags.join(", ")}`,
-              );
-            }
-            if (titleChanged) {
-              console.log(
-                `Worker: Updated title for note ${noteId}: ${updatedTitle}`,
-              );
-            }
+          if (type === "embeddings") {
+            await this.handleEmbeddingsJob(noteId, note.content);
           } else {
-            console.log(`Worker: No updates needed for note ${noteId}`);
+            await this.handleAnalysisJob(noteId, note.content, note.metadata);
           }
 
           console.log(`Worker: Completed job ${jobId}`);
@@ -170,6 +117,93 @@ export class WorkerService {
     } finally {
       // Check if there are more jobs to process
       this.processNext();
+    }
+  }
+
+  private async handleEmbeddingsJob(noteId: string, content: string) {
+    const hash = createHash("sha256").update(content).digest("hex");
+    const existingMeta = this.embeddingsService.getEmbeddingMeta(noteId);
+
+    if (existingMeta && existingMeta.content_hash === hash) {
+      console.log(`Worker: Embedding for note ${noteId} is up to date, skipping`);
+      return;
+    }
+
+    console.log(`Worker: Generating embedding for note ${noteId}...`);
+    const vector = await this.aiService.generateEmbedding(content);
+    this.embeddingsService.storeEmbedding(noteId, vector, hash);
+    console.log(`Worker: Stored embedding for note ${noteId}`);
+  }
+
+  private async handleAnalysisJob(
+    noteId: string,
+    content: string,
+    metadata: any,
+  ) {
+    const generatedTags = await this.aiService.generateTags(content);
+
+    const manualTags = metadata.tags || [];
+    const ignoredTags = metadata.ignored_tags || [];
+
+    // Filter out tags that are already in manual tags or ignored tags
+    const filteredGenerated = generatedTags.filter((t) => {
+      const titleCased = toTitleCase(t);
+      return (
+        !manualTags.includes(titleCased) && !ignoredTags.includes(titleCased)
+      );
+    });
+
+    // Replace old AI tags with fresh list (not merge) to avoid accumulation
+    const updatedAiTags = filteredGenerated.map(toTitleCase);
+
+    // Only save if ai_tags actually changed
+    const existingAiTags = metadata.ai_tags || [];
+    const aiTagsChanged =
+      updatedAiTags.length !== existingAiTags.length ||
+      !updatedAiTags.every((t) => existingAiTags.includes(t));
+
+    // Title generation logic
+    let updatedTitle = metadata.title;
+    let titleChanged = false;
+
+    if (!updatedTitle) {
+      const header = extractFirstHeader(content);
+      if (header) {
+        updatedTitle = header;
+        titleChanged = true;
+        console.log(
+          `Worker: Extracted title from header for note ${noteId}: ${updatedTitle}`,
+        );
+      } else {
+        updatedTitle = await this.aiService.generateTitle(content);
+        titleChanged = true;
+        console.log(
+          `Worker: Generated AI title for note ${noteId}: ${updatedTitle}`,
+        );
+      }
+    }
+
+    if (aiTagsChanged || titleChanged) {
+      const updatedMetadata = {
+        ...metadata,
+        ai_tags: updatedAiTags,
+        title: updatedTitle,
+      };
+
+      await this.storageService.saveNote(content, updatedMetadata);
+
+      if (aiTagsChanged) {
+        console.log(
+          `Worker: Updated ai_tags for note ${noteId}: ${updatedAiTags.join(", ")}`,
+        );
+      }
+      if (titleChanged) {
+        console.log(
+          `Worker: Updated title for note ${noteId}: ${updatedTitle}`,
+        );
+      }
+    } else {
+      console.log(`Worker: No updates needed for note ${noteId}`);
     }
   }
 

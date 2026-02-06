@@ -5,10 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 import { EventEmitter } from "node:events";
 
 export type JobStatus = "queued" | "processing" | "completed" | "failed";
+export type JobType = "analysis" | "embeddings";
 
 export interface Job {
   id: string;
   noteId: string;
+  type: JobType;
+  payload: string; // JSON string
   status: JobStatus;
   attempts: number;
   lastError: string | null;
@@ -32,17 +35,50 @@ export class QueueService extends EventEmitter {
   }
 
   private init() {
-    this.db.exec(`
-      CREATE TABLE IF NOT EXISTS jobs (
-        id TEXT PRIMARY KEY,
-        noteId TEXT NOT NULL,
-        status TEXT NOT NULL,
-        attempts INTEGER DEFAULT 0,
-        lastError TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // Add type and payload columns if they don't exist
+    const tableInfo = this.db.prepare("PRAGMA table_info(jobs)").all() as any[];
+    const hasType = tableInfo.some((col) => col.name === "type");
+
+    if (!hasType) {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS jobs_new (
+          id TEXT PRIMARY KEY,
+          noteId TEXT NOT NULL,
+          type TEXT NOT NULL DEFAULT 'analysis',
+          payload TEXT,
+          status TEXT NOT NULL,
+          attempts INTEGER DEFAULT 0,
+          lastError TEXT,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Migration if old table exists
+      const oldTableExists = tableInfo.length > 0;
+      if (oldTableExists) {
+        this.db.exec(`
+          INSERT INTO jobs_new (id, noteId, status, attempts, lastError, createdAt, updatedAt)
+          SELECT id, noteId, status, attempts, lastError, createdAt, updatedAt FROM jobs
+        `);
+        this.db.exec("DROP TABLE jobs");
+      }
+      this.db.exec("ALTER TABLE jobs_new RENAME TO jobs");
+    } else {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS jobs (
+          id TEXT PRIMARY KEY,
+          noteId TEXT NOT NULL,
+          type TEXT NOT NULL,
+          payload TEXT,
+          status TEXT NOT NULL,
+          attempts INTEGER DEFAULT 0,
+          lastError TEXT,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+    }
 
     // Create index on status and createdAt for efficient job polling
     this.db.exec(`
@@ -50,16 +86,17 @@ export class QueueService extends EventEmitter {
     `);
   }
 
-  enqueue(noteId: string): string {
+  enqueue(noteId: string, type: JobType = "analysis", payload: any = {}): string {
     const id = uuidv4();
     const now = new Date().toISOString();
+    const payloadStr = JSON.stringify(payload);
 
     const stmt = this.db.prepare(`
-      INSERT INTO jobs (id, noteId, status, attempts, createdAt, updatedAt)
-      VALUES (?, ?, 'queued', 0, ?, ?)
+      INSERT INTO jobs (id, noteId, type, payload, status, attempts, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, 'queued', 0, ?, ?)
     `);
 
-    stmt.run(id, noteId, now, now);
+    stmt.run(id, noteId, type, payloadStr, now, now);
     this.emit("job:enqueued", id);
     return id;
   }
