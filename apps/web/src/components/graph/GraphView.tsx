@@ -65,6 +65,16 @@ export function GraphView() {
               onNodeClick={(node) => {
                 setSelectedNodeId(node.id);
               }}
+              onNodeDoubleClick={(node) => {
+                // Flash the node for visual feedback
+                graphRef.current?.flashNode(node.id);
+
+                // Navigate to the note editor with the selected note
+                // Small delay to allow the flash animation to be perceived
+                setTimeout(() => {
+                  navigate("/", { state: { noteId: node.id } });
+                }, 150);
+              }}
               initialZoom={graphState.zoom}
               initialCenter={graphState.center}
             />
