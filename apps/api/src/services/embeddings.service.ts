@@ -1,10 +1,11 @@
 import type Database from "better-sqlite3";
-import type { StorageService } from "./storage.service";
+import type { StorageService, NoteMetadata } from "./storage.service";
 import type { QueueService } from "./queue.service";
 
-export interface SimilarNote {
+export interface SimilarNote extends NoteMetadata {
   noteId: string;
   distance: number;
+  excerpt: string;
 }
 
 export class EmbeddingsService {
@@ -131,13 +132,48 @@ export class EmbeddingsService {
   }
 
   /**
+   * Find semantically related notes for a given note
+   */
+  async findRelated(
+    noteId: string,
+    limit: number = 5,
+  ): Promise<SimilarNote[]> {
+    const vector = this.getVector(noteId);
+    if (!vector) return [];
+
+    const similar = this.findSimilar(vector, limit, noteId);
+    if (!this.storage) return [];
+
+    const results = await Promise.all(
+      similar.map(async (item) => {
+        const note = await this.storage!.getNote(item.noteId);
+        if (!note) return null;
+
+        // Create a brief excerpt (first 150 chars)
+        const excerpt =
+          note.content.slice(0, 150).trim() +
+          (note.content.length > 150 ? "..." : "");
+
+        return {
+          ...note.metadata,
+          noteId: item.noteId,
+          distance: item.distance,
+          excerpt,
+        };
+      }),
+    );
+
+    return results.filter((n): n is SimilarNote => n !== null);
+  }
+
+  /**
    * Find similar notes using KNN search
    */
   findSimilar(
     vector: number[],
     limit: number = 10,
     excludeNoteId?: string,
-  ): SimilarNote[] {
+  ): { noteId: string; distance: number }[] {
     const float32Vector = new Float32Array(vector);
 
     // sqlite-vec KNN search syntax

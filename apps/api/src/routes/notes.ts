@@ -126,27 +126,10 @@ export const notes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
     async (c) => {
       const id = c.req.param("id");
       const { limit } = c.req.valid("query");
-      const storageService = c.get("storageService");
       const embeddingsService = c.get("embeddingsService");
 
-      const vector = embeddingsService.getVector(id);
-      if (!vector) {
-        return c.json([]);
-      }
+      const relatedNotes = await embeddingsService.findRelated(id, limit);
 
-      const similar = embeddingsService.findSimilar(vector, limit, id);
-
-      const relatedNotes = await Promise.all(
-        similar.map(async (item) => {
-          const note = await storageService.getNote(item.noteId);
-          if (!note) return null;
-          return {
-            ...note.metadata,
-            distance: item.distance,
-          };
-        })
-      );
-
-      return c.json(relatedNotes.filter((n) => n !== null));
+      return c.json(relatedNotes);
     },
   );
