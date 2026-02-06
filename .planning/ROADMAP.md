@@ -135,7 +135,11 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 1. User can select one or more tags from a filter menu to hide all notes without those tags.
 2. User can toggle a "Local Graph" view that isolates the active note and its immediate neighbors (1-2 hops).
-   **Plans**: TBD
+   **Plans**: 3 plans
+
+- [ ] 22-01-PLAN.md — Graph State & Rendering Infrastructure
+- [ ] 22-02-PLAN.md — Filtering UI Components
+- [ ] 22-03-PLAN.md — Integration & Global Interactions
 
 #### Phase 23: Spatial Interaction & Linking
 
