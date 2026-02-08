@@ -1,7 +1,8 @@
-import { X, Tag as TagIcon, Calendar } from "lucide-react";
+import { X, Tag as TagIcon, Calendar, Brain } from "lucide-react";
 import { type GraphNode } from "../../hooks/useGraphData";
 import { Markdown } from "../common/Markdown";
 import { Tag } from "../common/Tag";
+import { useGraphState } from "../../contexts/GraphStateContext";
 
 interface NoteSidePanelProps {
   node: GraphNode;
@@ -9,8 +10,14 @@ interface NoteSidePanelProps {
 }
 
 export function NoteSidePanel({ node, onClose }: NoteSidePanelProps) {
+  const { graphState, setSemanticFilterNodeId } = useGraphState();
+  const { semanticEnabled } = graphState;
   const manualTags = node.tags || [];
   const aiTags = node.ai_tags || [];
+
+  const handleFilterBySimilar = () => {
+    setSemanticFilterNodeId(node.id);
+  };
 
   return (
     <div className="absolute top-0 right-0 w-96 h-full bg-nord-snow2 dark:bg-nord-polar0 border-l border-nord-snow0 dark:border-nord-polar1 shadow-xl flex flex-col z-20 animate-in slide-in-from-right duration-300">
@@ -56,7 +63,16 @@ export function NoteSidePanel({ node, onClose }: NoteSidePanelProps) {
         )}
       </div>
 
-      <footer className="p-4 border-t border-nord-snow0 dark:border-nord-polar1 bg-nord-snow1/30 dark:bg-nord-polar1/30">
+      <footer className="p-4 border-t border-nord-snow0 dark:border-nord-polar1 bg-nord-snow1/30 dark:bg-nord-polar1/30 space-y-3">
+        {node.type === "note" && semanticEnabled && (
+          <button
+            onClick={handleFilterBySimilar}
+            className="flex items-center gap-2 w-full p-2 rounded-lg text-sm text-nord-polar0 dark:text-nord-snow2 bg-nord-aurora3/20 border border-nord-aurora3/30 hover:bg-nord-aurora3/30 transition-colors"
+          >
+            <Brain className="w-4 h-4" />
+            <span>Show Similar Notes</span>
+          </button>
+        )}
         <div className="flex items-center gap-2 text-xs text-nord-polar3 dark:text-nord-snow1">
           {node.type === "note" ? (
             <>
