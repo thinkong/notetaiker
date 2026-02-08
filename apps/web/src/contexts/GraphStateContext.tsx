@@ -26,6 +26,8 @@ export interface GraphState {
   localNodeId: string | null;
   pinnedNodes: Record<string, PinnedNodePosition>;
   highContrast: boolean;
+  semanticEnabled: boolean;
+  semanticFilterNodeId: string | null;
 }
 
 interface GraphStateContextType {
@@ -38,6 +40,9 @@ interface GraphStateContextType {
   pinNode: (id: string, x: number, y: number) => void;
   unpinNode: (id: string) => void;
   toggleHighContrast: () => void;
+  setSemanticEnabled: (enabled: boolean) => void;
+  setSemanticFilterNodeId: (nodeId: string | null) => void;
+  clearSemanticFilter: () => void;
 }
 
 const PINNED_NODES_KEY = "notetaiker:graph:pinned-nodes";
@@ -53,6 +58,8 @@ const defaultState: GraphState = {
   localNodeId: null,
   pinnedNodes: {},
   highContrast: false,
+  semanticEnabled: false,
+  semanticFilterNodeId: null,
 };
 
 const GraphStateContext = createContext<GraphStateContextType | undefined>(
@@ -123,6 +130,26 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     setGraphState((prev) => ({ ...prev, highContrast: !prev.highContrast }));
   }, []);
 
+  const setSemanticEnabled = useCallback((enabled: boolean) => {
+    updateGraphState({ semanticEnabled: enabled });
+    // If disabling, also clear semantic filter
+    if (!enabled) {
+      updateGraphState({ semanticFilterNodeId: null });
+    }
+  }, []);
+
+  const setSemanticFilterNodeId = useCallback((nodeId: string | null) => {
+    updateGraphState({ semanticFilterNodeId: nodeId });
+    // Enable semantic mode when setting a filter
+    if (nodeId) {
+      updateGraphState({ semanticEnabled: true });
+    }
+  }, []);
+
+  const clearSemanticFilter = useCallback(() => {
+    updateGraphState({ semanticFilterNodeId: null });
+  }, []);
+
   // Persist pinned nodes to localStorage
   useEffect(() => {
     try {
@@ -166,6 +193,9 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
         pinNode,
         unpinNode,
         toggleHighContrast,
+        setSemanticEnabled,
+        setSemanticFilterNodeId,
+        clearSemanticFilter,
       }}
     >
       {children}
