@@ -22,30 +22,31 @@ The established libraries/tools for this domain:
 
 ### Core
 
-| Library | Version | Purpose | Why Standard |
-|---------|---------|---------|--------------|
-| react-force-graph-2d | 1.29.0 | 2D force-directed graph canvas | Already in use; provides built-in node dragging, fixed positions via `fx`/`fy`, and drag events |
-| @uiw/react-codemirror | 4.25.4 | CodeMirror 6 React wrapper | Already in use; provides editor component |
-| CodeMirror 6 (@codemirror/view) | ^6.39.11 | Editor core with drop extensions | Native `dropCursor` extension matches requirement; `domEventHandlers` for custom drop logic |
+| Library                         | Version  | Purpose                          | Why Standard                                                                                    |
+| ------------------------------- | -------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| react-force-graph-2d            | 1.29.0   | 2D force-directed graph canvas   | Already in use; provides built-in node dragging, fixed positions via `fx`/`fy`, and drag events |
+| @uiw/react-codemirror           | 4.25.4   | CodeMirror 6 React wrapper       | Already in use; provides editor component                                                       |
+| CodeMirror 6 (@codemirror/view) | ^6.39.11 | Editor core with drop extensions | Native `dropCursor` extension matches requirement; `domEventHandlers` for custom drop logic     |
 
 ### Supporting
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| localStorage API (native) | - | Persist pinned node positions | Simple client-side persistence; already used for draft persistence |
-| React Context | - | Share drag state and pinned nodes | GraphStateProvider already exists; extend it |
-| HTML5 Drag and Drop API | - | Cross-page data transfer from canvas to editor | Standard way to drag data between browser contexts |
+| Library                   | Version | Purpose                                        | When to Use                                                        |
+| ------------------------- | ------- | ---------------------------------------------- | ------------------------------------------------------------------ |
+| localStorage API (native) | -       | Persist pinned node positions                  | Simple client-side persistence; already used for draft persistence |
+| React Context             | -       | Share drag state and pinned nodes              | GraphStateProvider already exists; extend it                       |
+| HTML5 Drag and Drop API   | -       | Cross-page data transfer from canvas to editor | Standard way to drag data between browser contexts                 |
 
 ### Alternatives Considered
 
-| Instead of | Could Use | Tradeoff |
-|------------|-----------|----------|
-| HTML5 Drag API + setDragImage | Custom drag element following mouse (no API) | Avoids dragstart complexity but loses cross-page capability; not standard |
-| Context Menu Pin | Toolbar Pin button | Context menu is the decision; toolbar would be different placement |
-| localStorage | IndexedDB | Overkill for small pinned positions; localStorage is simpler and already used |
+| Instead of                    | Could Use                                    | Tradeoff                                                                      |
+| ----------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------- |
+| HTML5 Drag API + setDragImage | Custom drag element following mouse (no API) | Avoids dragstart complexity but loses cross-page capability; not standard     |
+| Context Menu Pin              | Toolbar Pin button                           | Context menu is the decision; toolbar would be different placement            |
+| localStorage                  | IndexedDB                                    | Overkill for small pinned positions; localStorage is simpler and already used |
 
 **Installation:**
 All packages are already installed. For reference:
+
 ```bash
 # Already in package.json
 "react-force-graph-2d": "^1.29.0"
@@ -80,6 +81,7 @@ apps/web/
 **When to use:** Pinning is UI state, not note content. Separation keeps note model pure and avoids unnecessary frontmatter writes.
 
 **Example:**
+
 ```typescript
 // Extend GraphState
 interface GraphState {
@@ -116,6 +118,7 @@ Source: `react-force-graph-2d` type definitions (`NodeObject` includes `fx`, `fy
 **When to use:** Dragging between different routes/pages in the same browser. HTML5 drag API supports cross-window drags naturally.
 
 **Example:**
+
 ```typescript
 // In Graph wrapper
 const [draggedNode, setDraggedNode] = useState<GraphNode | null>(null);
@@ -130,20 +133,30 @@ const handleNodeDrag = useCallback((node, translate) => {
   }
 }, []);
 
-const handleDragStart = useCallback((e: React.DragEvent) => {
-  if (!draggedNode) {
-    e.preventDefault(); // Cancel drag if not on a node
-    return;
-  }
-  e.dataTransfer.setData('application/json', JSON.stringify({
-    id: draggedNode.id,
-    name: draggedNode.name
-  }));
-  // Set custom drag image (full node ghost)
-  const ghostCanvas = document.createElement('canvas');
-  // draw node onto ghostCanvas...
-  e.dataTransfer.setDragImage(ghostCanvas, ghostCanvas.width/2, ghostCanvas.height/2);
-}, [draggedNode]);
+const handleDragStart = useCallback(
+  (e: React.DragEvent) => {
+    if (!draggedNode) {
+      e.preventDefault(); // Cancel drag if not on a node
+      return;
+    }
+    e.dataTransfer.setData(
+      "application/json",
+      JSON.stringify({
+        id: draggedNode.id,
+        name: draggedNode.name,
+      }),
+    );
+    // Set custom drag image (full node ghost)
+    const ghostCanvas = document.createElement("canvas");
+    // draw node onto ghostCanvas...
+    e.dataTransfer.setDragImage(
+      ghostCanvas,
+      ghostCanvas.width / 2,
+      ghostCanvas.height / 2,
+    );
+  },
+  [draggedNode],
+);
 
 const handleNodeDragEnd = useCallback(() => {
   setIsDragging(false);
@@ -162,6 +175,7 @@ Source: HTML5 Drag and Drop API (MDN); decision pattern from phase context.
 **When to use:** Handling custom dropped content in CodeMirror 6 editor.
 
 **Example:**
+
 ```typescript
 import { dropCursor } from "@codemirror/view";
 import { domEventHandlers } from "@codemirror/view";
@@ -169,7 +183,7 @@ import { domEventHandlers } from "@codemirror/view";
 const dropHandler = domEventHandlers({
   drop: (event, view) => {
     event.preventDefault();
-    const raw = event.dataTransfer?.getData('application/json');
+    const raw = event.dataTransfer?.getData("application/json");
     if (!raw) return false;
 
     const node = JSON.parse(raw);
@@ -182,30 +196,30 @@ const dropHandler = domEventHandlers({
     // Check if dropping on existing wiki link [[...]]
     const before = text.slice(0, pos);
     const after = text.slice(pos);
-    const open = before.lastIndexOf('[[');
-    const close = after.indexOf(']]');
+    const open = before.lastIndexOf("[[");
+    const close = after.indexOf("]]");
     if (open !== -1 && close !== -1) {
       const from = open;
       const to = pos + close + 2;
       view.dispatch({
         changes: { insert: `[[${node.name}|${node.id}]]`, from, to },
-        selection: { anchor: from + node.name.length + 2 } // place cursor after link
+        selection: { anchor: from + node.name.length + 2 }, // place cursor after link
       });
     } else {
       view.dispatch({
         changes: { insert: `[[${node.name}|${node.id}]]`, from: pos },
-        selection: { anchor: pos + node.name.length + 4 }
+        selection: { anchor: pos + node.name.length + 4 },
       });
     }
     return true;
-  }
+  },
 });
 
 // In Editor extensions:
 const extensions = [
   // ...existing extensions
   dropCursor(), // Shows insertion indicator during dragover
-  dropHandler
+  dropHandler,
 ];
 ```
 
@@ -218,11 +232,14 @@ Source: CodeMirror 6 documentation (`EditorView.domEventHandlers`).
 **When to use:** Simple client-side persistence; already used for draft persistence in `useDraftPersistence`.
 
 **Example:**
+
 ```typescript
 const PINNED_KEY = "notetaiker:graph:pinned-nodes";
 
 export function usePinnedNodes() {
-  const [pinned, setPinned] = useState<Record<string, {x: number, y: number}>>(() => {
+  const [pinned, setPinned] = useState<
+    Record<string, { x: number; y: number }>
+  >(() => {
     try {
       const raw = localStorage.getItem(PINNED_KEY);
       return raw ? JSON.parse(raw) : {};
@@ -242,11 +259,11 @@ export function usePinnedNodes() {
   }, [pinned]);
 
   const pinNode = useCallback((id: string, x: number, y: number) => {
-    setPinned(prev => ({ ...prev, [id]: { x, y } }));
+    setPinned((prev) => ({ ...prev, [id]: { x, y } }));
   }, []);
 
   const unpinNode = useCallback((id: string) => {
-    setPinned(prev => {
+    setPinned((prev) => {
       const { [id]: _, ...rest } = prev;
       return rest;
     });
@@ -270,15 +287,15 @@ Source: `apps/web/src/hooks/useDraftPersistence.ts`.
 
 Problems that look simple but have existing solutions:
 
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Node drag interaction | Custom mouse handlers | `enableNodeDrag` prop from react-force-graph-2d | Library handles drag physics, positioning, and coordinate updates |
-| Fixed nodes in force simulation | Manual force adjustments | D3-force `fx`/`fy` properties | Standard pattern; nodes with `fx`,`fy` ignore forces |
-| Insertion indicator in editor | Custom overlay div | CodeMirror `dropCursor` extension | Built-in, integrates with editor coordinates, handles dragover automatically |
-| Cross-page drag data transfer | Global event bus | HTML5 `dataTransfer` | Native browser support; works across windows/tabs |
-| Client-side persistence | Custom storage layer | `localStorage` API | Already used in codebase; sufficient for small data |
-| Context menu UI | From-scratch positioning | Simple absolute div with click-outside detection | Can be implemented quickly; no need for heavy library |
-| Canvas node badging | Complex canvas drawing | Canvas `arc`, `lineTo` in existing `paintNode` | Already customizing node drawing; extend it |
+| Problem                         | Don't Build              | Use Instead                                      | Why                                                                          |
+| ------------------------------- | ------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Node drag interaction           | Custom mouse handlers    | `enableNodeDrag` prop from react-force-graph-2d  | Library handles drag physics, positioning, and coordinate updates            |
+| Fixed nodes in force simulation | Manual force adjustments | D3-force `fx`/`fy` properties                    | Standard pattern; nodes with `fx`,`fy` ignore forces                         |
+| Insertion indicator in editor   | Custom overlay div       | CodeMirror `dropCursor` extension                | Built-in, integrates with editor coordinates, handles dragover automatically |
+| Cross-page drag data transfer   | Global event bus         | HTML5 `dataTransfer`                             | Native browser support; works across windows/tabs                            |
+| Client-side persistence         | Custom storage layer     | `localStorage` API                               | Already used in codebase; sufficient for small data                          |
+| Context menu UI                 | From-scratch positioning | Simple absolute div with click-outside detection | Can be implemented quickly; no need for heavy library                        |
+| Canvas node badging             | Complex canvas drawing   | Canvas `arc`, `lineTo` in existing `paintNode`   | Already customizing node drawing; extend it                                  |
 
 **Key insight:** The force-graph library already implements most of the heavy lifting for dragging and fixed positions. The integration work is about wiring events, maintaining React state, and handling the editor drop.
 
@@ -557,6 +574,7 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
 ### Example 3: Context Menu Component
 
 `GraphContextMenu.tsx`:
+
 ```typescript
 export function GraphContextMenu({ node, x, y, onClose, onPin, onUnpin, isPinned }: {
   node: GraphNode;
@@ -599,19 +617,20 @@ export function GraphContextMenu({ node, x, y, onClose, onPin, onUnpin, isPinned
 
 ## State of the Art
 
-| Old Approach | Current Approach | When Changed | Impact |
-|--------------|------------------|--------------|--------|
-| Manual pin state in note frontmatter | Separate localStorage mapping (UI-only) | Phase 23 | Keeps note data clean; UI preferences don't clutter markdown files |
-| Custom drag implementations | Use react-force-graph's enableNodeDrag | Always available | Leverages tested physics and coordinate handling |
-| Editor drop via DOM manipulation | CodeMirror DropCursor + domEventHandlers | CodeMirror 6 | Consistent with editor architecture; no hacky workarounds |
-| Global variables for drag state | React state with refs for batching | Modern React | Better encapsulation and fewer bugs |
+| Old Approach                         | Current Approach                         | When Changed     | Impact                                                             |
+| ------------------------------------ | ---------------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| Manual pin state in note frontmatter | Separate localStorage mapping (UI-only)  | Phase 23         | Keeps note data clean; UI preferences don't clutter markdown files |
+| Custom drag implementations          | Use react-force-graph's enableNodeDrag   | Always available | Leverages tested physics and coordinate handling                   |
+| Editor drop via DOM manipulation     | CodeMirror DropCursor + domEventHandlers | CodeMirror 6     | Consistent with editor architecture; no hacky workarounds          |
+| Global variables for drag state      | React state with refs for batching       | Modern React     | Better encapsulation and fewer bugs                                |
 
 **Deprecated/outdated:**
+
 - None applicable; all approaches are current.
 
 ## Open Questions
 
-1. **Should unpinned nodes retain their position across a single session?** Decisions say "Unpinned nodes keep their position (they don't reset to auto-layout)". This implies that after dragging an unpinned node, it stays where dropped until the simulation moves it naturally. Implementation: In `onNodeDragEnd`, we *do not* clear `fx`/`fy` for unpinned nodes – but force-graph automatically clears them after drag end by default. If we want them to stay temporarily, we may need to avoid the library's internal cleanup. **Tradeoff:** Letting them stay without `fx`/`fy` is impossible because forces will act. Setting `fx`/`fy` would pin them. We interpret "keep their position" as the node doesn't snap back instantly; it remains at dropped coordinates but slowly drifts due to forces. That matches the default behavior of force-graph: after drag, the node's `fx`/`fy` are cleared, but its current `x`/`y` are left as starting point for forces. The node will gradually move, not snap. **Recommendation:** Use default force-graph behavior (no special handling) for unpinned nodes; only pinned nodes get persistent `fx`/`fy`. This satisfies "keep their position" in the immediate sense and "auto-layout runs normally" in the longer term.
+1. **Should unpinned nodes retain their position across a single session?** Decisions say "Unpinned nodes keep their position (they don't reset to auto-layout)". This implies that after dragging an unpinned node, it stays where dropped until the simulation moves it naturally. Implementation: In `onNodeDragEnd`, we _do not_ clear `fx`/`fy` for unpinned nodes – but force-graph automatically clears them after drag end by default. If we want them to stay temporarily, we may need to avoid the library's internal cleanup. **Tradeoff:** Letting them stay without `fx`/`fy` is impossible because forces will act. Setting `fx`/`fy` would pin them. We interpret "keep their position" as the node doesn't snap back instantly; it remains at dropped coordinates but slowly drifts due to forces. That matches the default behavior of force-graph: after drag, the node's `fx`/`fy` are cleared, but its current `x`/`y` are left as starting point for forces. The node will gradually move, not snap. **Recommendation:** Use default force-graph behavior (no special handling) for unpinned nodes; only pinned nodes get persistent `fx`/`fy`. This satisfies "keep their position" in the immediate sense and "auto-layout runs normally" in the longer term.
 
 2. **What opacity level for dimmed nodes during drag?** Left to discretion. Recommend `globalAlpha = 0.3` or a distinct dimmed color (e.g., `COLORS.dimmed` from existing palette). We'll follow the existing dimming pattern used for ghosted nodes (`isGhosted` -> 0.15 alpha). For dragging dim, use 0.4 alpha for clear distinction.
 
@@ -640,6 +659,7 @@ export function GraphContextMenu({ node, x, y, onClose, onPin, onUnpin, isPinned
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard Stack: HIGH — based on installed package types and existing codebase
 - Architecture: HIGH — patterns derived from type definitions and established React practices
 - Pitfalls: HIGH — based on common React/Canvas pitfalls observed in similar projects
@@ -667,11 +687,11 @@ export function GraphContextMenu({ node, x, y, onClose, onPin, onUnpin, isPinned
 
 ### Confidence Assessment
 
-| Area | Level | Reason |
-|------|-------|--------|
-| Standard Stack | HIGH | Types and existing code confirm APIs |
-| Architecture | HIGH | Clear integration points in existing components |
-| Pitfalls | HIGH | Based on common Canvas/React/DnD issues |
+| Area           | Level | Reason                                          |
+| -------------- | ----- | ----------------------------------------------- |
+| Standard Stack | HIGH  | Types and existing code confirm APIs            |
+| Architecture   | HIGH  | Clear integration points in existing components |
+| Pitfalls       | HIGH  | Based on common Canvas/React/DnD issues         |
 
 ### Open Questions
 

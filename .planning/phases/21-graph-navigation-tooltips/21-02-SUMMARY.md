@@ -25,21 +25,25 @@ Transformed the graph view from a passive visualization into an active navigatio
 ### Interaction Logic
 
 The click handler uses a `setTimeout` pattern to wait for a potential second click.
+
 - **Single Click:** Sets selected node (side panel).
 - **Double Click:** Clears timer, triggers flash, then navigates.
 
 ### Coordinate Projection
 
 Tooltips are positioned using `graph2ScreenCoords` from the `react-force-graph` instance. This is updated on:
+
 1. Hover events (debounced 200ms)
 2. Frame rendering (`onRenderFramePost`) to ensure tooltips stick to nodes during pan/zoom operations.
 
 ## 5. Self-Check
 
 ### Created Files
+
 - `apps/web/src/components/graph/GraphTooltip.tsx`: **FOUND**
 
 ### Task Commits
+
 - `feat(21-02): implement click vs double-click discriminator`: **FOUND**
 - `feat(21-02): implement rich HTML tooltips with frosted glass effect`: **FOUND**
 - `feat(21-02): implement node flash visual feedback`: **FOUND**

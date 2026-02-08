@@ -23,6 +23,7 @@ metrics:
 Integrated filtering and local view UI components into the main Graph View and implemented cross-component behaviors.
 
 ## Substantive Changes
+
 - Integrated `GraphToolbar` and `GraphFilterChips` into `GraphView` layout.
 - Implemented visual feedback for active filtering via a subtle background tint on the graph canvas.
 - Added a "No matching notes" empty state overlay with a "Clear all filters" shortcut.
@@ -30,11 +31,14 @@ Integrated filtering and local view UI components into the main Graph View and i
 - Synchronized `selectedNodeId` with the global `GraphStateContext`.
 
 ## Deviations from Plan
+
 - **Rule 1 (Bug/Lint):** Fixed `useState` being unused and added proper `GraphNode` typing to `passesFilter` to satisfy ESLint rules that were blocking the commit.
 
 ## Task Commits
+
 - **65629fa**: feat(22-03): integrate graph filtering UI and global behaviors
 
 ## Self-Check: PASSED
+
 - FOUND: apps/web/src/components/graph/GraphView.tsx
 - FOUND: 65629fa
