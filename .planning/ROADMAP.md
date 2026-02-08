@@ -150,7 +150,9 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 1. User can drag a node from the graph and drop it into the editor to automatically insert a `[[WikiLink]]`.
 2. User can manually position a node and pin it so its location persists between sessions.
-   **Plans**: TBD
+   **Plans**: 1 plan
+
+- [x] 23-01-PLAN.md — Pinned node state management with localStorage persistence
 
 #### Phase 24: Semantic Graph Intelligence
 
@@ -161,7 +163,11 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 1. User can enable "Semantic Coloring" to see nodes grouped by topic clusters (hued by similarity).
 2. User can filter the graph to show only nodes semantically similar to the active note.
-   **Plans**: TBD
+   **Plans**: 3 plans
+
+- [ ] 24-01-PLAN.md — Backend DBSCAN clustering service and API routes
+- [ ] 24-02-PLAN.md — Frontend cluster visualization components and color system
+- [ ] 24-03-PLAN.md — Integration: toolbar controls, rendering, and semantic filtering
 
 ## Progress
 
