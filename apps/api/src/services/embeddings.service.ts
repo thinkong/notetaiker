@@ -248,4 +248,41 @@ export class EmbeddingsService {
 
     transaction();
   }
+
+  /**
+   * Get all embeddings with their metadata
+   * Returns all note embeddings for clustering operations
+   */
+  async getAllEmbeddings(): Promise<
+    Array<{ id: string; vector: number[]; title: string }>
+  > {
+    if (!this.storage) {
+      throw new Error("Storage service is required for getAllEmbeddings");
+    }
+
+    // Get all embedding metadata
+    const metaRows = this.db
+      .prepare("SELECT note_id FROM embeddings_meta")
+      .all() as Array<{ note_id: string }>;
+
+    const embeddings: Array<{ id: string; vector: number[]; title: string }> =
+      [];
+
+    for (const row of metaRows) {
+      const vector = this.getVector(row.note_id);
+      if (vector) {
+        // Get note title from storage
+        const note = await this.storage.getNote(row.note_id);
+        const title = note?.metadata.title || "Untitled";
+
+        embeddings.push({
+          id: row.note_id,
+          vector,
+          title,
+        });
+      }
+    }
+
+    return embeddings;
+  }
 }
