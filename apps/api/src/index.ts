@@ -10,6 +10,7 @@ import { notes } from "./routes/notes";
 import { settings } from "./routes/settings";
 import { events } from "./routes/events";
 import { embeddings } from "./routes/embeddings";
+import { clusters } from "./routes/clusters";
 import { QueueService } from "./services/queue.service";
 import { WorkerService } from "./services/worker.service";
 import { EventsService } from "./services/events.service";
@@ -18,6 +19,7 @@ import { StorageService } from "./services/storage.service";
 import { SecretsService } from "./services/secrets.service";
 import { IndexerService } from "./services/indexer.service";
 import { EmbeddingsService } from "./services/embeddings.service";
+import { ClustersService } from "./services/clusters.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
 
 type Bindings = {};
@@ -28,6 +30,7 @@ type Variables = {
   storageService: StorageService;
   indexerService: IndexerService;
   embeddingsService: EmbeddingsService;
+  clustersService: ClustersService;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -68,6 +71,12 @@ const embeddingsService = new EmbeddingsService(
   storageService,
   queueService,
 );
+const clustersService = new ClustersService(embeddingsService);
+
+// Listen for embedding changes to invalidate cluster cache
+eventsService.on("note_updated", () => {
+  clustersService.invalidateCache();
+});
 
 // Initial sync of notes
 console.log("Syncing notes index...");
@@ -98,6 +107,7 @@ app
     c.set("storageService", storageService);
     c.set("indexerService", indexerService);
     c.set("embeddingsService", embeddingsService);
+    c.set("clustersService", clustersService);
     await next();
   })
   .use("*", cors());
@@ -114,6 +124,7 @@ const routes = app
   .route("/notes", notes)
   .route("/settings", settings)
   .route("/embeddings", embeddings)
+  .route("/api/clusters", clusters)
   .route("/api/events", events);
 
 // In production, serve the static web frontend
