@@ -25,6 +25,7 @@ export interface GraphState {
   filterLogic: "AND" | "OR";
   localNodeId: string | null;
   pinnedNodes: Record<string, PinnedNodePosition>;
+  highContrast: boolean;
 }
 
 interface GraphStateContextType {
@@ -36,9 +37,12 @@ interface GraphStateContextType {
   setLocalNodeId: (nodeId: string | null) => void;
   pinNode: (id: string, x: number, y: number) => void;
   unpinNode: (id: string) => void;
+  toggleHighContrast: () => void;
 }
 
 const PINNED_NODES_KEY = "notetaiker:graph:pinned-nodes";
+
+const HIGH_CONTRAST_KEY = "notetaiker:graph:high-contrast";
 
 const defaultState: GraphState = {
   zoom: undefined,
@@ -48,6 +52,7 @@ const defaultState: GraphState = {
   filterLogic: "OR",
   localNodeId: null,
   pinnedNodes: {},
+  highContrast: false,
 };
 
 const GraphStateContext = createContext<GraphStateContextType | undefined>(
@@ -56,17 +61,29 @@ const GraphStateContext = createContext<GraphStateContextType | undefined>(
 
 export function GraphStateProvider({ children }: { children: ReactNode }) {
   const [graphState, setGraphState] = useState<GraphState>(() => {
-    // Load pinned nodes from localStorage on mount
+    // Load pinned nodes and high contrast from localStorage on mount
     try {
-      const stored = localStorage.getItem(PINNED_NODES_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
+      const pinnedStored = localStorage.getItem(PINNED_NODES_KEY);
+      const highContrastStored = localStorage.getItem(HIGH_CONTRAST_KEY);
+      const initialState: Partial<GraphState> = {};
+
+      if (pinnedStored) {
+        const parsed = JSON.parse(pinnedStored);
         if (typeof parsed === "object" && parsed !== null) {
-          return { ...defaultState, pinnedNodes: parsed };
+          initialState.pinnedNodes = parsed;
         }
       }
+
+      if (highContrastStored) {
+        const parsed = JSON.parse(highContrastStored);
+        if (typeof parsed === "boolean") {
+          initialState.highContrast = parsed;
+        }
+      }
+
+      return { ...defaultState, ...initialState };
     } catch (error) {
-      console.warn("Failed to parse pinned nodes from localStorage:", error);
+      console.warn("Failed to parse localStorage state:", error);
     }
     return defaultState;
   });
@@ -102,6 +119,10 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const toggleHighContrast = useCallback(() => {
+    setGraphState((prev) => ({ ...prev, highContrast: !prev.highContrast }));
+  }, []);
+
   // Persist pinned nodes to localStorage
   useEffect(() => {
     try {
@@ -118,6 +139,21 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     }
   }, [graphState.pinnedNodes]);
 
+  // Persist high contrast setting to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        HIGH_CONTRAST_KEY,
+        JSON.stringify(graphState.highContrast),
+      );
+    } catch (error) {
+      console.warn(
+        "Failed to save high contrast setting to localStorage:",
+        error,
+      );
+    }
+  }, [graphState.highContrast]);
+
   return (
     <GraphStateContext.Provider
       value={{
@@ -129,6 +165,7 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
         setLocalNodeId,
         pinNode,
         unpinNode,
+        toggleHighContrast,
       }}
     >
       {children}

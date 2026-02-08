@@ -42,7 +42,7 @@ export const HIGH_CONTRAST_COLORS = [
  */
 export function getClusterColor(
   clusterIndex: number,
-  highContrast: boolean = false,
+  highContrast = false,
 ): string {
   const palette = highContrast ? HIGH_CONTRAST_COLORS : CLUSTER_COLORS;
   return palette[clusterIndex % palette.length];
@@ -56,7 +56,7 @@ export function getClusterColor(
  */
 export function getClusterColors(
   count: number,
-  highContrast: boolean = false,
+  highContrast = false,
 ): string[] {
   const palette = highContrast ? HIGH_CONTRAST_COLORS : CLUSTER_COLORS;
   return Array.from({ length: count }, (_, i) => palette[i % palette.length]);

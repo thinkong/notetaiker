@@ -82,7 +82,7 @@ export function blendClusterColors(
 export function blendClusterColorsWithThreshold(
   colors: string[],
   weights: number[],
-  minAlpha: number = 0.2,
+  minAlpha = 0.2,
 ): string {
   if (colors.length === 0) return "#94a3b8";
 
