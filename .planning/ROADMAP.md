@@ -165,8 +165,8 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 2. User can filter the graph to show only nodes semantically similar to the active note.
    **Plans**: 3 plans
 
-- [ ] 24-01-PLAN.md — Backend DBSCAN clustering service and API routes
-- [ ] 24-02-PLAN.md — Frontend cluster visualization components and color system
+- [x] 24-01-PLAN.md — Backend DBSCAN clustering service and API routes
+- [x] 24-02-PLAN.md — Frontend cluster visualization components and color system
 - [ ] 24-03-PLAN.md — Integration: toolbar controls, rendering, and semantic filtering
 
 ## Progress
@@ -184,5 +184,5 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 | 20       | v1.6      | 3/3            | Complete    | 2026-02-06 |
 | 21       | v1.7      | 2/2            | Complete    | 2026-02-06 |
 | 22       | v1.7      | 3/3            | Complete    | 2026-02-06 |
-| 23       | v1.7      | 0/TBD          | Not started | -          |
-| 24       | v1.7      | 0/TBD          | Not started | -          |
+| 23       | v1.7      | 1/1            | Complete    | 2026-02-08 |
+| 24       | v1.7      | 2/3            | In progress | 2026-02-08 |
