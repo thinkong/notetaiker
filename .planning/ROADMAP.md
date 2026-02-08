@@ -14,7 +14,7 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 - ✅ **v1.4 UX Refinement** - Phases 15-18 (shipped 2026-02-03)
 - ✅ **v1.5 AI Enhancements** - Quick tasks 006-007 (shipped 2026-02-06)
 - ✅ **v1.6 Smart Connections** - Phases 19-20 (shipped 2026-02-06)
-- 🚧 **v1.7 Graph Interactions** - Phases 21-24 (planned)
+- ✅ **v1.7 Graph Interactions** - Phases 21-24 (shipped 2026-02-08)
 
 ## Phases
 
@@ -106,68 +106,19 @@ notetAIker will be built as a local-first, AI-enhanced note-taking system. The j
 
 </details>
 
-### 🚧 v1.7 Graph Interactions (Planned)
+<details>
+<summary>✅ v1.7 Graph Interactions (Phases 21-24) - SHIPPED 2026-02-08</summary>
 
-**Milestone Goal:** Transform the static graph view into an interactive workspace for organizing thoughts.
+- [x] Phase 21: Graph Navigation & Tooltips (2/2 plans)
+- [x] Phase 22: Graph Filtering & Local View (3/3 plans)
+- [x] Phase 23: Spatial Interaction & Linking (1/1 plan)
+- [x] Phase 24: Semantic Graph Intelligence (3/3 plans)
 
-#### Phase 21: Graph Navigation & Tooltips
+_Full details archived to: [milestones/v1.7-ROADMAP.md](./milestones/v1.7-ROADMAP.md)_
 
-**Goal**: Users can smoothly explore the graph and navigate to notes with rich context.
-**Depends on**: Phase 11
-**Requirements**: NAV-01, NAV-02, NAV-03
-**Success Criteria**:
+</details>
 
-1. User can hover over any node to see a tooltip containing the note title and a 2-line content excerpt.
-2. User can double-click a node to load that note into the editor instantly.
-3. User can click a node once to highlight its direct connections while dimming the rest of the graph.
-4. User can pan and zoom the canvas smoothly without physics "jitter" or stuttering.
-   **Plans**: 2 plans
-
-- [x] 21-01-PLAN.md — Graph persistence & deep linking
-- [x] 21-02-PLAN.md — Advanced interactions & tooltips
-
-#### Phase 22: Graph Filtering & Local View
-
-**Goal**: Users can reduce noise and focus on specific sub-sections of their knowledge base.
-**Depends on**: Phase 21
-**Requirements**: FILT-01, FILT-02
-**Success Criteria**:
-
-1. User can select one or more tags from a filter menu to hide all notes without those tags.
-2. User can toggle a "Local Graph" view that isolates the active note and its immediate neighbors (1-2 hops).
-   **Plans**: 3 plans
-
-- [x] 22-01-PLAN.md — Graph State & Rendering Infrastructure
-- [x] 22-02-PLAN.md — Filtering UI Components
-- [x] 22-03-PLAN.md — Integration & Global Interactions
-
-#### Phase 23: Spatial Interaction & Linking
-
-**Goal**: Users can manually organize the graph and use it as a creative source for the editor.
-**Depends on**: Phase 22
-**Requirements**: INTER-01, INTER-02
-**Success Criteria**:
-
-1. User can drag a node from the graph and drop it into the editor to automatically insert a `[[WikiLink]]`.
-2. User can manually position a node and pin it so its location persists between sessions.
-   **Plans**: 1 plan
-
-- [x] 23-01-PLAN.md — Pinned node state management with localStorage persistence
-
-#### Phase 24: Semantic Graph Intelligence
-
-**Goal:** Leverage vector embeddings to reveal conceptual relationships visually.
-**Depends on**: Phase 23, Phase 19
-**Requirements**: SMART-01, SMART-02
-**Success Criteria:**
-
-1. User can enable "Semantic Coloring" to see nodes grouped by topic clusters (hued by similarity).
-2. User can filter the graph to show only nodes semantically similar to the active note.
-   **Plans:** 3 plans
-
-- [x] 24-01-PLAN.md — Backend DBSCAN clustering service and API routes
-- [x] 24-02-PLAN.md — Frontend cluster visualization components and color system
-- [x] 24-03-PLAN.md — Integration: toolbar controls, rendering, and semantic filtering
+<!-- READY FOR NEXT MILESTONE -->
 
 ## Progress
 

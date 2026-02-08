@@ -8,17 +8,9 @@ A local-first, AI-enhanced note-taking system designed for zero-friction capture
 
 Zero-friction capture with intelligent, automated organization. The user just types; the system handles the sorting.
 
-## Current Milestone: v1.7 Graph Interactions
+## Current Milestone
 
-**Goal:** Transform the static graph view into an interactive workspace for organizing thoughts.
-
-**Target features:**
-
-- **Interactive Nodes:** Click to expand/collapse, right-click context menu
-- **Drag & Drop Organization:** Manually position nodes (pinning)
-- **Cluster Management:** Name and color auto-detected clusters
-- **Filtering:** Filter graph by tag, date, or semantic similarity
-- **Graph-to-Editor:** Drag nodes into editor to insert links
+**Status:** v1.7 Graph Interactions shipped (2026-02-08)
 
 ## Requirements
 
@@ -57,6 +49,14 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 - ✓ **RELATED-01**: Sidebar displays semantically related notes based on vector similarity — v1.6
 - ✓ **RELATED-02**: Users can trigger manual index rebuilds from settings — v1.6
 - ✓ **RELATED-03**: Related notes are debounced and show similarity strength labels — v1.6
+- ✓ **NAV-01**: Graph state persists across navigation with deep linking support — v1.7
+- ✓ **NAV-02**: Rich HTML tooltips display note title and excerpt — v1.7
+- ✓ **NAV-03**: Smooth pan/zoom with node flash feedback — v1.7
+- ✓ **FILT-01**: Tag-based filtering with ghosted nodes at 15% opacity — v1.7
+- ✓ **FILT-02**: Local view mode isolates active note and neighbors — v1.7
+- ✓ **INTER-02**: Manual node positioning with pinning (localStorage) — v1.7
+- ✓ **SMART-01**: Semantic coloring with DBSCAN clusters and accessible palette — v1.7
+- ✓ **SMART-02**: Semantic filtering shows only similar notes — v1.7
 
 ### Active
 
@@ -70,8 +70,8 @@ Zero-friction capture with intelligent, automated organization. The user just ty
 
 ## Context
 
-Shipped v1.6 Smart Connections.
-System is stable with ~7400 LOC TypeScript.
+Shipped v1.7 Graph Interactions.
+System is stable with ~10,400 LOC TypeScript.
 Tech Stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6, Ollama, sqlite-vec.
 
 ## Constraints
@@ -104,6 +104,39 @@ Tech Stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React F
 | **Backend Proxy for Ollama**   | Hono proxies all Ollama requests to avoid CORS issues in browser.                                          | ✓ Good (v1.5)   |
 | **Header-First Title Extract** | Extract markdown headers before falling back to LLM, reducing API calls and honoring user intent.          | ✓ Good (v1.5)   |
 
+| **Header-First Title Extract** | Extract markdown headers before falling back to LLM, reducing API calls and honoring user intent. | ✓ Good (v1.5) |
+| **Ghosted Opacity 15%** | Consistent ghosting (0.15 opacity) for filtered nodes while keeping them interactive. | ✓ Good (v1.7) |
+| **Local View Focus Shift** | Single-click focus shifts to visible neighbor nodes for smooth exploration. | ✓ Good (v1.7) |
+| **Alt+Double Toggle** | Keyboard-first local view toggle using Alt + Double-click. | ✓ Good (v1.7) |
+| **Pinned Node Persistence** | localStorage for pinned positions keeps note data clean. | ✓ Good (v1.7) |
+| **Adaptive Epsilon Clustering** | DBSCAN epsilon via k-distance elbow method (k=4, 15th percentile, [0.3, 0.7]). | ✓ Good (v1.7) |
+| **Soft Clustering 3 Max** | Up to 3 cluster memberships per node based on cosine similarity. | ✓ Good (v1.7) |
+| **TF-IDF Cluster Labels** | Auto-generated labels from note titles (excludes stopwords). | ✓ Good (v1.7) |
+| **Accessible Color Palette** | 8-color palette based on Paul Tol's colorblind research + pure RGB high contrast. | ✓ Good (v1.7) |
+| **Independent Filters** | Tag and semantic filters operate independently with AND logic. | ✓ Good (v1.7) |
+
 ---
 
-_Last updated: 2026-02-06 after start of v1.6 milestone_
+## Current State
+
+**Shipped:** v1.7 Graph Interactions (2026-02-08)
+
+System now features a fully interactive graph workspace with rich navigation, sophisticated filtering, spatial organization, and semantic intelligence. Graph state persists across navigation with deep linking support. Users can filter by tags, toggle local view, and pin node positions manually. DBSCAN clustering with adaptive epsilon groups notes into semantic clusters, visualized with accessible color palettes and soft clustering support. All filtering uses consistent 15% ghosting opacity while keeping nodes interactive.
+
+The codebase is stable at ~10,400 LOC TypeScript. Tech stack: Hono (Node.js), React 19, Tailwind v4, SQLite, CodeMirror 6, React Force Graph, React Router v6, Ollama, sqlite-vec.
+
+## Next Milestone Goals
+
+**Status:** Planning next milestone (to be defined)
+
+Potential directions:
+
+- Enhanced sharing and collaboration features
+- Advanced search and cross-note querying
+- Notebook/workspace management
+- Performance optimization for large libraries (>5000 notes)
+- Plugin system for custom exporters and processors
+
+---
+
+_Last updated: 2026-02-08 after v1.7 milestone_
