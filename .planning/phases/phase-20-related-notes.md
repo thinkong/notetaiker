@@ -3,15 +3,18 @@
 **Goal**: Users can discover semantically related notes while viewing or editing a note.
 
 ## User Story
+
 As a user, I want to see notes related to the one I'm working on so I can make connections and rediscover relevant information without manual searching.
 
 ## Dependencies
+
 - **Phase 19 (Complete)**: `EmbeddingsService` and `sqlite-vec` infrastructure are in place.
 - **Ollama**: Requires `nomic-embed-text` model to be available for generating embeddings (handled in Phase 19).
 
 ## Technical Approach
 
 ### Backend
+
 - **Endpoint**: `GET /api/notes/:id/related`
 - **Logic**:
   1. Fetch the embedding vector for the note with `:id` from the `vec_notes` table.
@@ -22,6 +25,7 @@ As a user, I want to see notes related to the one I'm working on so I can make c
   6. Return the top 5-10 results with their similarity distances.
 
 ### Frontend
+
 - **Component**: `RelatedNotesPanel`
 - **Location**: Added to the right sidebar (within `Sidebar.tsx`).
 - **Data Fetching**:
@@ -35,6 +39,7 @@ As a user, I want to see notes related to the one I'm working on so I can make c
 ## Step-by-Step Implementation Plan
 
 ### Plan 20-01: Backend API
+
 - **Objective**: Expose semantic similarity search via a Hono route.
 - **Tasks**:
   1. Add `getEmbedding(noteId)` to `EmbeddingsService`.
@@ -43,6 +48,7 @@ As a user, I want to see notes related to the one I'm working on so I can make c
 - **Success Criteria**: `curl` request for a note ID returns a JSON list of semantically similar notes.
 
 ### Plan 20-02: Related Notes UI
+
 - **Objective**: Create the sidebar panel and integrate with the backend.
 - **Tasks**:
   1. Create `RelatedNotesPanel.tsx` component.
@@ -51,6 +57,7 @@ As a user, I want to see notes related to the one I'm working on so I can make c
 - **Success Criteria**: Sidebar shows related notes when a note is opened.
 
 ### Plan 20-03: UX Polish & Navigation
+
 - **Objective**: Refine the visual representation and navigation flow.
 - **Tasks**:
   1. Add visual similarity labels/indicators.

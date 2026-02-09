@@ -53,15 +53,18 @@ Output: Working title generation that runs during background processing, storing
 @.planning/STATE.md
 
 # Current implementation
+
 @apps/api/src/services/ai.service.ts
 @apps/api/src/services/worker.service.ts
 @apps/api/src/lib/markdown.ts
 
 # Frontend usage (read-only for understanding)
+
 @apps/web/src/components/sidebar/SidebarNoteCard.tsx
 @apps/web/src/hooks/useGraphData.ts
 
 # Testing patterns
+
 @apps/api/src/services/ai.service.test.ts
 </context>
 
@@ -93,17 +96,17 @@ Output: Working title generation that runs during background processing, storing
    - Mock the AI response
    - Verify title is generated from note content
    - Verify title respects max length constraint
-  </action>
-  <verify>
-    pnpm --filter @notetaiker/api test markdown.test.ts
-    pnpm --filter @notetaiker/api test ai.service.test.ts
-  </verify>
-  <done>
-    - extractFirstHeader correctly identifies headers and returns null when missing
-    - generateTitle method exists and returns AI-generated titles
-    - Tests pass
-  </done>
-</task>
+     </action>
+     <verify>
+     pnpm --filter @notetaiker/api test markdown.test.ts
+     pnpm --filter @notetaiker/api test ai.service.test.ts
+     </verify>
+     <done>
+   - extractFirstHeader correctly identifies headers and returns null when missing
+   - generateTitle method exists and returns AI-generated titles
+   - Tests pass
+     </done>
+     </task>
 
 <task type="auto">
   <name>Integrate title generation in worker service</name>
@@ -129,18 +132,14 @@ In `apps/api/src/services/worker.service.ts`, modify `executeJob` method to gene
    - Update console.log messages to indicate when title is generated
 
 4. Preserve existing tag generation logic - title generation runs alongside it.
-  </action>
-  <verify>
-    pnpm --filter @notetaiker/api test worker.service.test.ts
-    pnpm lint
-  </verify>
-  <done>
-    - Worker generates titles for notes without headers during background processing
-    - Existing titles and headers are preserved
-    - Title is saved to frontmatter (metadata.title)
-    - Tests pass and no linting errors
-  </done>
-</task>
+   </action>
+   <verify>
+   pnpm --filter @notetaiker/api test worker.service.test.ts
+   pnpm lint
+   </verify>
+   <done> - Worker generates titles for notes without headers during background processing - Existing titles and headers are preserved - Title is saved to frontmatter (metadata.title) - Tests pass and no linting errors
+   </done>
+   </task>
 
 <task type="auto">
   <name>Add test coverage for title generation workflow</name>
@@ -167,17 +166,17 @@ In `apps/api/src/lib/markdown.test.ts`, add tests for `extractFirstHeader`:
    - Expect: null
 
 5. Test "should handle header with extra whitespace":
-   - Content: "#    Spaced Title   \n\nContent"
+   - Content: "# Spaced Title \n\nContent"
    - Expect: "Spaced Title"
-  </action>
-  <verify>
-    pnpm --filter @notetaiker/api test markdown.test.ts
-  </verify>
-  <done>
-    - All extractFirstHeader tests pass
-    - Edge cases are handled correctly
-  </done>
-</task>
+     </action>
+     <verify>
+     pnpm --filter @notetaiker/api test markdown.test.ts
+     </verify>
+     <done>
+   - All extractFirstHeader tests pass
+   - Edge cases are handled correctly
+     </done>
+     </task>
 
 </tasks>
 
@@ -193,13 +192,14 @@ Integration verification:
 </verification>
 
 <success_criteria>
+
 - Notes without headers get AI-generated titles stored in frontmatter
 - Notes with headers use the header text as the title
 - Existing titles are never overwritten
 - Title generation happens during background processing (same job as tags)
 - Frontend continues to work (reads from metadata.title first, then extracts from content)
 - All tests pass: `pnpm test`
-</success_criteria>
+  </success_criteria>
 
 <output>
 After completion, create `.planning/quick/006-when-a-note-doesn-t-contain-a-title-head/006-SUMMARY.md`

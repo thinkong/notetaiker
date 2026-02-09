@@ -17,11 +17,19 @@ affects: [19-02-generate-embeddings, 19-03-related-notes]
 # Tech tracking
 tech-stack:
   added: [sqlite-vec]
-  patterns: [Virtual tables for vector search, Transactional vector-meta updates]
+  patterns:
+    [Virtual tables for vector search, Transactional vector-meta updates]
 
 key-files:
-  created: [/home/ubuntu/projects/notetaiker/apps/api/src/services/embeddings.service.ts]
-  modified: [/home/ubuntu/projects/notetaiker/apps/api/package.json, /home/ubuntu/projects/notetaiker/apps/api/src/services/indexer.service.ts]
+  created:
+    [
+      /home/ubuntu/projects/notetaiker/apps/api/src/services/embeddings.service.ts,
+    ]
+  modified:
+    [
+      /home/ubuntu/projects/notetaiker/apps/api/package.json,
+      /home/ubuntu/projects/notetaiker/apps/api/src/services/indexer.service.ts,
+    ]
 
 key-decisions:
   - "Used vec0 virtual table for sqlite-vec for efficient KNN search"
@@ -50,6 +58,7 @@ completed: 2026-02-06
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Integrated `sqlite-vec` extension into the `better-sqlite3` database lifecycle.
 - Created `vec_notes` virtual table for high-performance vector operations.
 - Implemented `EmbeddingsService` with support for storing, retrieving, and finding similar notes.
@@ -64,11 +73,13 @@ Each task was committed atomically:
 3. **Task 3: Implement EmbeddingsService** - `82a1307` (feat)
 
 ## Files Created/Modified
+
 - `apps/api/package.json` - Added `sqlite-vec` dependency.
 - `apps/api/src/services/indexer.service.ts` - Added database initialization logic for vector search.
 - `apps/api/src/services/embeddings.service.ts` - New service for managing note embeddings.
 
 ## Decisions Made
+
 - **sqlite-vec Version:** Used `0.1.7-alpha.2` for compatibility with `better-sqlite3`.
 - **Update Logic:** Switched to a transactional `DELETE` + `INSERT` strategy for `vec_notes` because SQLite virtual tables do not support the `ON CONFLICT` (UPSERT) clause.
 - **Data Integrity:** Used a foreign key from `embeddings_meta` to `notes_index` to ensure embeddings are automatically cleaned up when notes are deleted.
@@ -78,6 +89,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Virtual table UPSERT limitation**
+
 - **Found during:** Task 3 (Embeddings Service implementation)
 - **Issue:** `sqlite-vec` virtual tables (vec0) do not support `INSERT ... ON CONFLICT DO UPDATE`.
 - **Fix:** Implemented update logic by deleting existing record and inserting new record within a transaction.
@@ -86,6 +98,7 @@ Each task was committed atomically:
 - **Committed in:** `82a1307`
 
 **2. [Rule 3 - Blocking] Foreign Key verification in tests**
+
 - **Found during:** Verification phase
 - **Issue:** Test failed because it tried to insert metadata referencing a non-existent note ID in `notes_index`.
 - **Fix:** Updated test script to sync a dummy note to `notes_index` before testing embedding storage.
@@ -99,14 +112,17 @@ Each task was committed atomically:
 **Impact on plan:** Minor implementation adjustment to accommodate SQLite virtual table limitations. No change to functionality or scope.
 
 ## Issues Encountered
+
 - None beyond the technical limitations of virtual tables mentioned above.
 
 ## Next Phase Readiness
+
 - Vector infrastructure is fully operational.
 - Ready for `19-02-generate-embeddings` to implement the background job for generating embeddings for all existing and new notes.
 
 ---
-*Phase: 19-embeddings-infrastructure*
-*Completed: 2026-02-06*
+
+_Phase: 19-embeddings-infrastructure_
+_Completed: 2026-02-06_
 
 ## Self-Check: PASSED

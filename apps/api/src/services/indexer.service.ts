@@ -136,10 +136,8 @@ export class IndexerService {
         const id = metadata.id || uuidv5(filename, FILE_NAMESPACE);
 
         // Fill in missing timestamps from file stats
-        const createdAt =
-          metadata.createdAt || stats.birthtime.toISOString();
-        const updatedAt =
-          metadata.updatedAt || stats.mtime.toISOString();
+        const createdAt = metadata.createdAt || stats.birthtime.toISOString();
+        const updatedAt = metadata.updatedAt || stats.mtime.toISOString();
 
         this.syncNote(filename, parsedContent, {
           ...metadata,

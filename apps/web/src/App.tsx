@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -9,6 +9,7 @@ import {
   RouterProvider,
   Outlet,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import { Settings, Save, Search, Share2, Eye, Edit3 } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -20,6 +21,7 @@ import { SettingsPage } from "./components/settings/SettingsPage";
 import { SearchPalette } from "./components/search/SearchPalette";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { GraphView } from "./components/graph/GraphView";
+import { GraphStateProvider } from "./contexts/GraphStateContext";
 import { useDraftPersistence } from "./hooks/useDraftPersistence";
 import { useNavigationGuard } from "./hooks/useNavigationGuard";
 import { Toast } from "./components/common/Toast";
@@ -67,6 +69,7 @@ function MainCapture() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     status,
@@ -168,33 +171,56 @@ function MainCapture() {
     }
   };
 
+  const handleEditNote = useCallback(
+    async (noteId: string) => {
+      // Fetch note content
+      try {
+        const res = await api.notes[":id"].$get({ param: { id: noteId } });
+        if (res.ok) {
+          const note = await res.json();
+          setNoteId(noteId); // Set the note ID for editing
+          setContent(note.content);
+          setOriginalContent(note.content);
+          setDraft(note.content);
+          setTags(note.metadata.tags || []);
+          setAiTags(note.metadata.ai_tags || []);
+          setIgnoredTags(note.metadata.ignored_tags || []);
+          setTitle(
+            note.metadata.title || extractFallbackTitle(note.content) || "",
+          );
+          editorRef.current?.focus();
+        }
+      } catch (error) {
+        console.error("Failed to load note:", error);
+      }
+    },
+    [
+      setNoteId,
+      setContent,
+      setOriginalContent,
+      setDraft,
+      setTags,
+      setAiTags,
+      setIgnoredTags,
+      setTitle,
+    ],
+  );
+
+  useEffect(() => {
+    if (location.state?.noteId) {
+      const noteId = location.state.noteId;
+      // Wrap in setTimeout to avoid linter complaint about setting state in effect
+      // and ensuring it runs after render cycle
+      setTimeout(() => {
+        handleEditNote(noteId);
+      }, 0);
+    }
+  }, [location.state?.noteId, handleEditNote]);
+
   const handleNoteClick = (noteId: string) => {
     requestAction(() => {
       handleEditNote(noteId);
     });
-  };
-
-  const handleEditNote = async (noteId: string) => {
-    // Fetch note content
-    try {
-      const res = await api.notes[":id"].$get({ param: { id: noteId } });
-      if (res.ok) {
-        const note = await res.json();
-        setNoteId(noteId); // Set the note ID for editing
-        setContent(note.content);
-        setOriginalContent(note.content);
-        setDraft(note.content);
-        setTags(note.metadata.tags || []);
-        setAiTags(note.metadata.ai_tags || []);
-        setIgnoredTags(note.metadata.ignored_tags || []);
-        setTitle(
-          note.metadata.title || extractFallbackTitle(note.content) || "",
-        );
-        editorRef.current?.focus();
-      }
-    } catch (error) {
-      console.error("Failed to load note:", error);
-    }
   };
 
   const handleAddTag = (tag: string) => {
@@ -475,7 +501,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <GraphStateProvider>
+        <RouterProvider router={router} />
+      </GraphStateProvider>
     </QueryClientProvider>
   );
 }

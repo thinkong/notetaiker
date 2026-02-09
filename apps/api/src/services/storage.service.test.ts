@@ -19,7 +19,11 @@ describe("StorageService", () => {
     // as it just updates the SQLite DB
     indexerService = new IndexerService(tempDir, tempDir);
     const mockQueue = { enqueue: vi.fn() };
-    storageService = new StorageService(tempDir, indexerService, mockQueue as any);
+    storageService = new StorageService(
+      tempDir,
+      indexerService,
+      mockQueue as any,
+    );
   });
 
   afterEach(async () => {

@@ -44,6 +44,7 @@ Add a preview toggle button to the editor header that allows users to switch bet
 **Commit:** ddb781e
 
 Added preview mode state management and UI toggle button:
+
 - Imported Eye and Edit3 icons from lucide-react
 - Added `showPreview` state to MainCapture component
 - Created toggle button positioned between Save and Search buttons
@@ -51,6 +52,7 @@ Added preview mode state management and UI toggle button:
 - Passed `showPreview` prop to Editor component
 
 **Files Modified:**
+
 - `apps/web/src/App.tsx`
 
 ### 2. Implement preview mode rendering in Editor component
@@ -59,6 +61,7 @@ Added preview mode state management and UI toggle button:
 **Commit:** 5068bcb
 
 Modified Editor component to support conditional rendering:
+
 - Added `showPreview?: boolean` to EditorProps interface
 - Imported Markdown component from `../common/Markdown`
 - Implemented conditional rendering logic:
@@ -67,6 +70,7 @@ Modified Editor component to support conditional rendering:
 - Maintained consistent layout with `h-full overflow-y-auto px-4 py-2` for preview container
 
 **Files Modified:**
+
 - `apps/web/src/components/editor/Editor.tsx`
 
 ### 3. Manual testing of preview toggle
@@ -75,6 +79,7 @@ Modified Editor component to support conditional rendering:
 **Commit:** 31dd5db
 
 Verified implementation through static analysis:
+
 - All required imports present (Eye, Edit3, Markdown)
 - State management correctly implemented
 - Toggle button properly positioned in header
@@ -85,6 +90,7 @@ Verified implementation through static analysis:
 ## Implementation Details
 
 ### Preview Toggle Button
+
 - **Location:** Header button group, between Save and Search buttons
 - **Visual States:**
   - Edit mode: Eye icon + "Preview" text
@@ -93,6 +99,7 @@ Verified implementation through static analysis:
 - **Interaction:** Single click toggles between modes
 
 ### Preview Rendering
+
 - **Component:** Reuses existing Markdown component (`apps/web/src/components/common/Markdown.tsx`)
 - **Container:** Scrollable div with consistent padding
 - **Behavior:** Content is preserved when switching between modes

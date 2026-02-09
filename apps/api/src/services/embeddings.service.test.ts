@@ -25,7 +25,11 @@ describe("EmbeddingsService", () => {
       enqueue: vi.fn(),
     };
 
-    service = new EmbeddingsService(db as any, mockStorage as any, mockQueue as any);
+    service = new EmbeddingsService(
+      db as any,
+      mockStorage as any,
+      mockQueue as any,
+    );
   });
 
   describe("rebuildIndex", () => {
@@ -78,7 +82,6 @@ describe("EmbeddingsService", () => {
       const prepareCall = db.prepare.mock.calls[0][0];
       const stmt = db.prepare.mock.results[0].value;
       const runCall = stmt.all.mock.calls[0];
-
 
       expect(prepareCall).toContain("WHERE vector MATCH ?");
       expect(prepareCall).toContain("AND k = ?");
