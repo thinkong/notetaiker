@@ -41,6 +41,7 @@ export function GraphToolbar() {
     const tagsSet = new Set<string>();
     notes?.forEach((note) => {
       note.metadata.tags?.forEach((tag: string) => tagsSet.add(tag));
+      note.metadata.ai_tags?.forEach((tag: string) => tagsSet.add(tag));
     });
     // Remove tags already in filter
     graphState.filterTags.forEach((tag) => tagsSet.delete(tag));
@@ -151,60 +152,59 @@ export function GraphToolbar() {
         </>
       )}
 
-      {/* Tag Search Palette */}
-      {open && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[20vh] px-4">
-          <div
-            className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-          <Command
-            className="relative w-full max-w-md bg-nord-snow2 dark:bg-nord-polar1 rounded-xl shadow-2xl border border-nord-snow0 dark:border-nord-polar2 overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
-            onKeyDown={(e) => {
-              if (e.key === "Escape") setOpen(false);
-            }}
-          >
-            <div className="flex items-center border-b border-nord-snow0 dark:border-nord-polar2 px-4 py-3">
-              <Tag className="w-5 h-5 text-nord-polar3 dark:text-nord-snow0 mr-3 shrink-0" />
-              <Command.Input
-                autoFocus
-                placeholder="Search tags..."
-                value={search}
-                onValueChange={setSearch}
-                className="w-full bg-transparent border-none outline-none text-nord-polar0 dark:text-nord-snow2 placeholder:text-nord-polar3 dark:placeholder:text-nord-polar3 py-1 text-base"
-              />
-              <button
-                onClick={() => setOpen(false)}
-                className="p-1 rounded-md hover:bg-nord-snow0 dark:hover:bg-nord-polar2 text-nord-polar3 dark:text-nord-snow0"
+      {/* Tag Search Palette (uses Command.Dialog for portal + focus management) */}
+      <Command.Dialog
+        open={open}
+        onOpenChange={setOpen}
+        label="Search Tags"
+        className="fixed inset-0 z-[60] flex items-start justify-center pt-[20vh] px-4"
+      >
+        <div
+          className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm"
+          aria-hidden="true"
+        />
+
+        <div className="relative w-full max-w-md bg-nord-snow2 dark:bg-nord-polar1 rounded-xl shadow-2xl border border-nord-snow0 dark:border-nord-polar2 overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+          <div className="flex items-center border-b border-nord-snow0 dark:border-nord-polar2 px-4 py-3">
+            <Tag className="w-5 h-5 text-nord-polar3 dark:text-nord-snow0 mr-3 shrink-0" />
+            <Command.Input
+              autoFocus
+              placeholder="Search tags..."
+              value={search}
+              onValueChange={setSearch}
+              className="w-full bg-transparent border-none outline-none text-nord-polar0 dark:text-nord-snow2 placeholder:text-nord-polar3 dark:placeholder:text-nord-polar3 py-1 text-base"
+            />
+            <button
+              onClick={() => setOpen(false)}
+              className="p-1 rounded-md hover:bg-nord-snow0 dark:hover:bg-nord-polar2 text-nord-polar3 dark:text-nord-snow0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <Command.List className="max-h-[40vh] overflow-y-auto p-2 scrollbar-hide">
+            <Command.Empty className="py-8 text-center text-nord-polar3 dark:text-nord-snow0">
+              No tags found.
+            </Command.Empty>
+
+            {allTags.map((tag) => (
+              <Command.Item
+                key={tag}
+                onSelect={() => handleSelectTag(tag)}
+                className="group flex items-center gap-3 px-3 py-2 rounded-lg cursor-default select-none text-nord-polar0 dark:text-nord-snow2 aria-selected:bg-nord-frost3 aria-selected:text-white transition-colors"
               >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+                <Tag className="w-4 h-4 opacity-50 group-aria-selected:opacity-100" />
+                <span className="flex-1 font-medium">{tag}</span>
+              </Command.Item>
+            ))}
+          </Command.List>
 
-            <Command.List className="max-h-[40vh] overflow-y-auto p-2 scrollbar-hide">
-              <Command.Empty className="py-8 text-center text-nord-polar3 dark:text-nord-snow0">
-                No tags found.
-              </Command.Empty>
-
-              {allTags.map((tag) => (
-                <Command.Item
-                  key={tag}
-                  onSelect={() => handleSelectTag(tag)}
-                  className="group flex items-center gap-3 px-3 py-2 rounded-lg cursor-default select-none text-nord-polar0 dark:text-nord-snow2 aria-selected:bg-nord-frost3 aria-selected:text-white transition-colors"
-                >
-                  <Tag className="w-4 h-4 opacity-50 group-aria-selected:opacity-100" />
-                  <span className="flex-1 font-medium">{tag}</span>
-                </Command.Item>
-              ))}
-            </Command.List>
-
-            <div className="flex items-center justify-between border-t border-nord-snow0 dark:border-nord-polar2 px-4 py-2 text-[10px] uppercase tracking-widest text-nord-polar3 dark:text-nord-snow0 bg-nord-snow1/50 dark:bg-nord-polar0/50">
-              <span>Navigate with ↑↓, Select with ↵</span>
-              <span>ESC to close</span>
-            </div>
-          </Command>
+          <div className="flex items-center justify-between border-t border-nord-snow0 dark:border-nord-polar2 px-4 py-2 text-[10px] uppercase tracking-widest text-nord-polar3 dark:text-nord-snow0 bg-nord-snow1/50 dark:bg-nord-polar0/50">
+            <span>Navigate with ↑↓, Select with ↵</span>
+            <span>ESC to close</span>
+          </div>
         </div>
-      )}
+      </Command.Dialog>
     </div>
   );
 }

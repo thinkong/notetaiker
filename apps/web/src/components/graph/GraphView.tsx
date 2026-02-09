@@ -1,13 +1,14 @@
 import { useMemo, useRef, useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useGraphData, type GraphNode } from "../../hooks/useGraphData";
+import { useGraphData } from "../../hooks/useGraphData";
 import { ForceGraph, type ForceGraphHandle } from "./ForceGraph";
 import { NoteSidePanel } from "./NoteSidePanel";
 import { useGraphState } from "../../contexts/GraphStateContext";
 import { GraphToolbar } from "./GraphToolbar";
 import { GraphFilterChips } from "./GraphFilterChips";
 import { ClusterLegend } from "./ClusterLegend";
+import { passesTagFilter } from "../../lib/graphUtils";
 
 export function GraphView() {
   const navigate = useNavigate();
@@ -41,7 +42,9 @@ export function GraphView() {
   }, [selectedNodeId, data]);
 
   const isFiltered =
-    graphState.filterTags.length > 0 || !!graphState.localNodeId;
+    graphState.filterTags.length > 0 ||
+    !!graphState.localNodeId ||
+    !!graphState.semanticFilterNodeId;
 
   // Calculate visible nodes to check for empty state
   const visibleNodesCount = useMemo(() => {
@@ -51,26 +54,14 @@ export function GraphView() {
     // This logic should match ForceGraph.tsx visibility logic
     const visible = new Set<string>();
 
-    const passesFilter = (node: GraphNode) => {
-      if (graphState.filterTags.length === 0) return true;
-      const nodeTags = [...(node.tags || []), ...(node.ai_tags || [])].map(
-        (t) => t.toLowerCase(),
-      );
-      const searchTags = graphState.filterTags.map((t) => t.toLowerCase());
-
-      if (graphState.filterLogic === "AND") {
-        return searchTags.every((t) => nodeTags.includes(t));
-      } else {
-        return searchTags.some((t) => nodeTags.includes(t));
-      }
-    };
-
     if (graphState.localNodeId) {
       // In local view, at least the center node is visible.
       return 1;
     } else {
       data.nodes.forEach((node) => {
-        if (passesFilter(node)) {
+        if (
+          passesTagFilter(node, graphState.filterTags, graphState.filterLogic)
+        ) {
           visible.add(node.id);
         }
       });
@@ -90,21 +81,11 @@ export function GraphView() {
       const node = data.nodes.find((n) => n.id === selectedNodeId);
       if (!node) return;
 
-      const passesFilter = () => {
-        if (graphState.filterTags.length === 0) return true;
-        const nodeTags = [...(node.tags || []), ...(node.ai_tags || [])].map(
-          (t) => t.toLowerCase(),
-        );
-        const searchTags = graphState.filterTags.map((t) => t.toLowerCase());
-
-        if (graphState.filterLogic === "AND") {
-          return searchTags.every((t) => nodeTags.includes(t));
-        } else {
-          return searchTags.some((t) => nodeTags.includes(t));
-        }
-      };
-
-      let isVisible = passesFilter();
+      let isVisible = passesTagFilter(
+        node,
+        graphState.filterTags,
+        graphState.filterLogic,
+      );
       if (isVisible && graphState.localNodeId) {
         // In local view, must be center or neighbor. Since we don't have neighborsMap
         // easily accessible here without duplication, and the requirement is to reveal

@@ -9,9 +9,9 @@ interface ClusterLegendProps {
 
 export function ClusterLegend({ isOpen, onToggle }: ClusterLegendProps) {
   const { data, isLoading, error } = useClusters();
-  const { colorMap } = useClusterColors();
   const { graphState, toggleHighContrast } = useGraphState();
   const { highContrast } = graphState;
+  const { colorMap } = useClusterColors(highContrast);
 
   // Collapsed state - just show toggle button
   if (!isOpen) {

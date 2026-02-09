@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import { env } from "@notetaiker/env";
 import fs from "node:fs";
 import path from "node:path";
@@ -110,6 +111,7 @@ app
     c.set("clustersService", clustersService);
     await next();
   })
+  .use("*", logger())
   .use("*", cors());
 
 console.log("Initializing notes directory at:", notesDir);

@@ -95,21 +95,30 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     return defaultState;
   });
 
-  const updateGraphState = (updates: Partial<GraphState>) => {
+  const updateGraphState = useCallback((updates: Partial<GraphState>) => {
     setGraphState((prev) => ({ ...prev, ...updates }));
-  };
+  }, []);
 
-  const setFilterTags = (tags: string[]) => {
-    updateGraphState({ filterTags: tags });
-  };
+  const setFilterTags = useCallback(
+    (tags: string[]) => {
+      updateGraphState({ filterTags: tags });
+    },
+    [updateGraphState],
+  );
 
-  const setFilterLogic = (logic: "AND" | "OR") => {
-    updateGraphState({ filterLogic: logic });
-  };
+  const setFilterLogic = useCallback(
+    (logic: "AND" | "OR") => {
+      updateGraphState({ filterLogic: logic });
+    },
+    [updateGraphState],
+  );
 
-  const setLocalNodeId = (nodeId: string | null) => {
-    updateGraphState({ localNodeId: nodeId });
-  };
+  const setLocalNodeId = useCallback(
+    (nodeId: string | null) => {
+      updateGraphState({ localNodeId: nodeId });
+    },
+    [updateGraphState],
+  );
 
   const pinNode = useCallback((id: string, x: number, y: number) => {
     setGraphState((prev) => ({
@@ -130,25 +139,31 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     setGraphState((prev) => ({ ...prev, highContrast: !prev.highContrast }));
   }, []);
 
-  const setSemanticEnabled = useCallback((enabled: boolean) => {
-    updateGraphState({ semanticEnabled: enabled });
-    // If disabling, also clear semantic filter
-    if (!enabled) {
-      updateGraphState({ semanticFilterNodeId: null });
-    }
-  }, []);
+  const setSemanticEnabled = useCallback(
+    (enabled: boolean) => {
+      updateGraphState({
+        semanticEnabled: enabled,
+        // If disabling, also clear semantic filter
+        ...(enabled ? {} : { semanticFilterNodeId: null }),
+      });
+    },
+    [updateGraphState],
+  );
 
-  const setSemanticFilterNodeId = useCallback((nodeId: string | null) => {
-    updateGraphState({ semanticFilterNodeId: nodeId });
-    // Enable semantic mode when setting a filter
-    if (nodeId) {
-      updateGraphState({ semanticEnabled: true });
-    }
-  }, []);
+  const setSemanticFilterNodeId = useCallback(
+    (nodeId: string | null) => {
+      updateGraphState({
+        semanticFilterNodeId: nodeId,
+        // Enable semantic mode when setting a filter
+        ...(nodeId ? { semanticEnabled: true } : {}),
+      });
+    },
+    [updateGraphState],
+  );
 
   const clearSemanticFilter = useCallback(() => {
     updateGraphState({ semanticFilterNodeId: null });
-  }, []);
+  }, [updateGraphState]);
 
   // Persist pinned nodes to localStorage
   useEffect(() => {

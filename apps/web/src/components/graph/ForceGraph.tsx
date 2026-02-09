@@ -17,6 +17,7 @@ import {
 import { useGraphState } from "../../contexts/GraphStateContext";
 import { useClusters, useClusterColors } from "../../hooks/useClusters";
 import { blendClusterColors, createGlowGradient } from "../../lib/colorUtils";
+import { passesTagFilter } from "../../lib/graphUtils";
 
 export interface ForceGraphHandle {
   getGraphState: () =>
@@ -188,40 +189,23 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     const visibleNodes = useMemo(() => {
       const visible = new Set<string>();
 
-      // 1. Initial Filtering by Tags
-      const passesFilter = (node: GraphNode) => {
-        if (filterTags.length === 0) return true;
-        const nodeTags = [...(node.tags || []), ...(node.ai_tags || [])].map(
-          (t) => t.toLowerCase(),
-        );
-        const searchTags = filterTags.map((t) => t.toLowerCase());
-
-        if (filterLogic === "AND") {
-          return searchTags.every((t) => nodeTags.includes(t));
-        } else {
-          return searchTags.some((t) => nodeTags.includes(t));
-        }
-      };
-
-      // 2. Local View Filter (1-hop)
+      // 1. Local View Filter (1-hop) + Tag filtering
       if (localNodeId) {
         visible.add(localNodeId);
         const neighbors = neighborsMap.get(localNodeId);
         if (neighbors) {
           neighbors.forEach(({ neighbor }) => {
             const node = data.nodes.find((n) => n.id === neighbor);
-            if (node && passesFilter(node)) {
+            if (node && passesTagFilter(node, filterTags, filterLogic)) {
               visible.add(neighbor);
             }
           });
         }
-        // If the center node itself doesn't pass the tag filter,
-        // we might still want to see it in local view, but usually we filter the whole graph.
-        // For now, let's say local view takes precedence on the center, but neighbors must match.
+        // Local view takes precedence on the center, but neighbors must match.
       } else {
         // Just global filter
         data.nodes.forEach((node) => {
-          if (passesFilter(node)) {
+          if (passesTagFilter(node, filterTags, filterLogic)) {
             visible.add(node.id);
           }
         });
@@ -495,8 +479,12 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         ctx.stroke();
 
         // Adaptive Labeling
+        // When hovered on a note node, the HTML tooltip already shows the name,
+        // so skip the canvas label to avoid duplication.
         const showLabel =
-          globalScale > LABEL_THRESHOLD || isHovered || isFlashed;
+          isFlashed ||
+          (globalScale > LABEL_THRESHOLD && !isHovered) ||
+          (isHovered && isTag);
         if (showLabel) {
           const label = name;
           const fontSize = 12 / globalScale;
@@ -540,11 +528,47 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
       ],
     );
 
+    const getLinkColor = useCallback(
+      (link: InternalLink) => {
+        const source =
+          typeof link.source === "object" ? link.source.id : link.source;
+        const target =
+          typeof link.target === "object" ? link.target.id : link.target;
+        const linkId = `${source}-${target}`;
+
+        const sourceVisible =
+          visibleNodes.size === 0 || visibleNodes.has(source);
+        const targetVisible =
+          visibleNodes.size === 0 || visibleNodes.has(target);
+        const isGhosted = !sourceVisible || !targetVisible;
+
+        // Use same 15% opacity for ghosted links as nodes
+        if (isGhosted) return "rgba(84, 110, 122, 0.15)";
+
+        if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
+        return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
+      },
+      [highlightLinks, highlightNodes.size, visibleNodes],
+    );
+
+    const getLinkWidth = useCallback(
+      (link: InternalLink) => {
+        const source =
+          typeof link.source === "object" ? link.source.id : link.source;
+        const target =
+          typeof link.target === "object" ? link.target.id : link.target;
+        const linkId = `${source}-${target}`;
+        return highlightLinks.has(linkId) ? 2 : 1;
+      },
+      [highlightLinks],
+    );
+
     return (
       <div className="relative w-full h-full">
         <ForceGraph2D
           ref={fgRef}
           graphData={data}
+          nodeLabel={() => ""}
           nodeCanvasObject={(node, ctx, globalScale) =>
             paintNode(node as InternalNode, ctx, globalScale)
           }
@@ -561,41 +585,10 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
           }
           onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
           onRenderFramePost={onRenderFramePost}
-          linkColor={useCallback(
-            (link: InternalLink) => {
-              const source =
-                typeof link.source === "object" ? link.source.id : link.source;
-              const target =
-                typeof link.target === "object" ? link.target.id : link.target;
-              const linkId = `${source}-${target}`;
-
-              const sourceVisible =
-                visibleNodes.size === 0 || visibleNodes.has(source);
-              const targetVisible =
-                visibleNodes.size === 0 || visibleNodes.has(target);
-              const isGhosted = !sourceVisible || !targetVisible;
-
-              // Use same 15% opacity for ghosted links as nodes
-              if (isGhosted) return "rgba(84, 110, 122, 0.15)";
-
-              if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
-              return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;
-            },
-            [highlightLinks, highlightNodes.size, visibleNodes],
-          )}
-          linkWidth={useCallback(
-            (link: InternalLink) => {
-              const source =
-                typeof link.source === "object" ? link.source.id : link.source;
-              const target =
-                typeof link.target === "object" ? link.target.id : link.target;
-              const linkId = `${source}-${target}`;
-              return highlightLinks.has(linkId) ? 2 : 1;
-            },
-            [highlightLinks],
-          )}
+          linkColor={getLinkColor}
+          linkWidth={getLinkWidth}
         />
-        {hoverNode && tooltipPos && (
+        {hoverNode && tooltipPos && hoverNode.type === "note" && (
           <GraphTooltip node={hoverNode} x={tooltipPos.x} y={tooltipPos.y} />
         )}
       </div>

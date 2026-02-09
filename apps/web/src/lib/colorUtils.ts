@@ -113,12 +113,17 @@ export function createGlowGradient(
 ): CanvasGradient {
   const gradient = ctx.createRadialGradient(x, y, radius, x, y, radius + 8);
 
+  // Normalize weights so cumulative positions stay within [0, 1]
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  const safeWeights =
+    totalWeight > 0 ? weights.map((w) => w / totalWeight) : weights;
+
   // Add color stops for each cluster color
   let cumulativeWeight = 0;
   colors.forEach((color, i) => {
-    const weight = weights[i] || 0;
+    const weight = safeWeights[i] || 0;
     const alpha = Math.min(0.5, 0.3 + weight * 0.4);
-    const stopPosition = cumulativeWeight;
+    const stopPosition = Math.min(cumulativeWeight, 0.99); // Clamp to valid range
     gradient.addColorStop(stopPosition, hexToRgba(color, alpha));
     cumulativeWeight += weight;
   });
