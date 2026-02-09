@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGraphData, type GraphNode } from "../../hooks/useGraphData";
@@ -7,6 +7,7 @@ import { NoteSidePanel } from "./NoteSidePanel";
 import { useGraphState } from "../../contexts/GraphStateContext";
 import { GraphToolbar } from "./GraphToolbar";
 import { GraphFilterChips } from "./GraphFilterChips";
+import { ClusterLegend } from "./ClusterLegend";
 
 export function GraphView() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export function GraphView() {
     updateGraphState({ selectedNodeId: id });
   };
   const graphRef = useRef<ForceGraphHandle>(null);
+  const [legendOpen, setLegendOpen] = useState(false);
 
   // Save state on unmount
   useEffect(() => {
@@ -151,6 +153,12 @@ export function GraphView() {
             isFiltered ? "bg-nord-frost3/5 dark:bg-nord-frost3/10" : ""
           }`}
         >
+          {/* Cluster Legend */}
+          <ClusterLegend
+            isOpen={legendOpen}
+            onToggle={() => setLegendOpen(!legendOpen)}
+          />
+
           <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
             <div className="pointer-events-auto max-w-2xl">
               <GraphFilterChips />

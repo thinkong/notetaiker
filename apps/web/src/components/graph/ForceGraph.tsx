@@ -15,6 +15,8 @@ import {
   type NodeType,
 } from "../../hooks/useGraphData";
 import { useGraphState } from "../../contexts/GraphStateContext";
+import { useClusters, useClusterColors } from "../../hooks/useClusters";
+import { blendClusterColors, createGlowGradient } from "../../lib/colorUtils";
 
 export interface ForceGraphHandle {
   getGraphState: () =>
@@ -79,7 +81,18 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     ref,
   ) => {
     const { graphState, setLocalNodeId } = useGraphState();
-    const { filterTags, filterLogic, localNodeId } = graphState;
+    const {
+      filterTags,
+      filterLogic,
+      localNodeId,
+      semanticEnabled,
+      semanticFilterNodeId,
+      highContrast,
+    } = graphState;
+
+    // Get cluster data
+    const { data: clusterData } = useClusters();
+    const { colorMap } = useClusterColors(highContrast);
 
     const fgRef = useRef<
       ForceGraphMethods<InternalNode, InternalLink> | undefined
@@ -214,8 +227,47 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         });
       }
 
+      // 3. Semantic Filter (show only nodes similar to active note)
+      if (semanticFilterNodeId && clusterData) {
+        const similarNodes = new Set<string>();
+        similarNodes.add(semanticFilterNodeId);
+
+        // Add nodes that share clusters with the semantic filter node
+        const memberships = clusterData.nodeMemberships[semanticFilterNodeId];
+        if (memberships) {
+          // Find all nodes in the same clusters (above threshold)
+          Object.entries(clusterData.nodeMemberships).forEach(
+            ([nodeId, nodeMemberships]) => {
+              const hasSharedCluster = nodeMemberships.some((nm) =>
+                memberships.some(
+                  (m) => m.clusterId === nm.clusterId && nm.weight > 0.3,
+                ),
+              );
+              if (hasSharedCluster) {
+                similarNodes.add(nodeId);
+              }
+            },
+          );
+        }
+
+        // Intersect with existing visible set
+        visible.forEach((nodeId) => {
+          if (!similarNodes.has(nodeId)) {
+            visible.delete(nodeId);
+          }
+        });
+      }
+
       return visible;
-    }, [data.nodes, filterTags, filterLogic, localNodeId, neighborsMap]);
+    }, [
+      data.nodes,
+      filterTags,
+      filterLogic,
+      localNodeId,
+      neighborsMap,
+      semanticFilterNodeId,
+      clusterData,
+    ]);
 
     const handleClick = useCallback(
       (node: GraphNode, event: MouseEvent) => {
@@ -345,29 +397,83 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
 
         const r = NODE_R[type as NodeType] || 4;
         const nodeColors = COLORS[type as NodeType];
+        const isTag = type === "tag";
+
+        // Determine node color (with semantic clustering support)
+        let nodeColor = nodeColors.base;
+        let glowColors: string[] = [];
+        let glowWeights: number[] = [];
+
+        if (semanticEnabled && clusterData && !isTag) {
+          // Get node memberships
+          const memberships = clusterData.nodeMemberships[node.id];
+          if (memberships && memberships.length > 0) {
+            // Get colors and weights for blending
+            const memberColors = memberships.map(
+              (m) => colorMap[m.clusterId] || "#94a3b8",
+            );
+            const memberWeights = memberships.map((m) => m.weight);
+
+            if (memberships.length === 1) {
+              // Single cluster - use that color
+              nodeColor = memberColors[0];
+              glowColors = memberColors;
+              glowWeights = memberWeights;
+            } else {
+              // Multiple clusters - blend colors
+              nodeColor = blendClusterColors(memberColors, memberWeights);
+              glowColors = memberColors;
+              glowWeights = memberWeights;
+            }
+          } else {
+            // Noise node - use gray
+            nodeColor = "#94a3b8";
+          }
+        }
+
         const color = isFlashed
-          ? "#ffffff" // White flash
+          ? "#ffffff" // White flash takes precedence
           : isHovered
             ? nodeColors.hover
             : isDimmed
               ? COLORS.dimmed
-              : nodeColors.base;
+              : nodeColor;
 
         ctx.save();
         if (isGhosted) {
           ctx.globalAlpha = 0.15;
         }
 
-        // Draw glow effect for highlighted/hovered/flashed nodes
-        if ((isHighlighted || isHovered || isFlashed) && !isDimmed) {
+        // Draw glow effect for highlighted/hovered/flashed nodes OR semantic cluster
+        const shouldDrawGlow =
+          (isHighlighted || isHovered || isFlashed) && !isDimmed;
+
+        if (semanticEnabled && glowColors.length > 0 && !isGhosted) {
+          // Draw semantic cluster glow
+          ctx.beginPath();
+          const glowRadius = r + 8;
+          ctx.arc(x, y, glowRadius, 0, 2 * Math.PI, false);
+
+          const gradient = createGlowGradient(
+            ctx,
+            x,
+            y,
+            r,
+            glowColors,
+            glowWeights,
+          );
+          ctx.fillStyle = gradient;
+          ctx.fill();
+        } else if (shouldDrawGlow) {
+          // Draw standard highlight glow
           ctx.beginPath();
           const glowRadius = isFlashed ? r + 12 : r + 6;
           ctx.arc(x, y, glowRadius, 0, 2 * Math.PI, false);
           const gradient = ctx.createRadialGradient(x, y, r, x, y, glowRadius);
-          gradient.addColorStop(
-            0,
-            isFlashed ? "rgba(255, 255, 255, 0.8)" : nodeColors.glow,
-          );
+          const glowColor = isFlashed
+            ? "rgba(255, 255, 255, 0.8)"
+            : nodeColors.glow;
+          gradient.addColorStop(0, glowColor);
           gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
           ctx.fillStyle = gradient;
           ctx.fill();
@@ -423,7 +529,15 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
         }
         ctx.restore();
       },
-      [hoverNode, highlightNodes, flashNodeId, visibleNodes],
+      [
+        hoverNode,
+        highlightNodes,
+        flashNodeId,
+        visibleNodes,
+        semanticEnabled,
+        clusterData,
+        colorMap,
+      ],
     );
 
     return (
@@ -461,7 +575,8 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
                 visibleNodes.size === 0 || visibleNodes.has(target);
               const isGhosted = !sourceVisible || !targetVisible;
 
-              if (isGhosted) return "rgba(84, 110, 122, 0.1)";
+              // Use same 15% opacity for ghosted links as nodes
+              if (isGhosted) return "rgba(84, 110, 122, 0.15)";
 
               if (highlightLinks.has(linkId)) return COLORS.linkHighlight;
               return highlightNodes.size > 0 ? COLORS.dimmedLink : COLORS.link;

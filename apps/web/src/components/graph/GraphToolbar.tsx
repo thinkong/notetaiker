@@ -1,15 +1,26 @@
 import { useState, useMemo } from "react";
 import { Command } from "cmdk";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Tag, Settings2, X, Focus, Filter } from "lucide-react";
+import { Search, Tag, Settings2, X, Focus, Filter, Brain } from "lucide-react";
 import { api } from "../../lib/api";
 import { useGraphState } from "../../contexts/GraphStateContext";
 
 export function GraphToolbar() {
-  const { graphState, setFilterTags, setFilterLogic, setLocalNodeId } =
-    useGraphState();
+  const {
+    graphState,
+    setFilterTags,
+    setFilterLogic,
+    setLocalNodeId,
+    setSemanticEnabled,
+    // setSemanticFilterNodeId, // Will be used when implementing note context filter
+    clearSemanticFilter,
+  } = useGraphState();
+  const { semanticEnabled, semanticFilterNodeId } = graphState;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+
+  // Get clusters
+  // const { data: clusters } = useClusters(); // Will be used when implementing cluster-aware features
 
   // Fetch notes to extract unique tags
   const { data: notes } = useQuery({
@@ -86,6 +97,25 @@ export function GraphToolbar() {
         <span>Match: {graphState.filterLogic}</span>
       </button>
 
+      <div className="h-6 w-px bg-nord-snow0 dark:border-nord-polar2 mx-1" />
+
+      <button
+        onClick={() => setSemanticEnabled(!semanticEnabled)}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm transition-colors ${
+          semanticEnabled
+            ? "bg-nord-aurora2 text-white border-nord-aurora2"
+            : "bg-nord-snow2 dark:bg-nord-polar1 text-nord-polar0 dark:text-nord-snow2 border-nord-snow0 dark:border-nord-polar2"
+        }`}
+        title={
+          semanticEnabled
+            ? "Semantic coloring enabled"
+            : "Enable semantic coloring"
+        }
+      >
+        <Brain className="w-4 h-4" />
+        <span>Semantic</span>
+      </button>
+
       {graphState.localNodeId && (
         <>
           <div className="h-6 w-px bg-nord-snow0 dark:border-nord-polar2 mx-1" />
@@ -96,6 +126,24 @@ export function GraphToolbar() {
               onClick={clearLocalView}
               className="ml-1 p-0.5 rounded-md hover:bg-nord-frost2/30 transition-colors"
               title="Exit Local View"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Semantic Filter Section */}
+      {semanticFilterNodeId && (
+        <>
+          <div className="h-6 w-px bg-nord-snow0 dark:border-nord-polar2 mx-1" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-nord-aurora3/20 text-nord-aurora3 border border-nord-aurora3/30 text-sm">
+            <Brain className="w-4 h-4" />
+            <span>Similar Notes</span>
+            <button
+              onClick={clearSemanticFilter}
+              className="ml-1 p-0.5 rounded-md hover:bg-nord-aurora3/30 transition-colors"
+              title="Clear Similarity Filter"
             >
               <X className="w-3.5 h-3.5" />
             </button>

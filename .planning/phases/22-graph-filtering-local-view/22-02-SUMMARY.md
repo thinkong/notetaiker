@@ -21,24 +21,29 @@ metrics:
 # Phase 22 Plan 02: Graph Filtering UI Components Summary
 
 ## Substantive Delivery
+
 Created standalone `GraphToolbar` and `GraphFilterChips` components to provide an intuitive interface for managing graph filters (tags and logic) and local view focus.
 
 ## Task Commits
-| Task | Name | Commit | Files |
-|------|------|--------|-------|
-| 1 | Create GraphToolbar component | bd79601 | apps/web/src/components/graph/GraphToolbar.tsx |
-| 2 | Create GraphFilterChips component | 2fb69b2 | apps/web/src/components/graph/GraphFilterChips.tsx |
+
+| Task | Name                              | Commit  | Files                                              |
+| ---- | --------------------------------- | ------- | -------------------------------------------------- |
+| 1    | Create GraphToolbar component     | bd79601 | apps/web/src/components/graph/GraphToolbar.tsx     |
+| 2    | Create GraphFilterChips component | 2fb69b2 | apps/web/src/components/graph/GraphFilterChips.tsx |
 
 ## Decisions Made
+
 - **Tag Selection**: Used `cmdk` for a searchable command-palette style tag input within the toolbar, maintaining consistency with the global search palette.
 - **Filtering Logic**: Implemented a visible toggle for "AND" vs "OR" logic in the toolbar, with immediate feedback via button styling.
 - **Local View Indicator**: Added a specific indicator in the toolbar when `localNodeId` is active, allowing users to clear the focus easily.
 - **Animations**: Used Tailwind's `animate-in` utilities for smooth entry/exit of filter chips and the tag palette.
 
 ## Deviations from Plan
+
 None - plan executed exactly as written.
 
 ## Self-Check: PASSED
+
 - [x] apps/web/src/components/graph/GraphToolbar.tsx exists
 - [x] apps/web/src/components/graph/GraphFilterChips.tsx exists
 - [x] Commit bd79601 found
