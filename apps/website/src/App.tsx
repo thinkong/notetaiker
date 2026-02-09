@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Privacy } from "@/components/sections/Privacy";
 import { Comparison } from "@/components/sections/Comparison";
 import { CTA } from "@/components/sections/CTA";
+import { Pricing } from "@/components/sections/Pricing";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <HowItWorks />
         <Privacy />
         <Comparison />
+        <Pricing />
         <CTA />
       </main>
       <Footer />

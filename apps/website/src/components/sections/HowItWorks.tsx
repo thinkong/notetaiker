@@ -1,4 +1,4 @@
-import { PenLine, Cpu, Link2 } from "lucide-react";
+import { PenLine, Cpu, Link2, Compass } from "lucide-react";
 
 const steps = [
   {
@@ -13,14 +13,21 @@ const steps = [
     number: "02",
     title: "Process",
     description:
-      "AI agents analyze your notes in the background. No interruptions, no waiting. It just works.",
+      "AI agents analyze your notes in the background. Tags, titles, and vector embeddings are generated automatically.",
   },
   {
     icon: Link2,
     number: "03",
     title: "Connect",
     description:
-      "Tags and wiki-links are generated automatically. Your notes become a connected knowledge graph.",
+      "Semantic clustering groups related notes using DBSCAN. Your knowledge graph forms itself over time.",
+  },
+  {
+    icon: Compass,
+    number: "04",
+    title: "Explore",
+    description:
+      "Navigate your knowledge graph with filtering, local view, and semantic search. Discover connections you didn't know existed.",
   },
 ];
 
@@ -74,15 +81,32 @@ export function HowItWorks() {
 
                     {index === 2 && (
                       <div className="mt-4 flex flex-wrap gap-2">
-                        <span className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                          #architecture
+                        <span className="rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-600">
+                          Cluster: Architecture
                         </span>
-                        <span className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                          #project
+                        <span className="rounded-md bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-600">
+                          Cluster: Planning
                         </span>
                         <span className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                           [[Design Decisions]]
                         </span>
+                      </div>
+                    )}
+
+                    {index === 3 && (
+                      <div className="mt-4 rounded-lg border bg-muted/50 p-4">
+                        <div className="flex items-center gap-3 text-sm">
+                          <span className="text-muted-foreground">
+                            Filter by:
+                          </span>
+                          <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            #architecture
+                          </span>
+                          <span className="text-muted-foreground">AND</span>
+                          <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            #project
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>

@@ -1,0 +1,27 @@
+{
+  "name": "@notetaiker/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "note": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\" --target=node20",
+    "dev": "tsx src/index.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@notetaiker/env": "workspace:*"
+  },
+  "devDependencies": {
+    "@notetaiker/eslint-config": "workspace:*",
+    "@notetaiker/tsconfig": "workspace:*",
+    "@types/node": "^20.17.10",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.39.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.53.1"
+  }
+}

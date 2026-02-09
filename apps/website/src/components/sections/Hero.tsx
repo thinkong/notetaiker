@@ -22,8 +22,8 @@ export function Hero() {
 
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
             Zero-friction note-taking with local-first AI. Write in Markdown,
-            let intelligent agents auto-tag and connect your ideas. Your data
-            stays on your machine.
+            let intelligent agents auto-tag, cluster, and connect your ideas.
+            Your data stays on your machine.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -63,14 +63,26 @@ export function Hero() {
               <pre className="font-mono text-sm">
                 <code className="text-muted-foreground">---</code>
                 {"\n"}
+                <code className="text-primary">title:</code>
+                <code className="text-muted-foreground">
+                  {" "}
+                  Product Roadmap Meeting
+                </code>
+                {"\n"}
                 <code className="text-primary">tags:</code>
                 <code className="text-muted-foreground">
                   {" "}
-                  [meeting, product, Q1-planning]
+                  [meeting, product]
                 </code>
                 {"\n"}
-                <code className="text-primary">created:</code>
-                <code className="text-muted-foreground"> 2024-01-15</code>
+                <code className="text-primary">ai_tags:</code>
+                <code className="text-muted-foreground">
+                  {" "}
+                  [Q1-planning, roadmap, strategy]
+                </code>
+                {"\n"}
+                <code className="text-primary">createdAt:</code>
+                <code className="text-muted-foreground"> 2026-02-09</code>
                 {"\n"}
                 <code className="text-muted-foreground">---</code>
                 {"\n\n"}
@@ -97,7 +109,8 @@ export function Hero() {
             </div>
           </div>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            AI automatically generates tags and links from your content
+            AI generates tags, titles, and semantic connections from your
+            content automatically
           </p>
         </div>
       </div>

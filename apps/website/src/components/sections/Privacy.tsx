@@ -1,16 +1,23 @@
-import { Shield, HardDrive, Wifi, Lock } from "lucide-react";
+import { Shield, HardDrive, Wifi, Lock, Container } from "lucide-react";
 
 const privacyFeatures = [
   {
     icon: HardDrive,
     title: "100% Local Storage",
-    description: "All notes stored as plain Markdown files on your machine.",
+    description:
+      "Notes, embeddings, and indexes all stored locally. Nothing leaves your machine.",
   },
   {
     icon: Wifi,
     title: "Offline Capable",
     description:
       "Works completely offline with Ollama for local AI processing.",
+  },
+  {
+    icon: Container,
+    title: "Self-Hosted Docker",
+    description:
+      "Deploy with Docker Compose in one command. Full control over your infrastructure.",
   },
   {
     icon: Lock,
@@ -82,9 +89,21 @@ export function Privacy() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+                    <span className="text-sm">Embeddings</span>
+                    <span className="font-mono text-sm text-primary">
+                      SQLite (local)
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
                     <span className="text-sm">AI Provider</span>
                     <span className="font-mono text-sm text-primary">
                       Ollama (local)
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+                    <span className="text-sm">Deployment</span>
+                    <span className="font-mono text-sm text-primary">
+                      Docker Compose
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">

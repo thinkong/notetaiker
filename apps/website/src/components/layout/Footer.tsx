@@ -35,8 +35,16 @@ export function Footer() {
 
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} notetAIker. Open source under MIT
-            License.
+            &copy; {new Date().getFullYear()}{" "}
+            <a
+              href="https://blog.a-bba.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 transition-colors hover:text-foreground"
+            >
+              a-bba.dev
+            </a>
+            . Open source under MIT License.
           </p>
         </div>
       </div>

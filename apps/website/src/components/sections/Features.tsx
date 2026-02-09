@@ -1,4 +1,13 @@
-import { Zap, FileText, Tags, Bot, GitBranch, Command } from "lucide-react";
+import {
+  Zap,
+  FileText,
+  Tags,
+  Bot,
+  Network,
+  Search,
+  Command,
+  Container,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const features = [
@@ -18,7 +27,7 @@ const features = [
     icon: Tags,
     title: "AI Auto-Tagging",
     description:
-      "Background AI agents analyze your notes and generate relevant tags automatically.",
+      "Background AI agents analyze your notes and generate relevant tags automatically. Dismiss or keep suggestions.",
   },
   {
     icon: Bot,
@@ -27,16 +36,28 @@ const features = [
       "Choose your AI provider: OpenAI, Anthropic, Google Gemini, or run 100% local with Ollama.",
   },
   {
-    icon: GitBranch,
-    title: "Graph Visualization",
+    icon: Network,
+    title: "Semantic Knowledge Graph",
     description:
-      "See connections between your notes. Discover relationships you didn't know existed.",
+      "Interactive force-directed graph with DBSCAN clustering, tag filtering, local view, and node pinning.",
+  },
+  {
+    icon: Search,
+    title: "Semantic Search",
+    description:
+      "Vector embeddings power similarity-based discovery. Find related notes and surface hidden connections.",
   },
   {
     icon: Command,
     title: "Command Palette",
     description:
-      "Power user tools at your fingertips. Quick actions, search, and AI commands via Cmd+K.",
+      "Power user tools at your fingertips. Quick actions, search, and keyboard-driven navigation via Cmd+K.",
+  },
+  {
+    icon: Container,
+    title: "Docker Ready",
+    description:
+      "Deploy as a self-contained Docker image with Docker Compose. Includes optional local Ollama AI.",
   },
 ];
 
@@ -54,7 +75,7 @@ export function Features() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <Card
               key={feature.title}

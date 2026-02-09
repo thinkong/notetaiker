@@ -16,8 +16,9 @@ export function CTA() {
             Ready to take control of your notes?
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
-            Join developers, researchers, and thinkers who value their privacy
-            and productivity.
+            Semantic search, knowledge graphs, AI tagging — all running locally.
+            Join developers, researchers, and thinkers who value privacy and
+            productivity.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
