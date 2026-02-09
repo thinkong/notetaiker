@@ -1,4 +1,5 @@
-import { Check, Github, ArrowRight, Shield } from "lucide-react";
+import { useState } from "react";
+import { Check, Github, ArrowRight, Shield, Mail, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -58,7 +59,7 @@ const plans = [
     price: "$3.99",
     period: "/mo",
     highlight: true,
-    badge: "Most Popular",
+    badge: null,
     comingSoon: true,
     cta: "Get Started",
     ctaHref: "#get-started",
@@ -91,6 +92,83 @@ const plans = [
   },
 ];
 
+const SENDER_API_TOKEN = import.meta.env.VITE_SENDER_API_TOKEN ?? "";
+const SENDER_GROUP_ID = import.meta.env.VITE_SENDER_GROUP_ID ?? "";
+
+function NotifyForm() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || status === "submitting") return;
+
+    setStatus("submitting");
+
+    try {
+      const res = await fetch("https://api.sender.net/v2/subscribers", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${SENDER_API_TOKEN}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          groups: SENDER_GROUP_ID ? [SENDER_GROUP_ID] : undefined,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Subscription failed");
+
+      setStatus("success");
+      setEmail("");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary">
+        <Check className="h-4 w-4" />
+        Thanks! We&apos;ll let you know when we launch.
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <div className="relative flex-1">
+          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (status === "error") setStatus("idle");
+            }}
+            className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <Button type="submit" disabled={status === "submitting"}>
+          {status === "submitting" ? "Sending..." : "Notify Me"}
+        </Button>
+      </form>
+      {status === "error" && (
+        <p className="mt-2 text-center text-xs text-destructive">
+          Something went wrong. Please try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function Pricing() {
   return (
     <section id="pricing" className="border-t py-20 md:py-28">
@@ -112,7 +190,7 @@ export function Pricing() {
             <Card
               key={plan.name}
               className={cn(
-                "relative flex flex-col border bg-background shadow-md transition-shadow hover:shadow-lg",
+                "relative flex flex-col overflow-visible border bg-background shadow-md transition-shadow hover:shadow-lg",
                 plan.highlight &&
                   "border-primary shadow-lg ring-1 ring-primary/20",
               )}
@@ -194,6 +272,23 @@ export function Pricing() {
               </CardFooter>
             </Card>
           ))}
+        </div>
+
+        {/* Notify Me section */}
+        <div className="mx-auto mt-16 max-w-lg">
+          <div className="rounded-xl border bg-muted/30 p-6 text-center shadow-sm">
+            <div className="mb-3 flex items-center justify-center gap-2">
+              <Bell className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold">
+                Get notified when cloud launches
+              </h3>
+            </div>
+            <p className="mb-5 text-sm text-muted-foreground">
+              Be the first to know when Sync and Cloud Backup become available.
+              No spam, just one email when we launch.
+            </p>
+            <NotifyForm />
+          </div>
         </div>
 
         <div className="mx-auto mt-12 flex max-w-xl items-center justify-center gap-2 text-center text-sm text-muted-foreground">

@@ -54,7 +54,7 @@ export function HowItWorks() {
               {steps.map((step, index) => (
                 <div key={step.title} className="relative flex gap-6">
                   {/* Step indicator */}
-                  <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border bg-background shadow-sm">
                     <step.icon className="h-7 w-7 text-primary" />
                   </div>
 
