@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "apps/web/**"
+      - "apps/api/**"
+      - "packages/**"
+      - "Dockerfile"
+      - ".dockerignore"
 
 permissions:
   contents: write
