@@ -19,6 +19,7 @@ notetAIker is a local-first, AI-enhanced note-taking system designed for zero-fr
 - **Node.js**: v20 or higher
 - **pnpm**: v9 or higher
 - **Git**
+- **Docker**
 
 ## Quick Start
 
