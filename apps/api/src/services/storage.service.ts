@@ -40,6 +40,7 @@ export class StorageService {
   async saveNote(
     content: string,
     metadata: NoteMetadata = {},
+    options: { skipQueue?: boolean } = {},
   ): Promise<string> {
     const now = new Date();
     let id = metadata.id || uuidv4();
@@ -114,8 +115,8 @@ export class StorageService {
     // Sync to index
     this.indexer.syncNote(fileName, content, fullMetadata);
 
-    // Enqueue jobs
-    if (fullMetadata.ai !== false) {
+    // Enqueue jobs (skip when called from the worker to prevent infinite loops)
+    if (!options.skipQueue && fullMetadata.ai !== false) {
       this.queue.enqueue(id, "analysis");
       this.queue.enqueue(id, "embeddings");
     }

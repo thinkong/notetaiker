@@ -27,6 +27,7 @@ import { useNavigationGuard } from "./hooks/useNavigationGuard";
 import { Toast } from "./components/common/Toast";
 import { ConfirmDialog } from "./components/common/ConfirmDialog";
 import { useTimeline } from "./hooks/useTimeline";
+import { useSSE } from "./hooks/useSSE";
 import { api } from "./lib/api";
 import { extractFallbackTitle } from "./lib/title";
 
@@ -40,6 +41,9 @@ function MainCapture() {
   const queryClient = useQueryClient();
 
   const { data: timelineData } = useTimeline();
+
+  // Subscribe to SSE for real-time updates (e.g., after AI tag generation)
+  useSSE();
 
   const availableTags = useMemo(() => {
     const tags = new Set<string>();

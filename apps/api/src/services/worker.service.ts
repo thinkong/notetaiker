@@ -192,7 +192,9 @@ export class WorkerService {
         title: updatedTitle,
       };
 
-      await this.storageService.saveNote(content, updatedMetadata);
+      await this.storageService.saveNote(content, updatedMetadata, {
+        skipQueue: true,
+      });
 
       if (aiTagsChanged) {
         console.log(

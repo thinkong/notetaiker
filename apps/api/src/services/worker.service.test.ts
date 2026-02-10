@@ -74,6 +74,7 @@ describe("WorkerService", () => {
         ai_tags: ["New Ai Tag"],
         tags: ["Manual Tag"], // Should be unchanged
       }),
+      { skipQueue: true },
     );
 
     expect(mockQueueService.updateJobStatus).toHaveBeenCalledWith(
@@ -108,6 +109,7 @@ describe("WorkerService", () => {
       expect.objectContaining({
         ai_tags: ["New Ai Tag"],
       }),
+      { skipQueue: true },
     );
   });
 
@@ -152,6 +154,7 @@ describe("WorkerService", () => {
       expect.objectContaining({
         title: "My Header Title",
       }),
+      { skipQueue: true },
     );
   });
 
@@ -178,6 +181,7 @@ describe("WorkerService", () => {
       expect.objectContaining({
         title: "AI Generated Title",
       }),
+      { skipQueue: true },
     );
   });
 
