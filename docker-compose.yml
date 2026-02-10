@@ -5,10 +5,10 @@
 
 services:
   notetaiker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: notetaiker:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: thinkong/notetaiker:latest
     container_name: notetaiker
     restart: unless-stopped
     ports:
