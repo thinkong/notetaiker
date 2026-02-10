@@ -8,10 +8,10 @@
 # ============================================
 # Stage 1: Base with pnpm
 # ============================================
-FROM node:20-alpine AS base
+FROM node:24-slim AS base
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+RUN corepack enable
 
 # Set working directory
 WORKDIR /app
@@ -22,7 +22,7 @@ WORKDIR /app
 FROM base AS builder
 
 # Install build dependencies for native modules (better-sqlite3)
-RUN apk add --no-cache python3 make g++
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 # Copy package files for dependency installation
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
@@ -44,17 +44,14 @@ RUN pnpm --filter @notetaiker/web build
 # ============================================
 # Stage 3: Production
 # ============================================
-FROM node:20-alpine AS production
-
-# Install runtime dependencies for native modules
-RUN apk add --no-cache libc6-compat
+FROM node:24-slim AS production
 
 WORKDIR /app
 
 # Copy workspace config
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 
-# Copy node_modules (with native deps pre-built for Alpine)
+# Copy node_modules (with native deps pre-built)
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy API with its dependencies and source (tsx runs TypeScript directly)
@@ -72,9 +69,12 @@ COPY --from=builder /app/apps/web/dist ./apps/web/dist
 # Create data directories
 RUN mkdir -p /app/data/notes /app/.notetaiker
 
+# Install wget for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
+
 # Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 notetaiker && \
+    adduser --system --uid 1001 --ingroup nodejs notetaiker && \
     chown -R notetaiker:nodejs /app
 
 USER notetaiker
