@@ -98,7 +98,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     const fgRef = useRef<
       ForceGraphMethods<InternalNode, InternalLink> | undefined
     >(undefined);
-    const [hoverNode, setHoverNode] = useState<GraphNode | null>(null);
+    const [hoverNode, setHoverNode] = useState<InternalNode | null>(null);
     const [tooltipPos, setTooltipPos] = useState<{
       x: number;
       y: number;
@@ -254,7 +254,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     ]);
 
     const handleClick = useCallback(
-      (node: GraphNode, event: MouseEvent) => {
+      (node: InternalNode, event: MouseEvent) => {
         if (clickTimeoutRef.current) {
           // Double click detected
           clearTimeout(clickTimeoutRef.current);
@@ -304,7 +304,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
     );
 
     const handleNodeHover = useCallback(
-      (node: GraphNode | null) => {
+      (node: InternalNode | null) => {
         // Clear any pending hover action
         if (hoverTimeoutRef.current) {
           clearTimeout(hoverTimeoutRef.current);
@@ -581,9 +581,9 @@ export const ForceGraph = forwardRef<ForceGraphHandle, ForceGraphProps>(
             ctx.fill();
           }}
           onNodeClick={(node, event) =>
-            handleClick(node as GraphNode, event as MouseEvent)
+            handleClick(node as InternalNode, event as MouseEvent)
           }
-          onNodeHover={(node) => handleNodeHover(node as GraphNode | null)}
+          onNodeHover={(node) => handleNodeHover(node as InternalNode | null)}
           onRenderFramePost={onRenderFramePost}
           linkColor={getLinkColor}
           linkWidth={getLinkWidth}
