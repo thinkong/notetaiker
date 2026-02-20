@@ -35,7 +35,7 @@ export function Hero() {
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a
-                href="https://github.com/notetaiker/notetaiker"
+                href="https://github.com/thinkong/notetaiker"
                 target="_blank"
                 rel="noopener noreferrer"
               >
