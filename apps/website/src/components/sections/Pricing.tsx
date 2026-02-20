@@ -22,7 +22,7 @@ const plans = [
     badge: null,
     comingSoon: false,
     cta: "View on GitHub",
-    ctaHref: "https://github.com/notetaiker/notetaiker#installation",
+    ctaHref: "https://github.com/thinkong/notetaiker#installation",
     ctaIcon: Github,
     features: [
       "Unlimited local notes",
