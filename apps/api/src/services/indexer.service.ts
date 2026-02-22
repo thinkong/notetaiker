@@ -25,6 +25,9 @@ export interface QueryOptions {
 export class IndexerService {
   private db: Database.Database;
   private notesDir: string;
+  private syncNoteStmt!: Database.Statement;
+  private deleteNoteStmt!: Database.Statement;
+  private getByIdStmt!: Database.Statement;
 
   constructor(workspaceRoot: string, notesDir: string) {
     this.notesDir = notesDir;
@@ -37,6 +40,23 @@ export class IndexerService {
     this.db = new Database(dbPath);
     sqliteVec.load(this.db);
     this.init();
+    this.prepareStatements();
+  }
+
+  private prepareStatements() {
+    this.syncNoteStmt = this.db.prepare(`
+      INSERT INTO notes_index (id, filename, content, metadata, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        filename = excluded.filename,
+        content = excluded.content,
+        metadata = excluded.metadata,
+        createdAt = excluded.createdAt,
+        updatedAt = excluded.updatedAt
+    `);
+
+    this.deleteNoteStmt = this.db.prepare("DELETE FROM notes_index WHERE id = ?");
+    this.getByIdStmt = this.db.prepare("SELECT * FROM notes_index WHERE id = ?");
   }
 
   getDb(): Database.Database {
@@ -88,28 +108,22 @@ export class IndexerService {
 
     if (!id) return;
 
-    const stmt = this.db.prepare(`
-      INSERT INTO notes_index (id, filename, content, metadata, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        filename = excluded.filename,
-        content = excluded.content,
-        metadata = excluded.metadata,
-        createdAt = excluded.createdAt,
-        updatedAt = excluded.updatedAt
-    `);
-
-    stmt.run(id, filename, content, fullMetadata, createdAt, updatedAt);
+    this.syncNoteStmt.run(
+      id,
+      filename,
+      content,
+      fullMetadata,
+      createdAt,
+      updatedAt,
+    );
   }
 
   deleteNote(id: string) {
-    this.db.prepare("DELETE FROM notes_index WHERE id = ?").run(id);
+    this.deleteNoteStmt.run(id);
   }
 
   getById(id: string): IndexEntry | undefined {
-    return this.db.prepare("SELECT * FROM notes_index WHERE id = ?").get(id) as
-      | IndexEntry
-      | undefined;
+    return this.getByIdStmt.get(id) as IndexEntry | undefined;
   }
 
   async syncAll() {
