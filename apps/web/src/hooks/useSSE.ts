@@ -16,15 +16,9 @@ export function useSSE(options: SSEOptions = {}) {
     // Vite proxy should handle /api/events
     const eventSource = new EventSource("/api/events");
 
-    eventSource.addEventListener("ping", (event) => {
-      // Use warn for debug info to satisfy lint rules or remove
-      console.warn("SSE: Received ping", event.data);
-    });
-
     eventSource.addEventListener("note_updated", (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.warn("SSE: Received note_updated", data);
 
         if (onNoteUpdated) {
           onNoteUpdated(data.noteId);
@@ -48,7 +42,6 @@ export function useSSE(options: SSEOptions = {}) {
     };
 
     return () => {
-      console.warn("SSE: Closing connection");
       eventSource.close();
     };
   }, [queryClient, onNoteUpdated, invalidateQueries]);
