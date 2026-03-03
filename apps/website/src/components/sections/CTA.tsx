@@ -24,7 +24,7 @@ export function CTA() {
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
               <a
-                href="https://github.com/notetaiker/notetaiker#installation"
+                href="https://github.com/thinkong/notetaiker#installation"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -34,7 +34,7 @@ export function CTA() {
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a
-                href="https://github.com/notetaiker/notetaiker"
+                href="https://github.com/thinkong/notetaiker"
                 target="_blank"
                 rel="noopener noreferrer"
               >

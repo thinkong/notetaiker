@@ -38,7 +38,7 @@ export function Navbar() {
         <div className="hidden md:flex md:items-center md:gap-4">
           <Button variant="ghost" size="icon" asChild>
             <a
-              href="https://github.com/notetaiker/notetaiker"
+              href="https://github.com/thinkong/notetaiker"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
@@ -84,7 +84,7 @@ export function Navbar() {
             <div className="flex items-center gap-4 pt-4">
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href="https://github.com/notetaiker/notetaiker"
+                  href="https://github.com/thinkong/notetaiker"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
