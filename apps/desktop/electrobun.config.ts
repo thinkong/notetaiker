@@ -45,4 +45,7 @@ export default {
     },
   },
   scripts: {},
+  release: {
+    baseUrl: "https://github.com/thinkong/notetaiker/releases/latest/download",
+  }
 } satisfies ElectrobunConfig;

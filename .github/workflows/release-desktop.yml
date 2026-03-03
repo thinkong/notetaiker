@@ -1,19 +1,78 @@
 name: Release Desktop
 
 on:
-  release:
-    types: [published]
+  schedule:
+    - cron: "0 6 * * *"
+    - cron: "0 8 * * 1"
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Release channel
+        type: choice
+        options:
+          - canary
+          - dev
+          - stable
+        default: canary
 
 concurrency:
-  group: release-desktop-${{ github.ref }}
+  group: release-desktop-${{ github.event.schedule || inputs.channel || 'dispatch' }}
   cancel-in-progress: true
 
 env:
   SQLITE_VEC_VERSION: "0.1.7-alpha.2"
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      channel: ${{ steps.config.outputs.channel }}
+      should_build: ${{ steps.config.outputs.should_build }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine channel and check for changes
+        id: config
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CHANNEL="${{ inputs.channel }}"
+          elif [ "${{ github.event.schedule }}" = "0 8 * * 1" ]; then
+            CHANNEL="dev"
+          else
+            CHANNEL="canary"
+          fi
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TAG="desktop-${CHANNEL}-latest"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            LAST_SHA=$(git rev-parse "$TAG")
+            HEAD_SHA=$(git rev-parse HEAD)
+            if [ "$LAST_SHA" = "$HEAD_SHA" ]; then
+              echo "No changes since last $CHANNEL build ($TAG -> $LAST_SHA)"
+              echo "should_build=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "Changes detected: $LAST_SHA -> $HEAD_SHA"
+              echo "should_build=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "No previous $CHANNEL build tag found, proceeding"
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build-desktop:
+    needs: [setup]
+    if: needs.setup.outputs.should_build == 'true'
+
     strategy:
       fail-fast: false
       matrix:
@@ -21,20 +80,23 @@ jobs:
           - os: macos-14
             target: macos-arm64
             sqlite_vec_pkg: sqlite-vec-darwin-arm64
-            artifact_ext: tar.gz
           - os: windows-latest
             target: win-x64
             sqlite_vec_pkg: sqlite-vec-windows-x64
-            artifact_ext: zip
           - os: ubuntu-latest
             target: linux-x64
             sqlite_vec_pkg: sqlite-vec-linux-x64
-            artifact_ext: tar.gz
+          - os: ubuntu-24.04-arm
+            target: linux-arm64
+            sqlite_vec_pkg: sqlite-vec-linux-arm64
 
     runs-on: ${{ matrix.os }}
 
     permissions:
       contents: write
+
+    env:
+      CHANNEL: ${{ needs.setup.outputs.channel }}
 
     steps:
       - name: Checkout repository
@@ -52,6 +114,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-0 libnss3 libgbm-dev libxkbcommon0 libasound2
 
+      - name: Compute version
+        shell: bash
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          if [ "$CHANNEL" = "stable" ]; then
+            VERSION="$BASE_VERSION"
+          else
+            VERSION="$BASE_VERSION-$CHANNEL+$SHORT_SHA"
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Building $CHANNEL v$VERSION for ${{ matrix.target }}"
+
+      - name: Inject version into electrobun config
+        shell: bash
+        run: |
+          sed -i.bak 's/version: ".*"/version: "'"$VERSION"'"/' apps/desktop/electrobun.config.ts
+          rm -f apps/desktop/electrobun.config.ts.bak
+
       - name: Prepare platform sqlite-vec vendor
         shell: bash
         run: |
@@ -62,31 +143,37 @@ jobs:
             | tar -xz --strip-components=1 -C ${{ matrix.sqlite_vec_pkg }}
 
       - name: Build desktop app
-        run: bun run --filter @notetaiker/desktop build:desktop:stable
-
-      - name: Package build (macOS / Linux)
-        if: runner.os != 'Windows'
         shell: bash
+        working-directory: apps/desktop
         run: |
-          cd apps/desktop/build
-          tar -czf notetaiker-${{ matrix.target }}.tar.gz stable-${{ matrix.target }}/
+          bunx vite build
+          bunx electrobun build --env=$CHANNEL
 
-      - name: Package build (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          cd apps\desktop\build
-          Compress-Archive -Path "stable-${{ matrix.target }}\*" -DestinationPath "notetaiker-${{ matrix.target }}.zip"
-
-      - name: Upload release assets
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: apps/desktop/build/notetaiker-${{ matrix.target }}.${{ matrix.artifact_ext }}
-
-      - name: Upload build artifact
-        if: github.event_name == 'workflow_dispatch'
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: notetaiker-${{ matrix.target }}
-          path: apps/desktop/build/notetaiker-${{ matrix.target }}.${{ matrix.artifact_ext }}
+          name: desktop-${{ env.CHANNEL }}-${{ matrix.target }}
+          path: apps/desktop/artifacts/*
+
+      - name: Attach to GitHub Release
+        if: env.CHANNEL == 'stable'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          files: apps/desktop/artifacts/*
+
+  tag-build:
+    needs: [setup, build-desktop]
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update channel build tag
+        run: |
+          TAG="desktop-${{ needs.setup.outputs.channel }}-latest"
+          git tag -f "$TAG"
+          git push -f origin "$TAG"

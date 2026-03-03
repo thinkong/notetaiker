@@ -8,8 +8,6 @@
     "dev:desktop": "vite build && bunx electrobun dev",
     "build": "tsc -b && vite build",
     "build:desktop": "vite build && bunx electrobun build",
-    "build:desktop:stable": "vite build && bunx electrobun build --env=stable",
-    "build:desktop:all": "vite build && bunx electrobun build --targets macos-arm64,win-x64,linux-x64",
     "test": "vitest",
     "lint": "eslint .",
     "preview": "vite preview"
