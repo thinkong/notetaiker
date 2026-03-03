@@ -112,7 +112,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-0 libnss3 libgbm-dev libxkbcommon0 libasound2
+          sudo apt-get install build-essential cmake pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+        # sudo apt-get install -y libgtk-3-0 libnss3 libgbm-dev libxkbcommon0 libasound2
 
       - name: Compute version
         shell: bash
@@ -143,11 +144,10 @@ jobs:
             | tar -xz --strip-components=1 -C ${{ matrix.sqlite_vec_pkg }}
 
       - name: Build desktop app
-        shell: bash
         working-directory: apps/desktop
         run: |
           bunx vite build
-          bunx electrobun build --env=$CHANNEL
+          bunx electrobun build --env=${{ env.CHANNEL }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
