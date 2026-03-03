@@ -45,3 +45,5 @@ const win = new BrowserWindow({
   url: `http://localhost:${PORT}`,
   frame: { x: 0, y: 0, width: 1280, height: 860 },
 });
+
+void win;
