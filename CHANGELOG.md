@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/thinkong/notetaiker/compare/v0.3.0...v0.3.1) (2026-03-03)
+
+
+### Bug Fixes
+
+* **web:** add rehype-sanitize to Markdown component ([87b775f](https://github.com/thinkong/notetaiker/commit/87b775fe2a596affa51fea925b16ea3efdaad2cb))
+
 ## [0.3.0](https://github.com/thinkong/notetaiker/compare/v0.2.0...v0.3.0) (2026-02-10)
 
 ### Features
