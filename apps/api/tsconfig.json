@@ -1,9 +1,0 @@
-{
-  "extends": "@notetaiker/tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "types": ["bun"]
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
-}

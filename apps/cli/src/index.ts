@@ -105,7 +105,7 @@ async function sendNote(apiUrl: string, content: string): Promise<void> {
   const reachable = await checkServer(host, port);
   if (!reachable) {
     console.error(`Error: Could not connect to the API at ${apiUrl}`);
-    console.error("Make sure the NoteTAIker server is running (pnpm dev)");
+    console.error("Make sure the NoteTAIker server is running (bun dev)");
     process.exit(1);
   }
 

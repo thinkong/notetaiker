@@ -54,7 +54,7 @@ function stageNativeModules(desktopRoot: string) {
   const sqliteVecLink = path.join(apiRoot, "node_modules", "sqlite-vec");
   if (!fs.existsSync(sqliteVecLink)) {
     throw new Error(
-      `sqlite-vec not found at ${sqliteVecLink}. Run pnpm install first.`,
+      `sqlite-vec not found at ${sqliteVecLink}. Run bun install first.`,
     );
   }
   const sqliteVecReal = fs.realpathSync(sqliteVecLink);
@@ -64,7 +64,7 @@ function stageNativeModules(desktopRoot: string) {
   const platformPkgReal = path.join(storeNodeModules, platformPkg);
   if (!fs.existsSync(platformPkgReal)) {
     throw new Error(
-      `Platform package ${platformPkg} not found at ${platformPkgReal}. Run pnpm install first.`,
+      `Platform package ${platformPkg} not found at ${platformPkgReal}. Run bun install first.`,
     );
   }
 

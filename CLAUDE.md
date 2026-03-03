@@ -4,31 +4,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- **Build**: `pnpm build` (builds all packages and apps using Turbo)
-- **Dev**: `pnpm dev` (starts API on port 3001 and Web Client on port 5173)
-- **Lint**: `pnpm lint` (runs ESLint across the monorepo)
-- **Lint Fix**: `pnpm lint:fix`
-- **Format**: `pnpm format` (runs Prettier)
-- **Test**: `pnpm test` (currently runs Vitest in `apps/api`)
-- **Single Test**: `pnpm --filter @notetaiker/api test <test-file-name>`
+- **Build**: `bun run build` (builds all packages and apps)
+- **Dev**: `bun run dev` (starts API on port 3001 and Web Client on port 5173)
+- **Desktop Dev**: `bun run desktop:dev` (builds web then starts Electrobun desktop app)
+- **Desktop Build**: `bun run desktop:build` (builds web and Electrobun package)
+- **Lint**: `bun run lint` (runs ESLint across the monorepo)
+- **Lint Fix**: `bun run lint:fix`
+- **Format**: `bun run format` (runs Prettier)
+- **Test**: `bun run --filter @notetaiker/desktop test`
+- **Single Test**: `bun run --filter @notetaiker/desktop test <test-file-name>`
 
 ## Architecture
 
-**notetAIker** is a local-first, AI-enhanced note-taking system organized as a monorepo.
+**notetAIker** is a local-first, AI-enhanced note-taking desktop application organized as a monorepo.
 
 ### Monorepo Structure
 
-- **Package Manager**: pnpm (v9+)
-- **Build System**: Turbo
+- **Package Manager**: Bun (with built-in workspace support)
 - **Apps**:
-  - `apps/web`: Frontend application
-  - `apps/api`: Backend API and background workers
+  - `apps/desktop`: Main application (Electrobun desktop, Hono API, React frontend)
+  - `apps/cli`: CLI tool
+  - `apps/website`: Marketing/landing site
 - **Packages**:
   - `packages/env`: Shared environment configuration
   - `packages/eslint-config`: Shared ESLint configuration
   - `packages/tsconfig`: Shared TypeScript configuration
 
-### Frontend (`apps/web`)
+### Desktop App (`apps/desktop`)
+
+The desktop app contains the API backend, web frontend, and Electrobun main process:
+
+- `src/main/` - Electrobun main process entry point
+- `src/api/` - Hono backend (routes, services, types)
+- `src/web/` - React frontend (components, hooks, contexts)
+
+### Frontend (`src/web`)
 
 - **Framework**: React 19 + Vite
 - **Styling**: Tailwind CSS v4
@@ -36,10 +46,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Editor**: CodeMirror 6 (with markdown support)
 - **Routing**: React Router DOM
 
-### Backend (`apps/api`)
+### Backend (`src/api`)
 
-- **Server**: Hono (running on Node.js)
-- **Database**: SQLite (via `better-sqlite3`) - used for indexing and job queues, NOT for note storage
+- **Server**: Hono (running on Bun)
+- **Database**: SQLite (via `bun:sqlite` + `sqlite-vec`) - used for indexing and job queues, NOT for note storage
 - **AI Integration**: Vercel AI SDK (supports Anthropic, OpenAI, Google)
 - **Async Processing**: `p-queue` for background tasks
 

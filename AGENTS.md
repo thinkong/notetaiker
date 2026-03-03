@@ -29,42 +29,43 @@ The project uses ESLint with a shared base configuration in `packages/eslint-con
 
 - **Unused Variables**: Should be avoided. ESLint will warn about `no-unused-vars`.
 - **Console Logs**: Use `console.warn` or `console.error` for errors. General `console.log` is discouraged in the frontend but allowed in the API for startup/server logs.
-- **Rules Enforcement**: Pre-commit hooks run `turbo lint`, which will fail the commit if there are linting errors.
+- **Rules Enforcement**: Pre-commit hooks run `bun run lint`, which will fail the commit if there are linting errors.
 
 ## 3. Formatting
 
 Prettier is used for all TypeScript (`.ts`, `.tsx`) and Markdown (`.md`) files.
 
 - **Enforcement**: ESLint treats Prettier violations as errors.
-- **How to format**: Run `pnpm format` to format all supported files in the workspace.
+- **How to format**: Run `bun run format` to format all supported files in the workspace.
 
 ## 4. Development Workflow
 
-- **Package Manager**: Use `pnpm`. Avoid `npm` or `yarn`.
-- **Task Runner**: Use `turbo` for building, linting, and running the dev server.
-  - `pnpm dev`: Starts all applications in development mode.
-  - `pnpm build`: Builds all applications.
-  - `pnpm lint`: Runs linting across the entire workspace.
+- **Package Manager**: Use `bun`. Avoid `npm`, `yarn`, or `pnpm`.
+  - `bun run dev`: Starts all applications in development mode.
+  - `bun run build`: Builds all applications.
+  - `bun run lint`: Runs linting across the entire workspace.
 - **Monorepo Structure**:
-  - `apps/`: Contains the main applications (web, api).
+  - `apps/desktop`: Main application (API + web frontend + Electrobun desktop).
+  - `apps/`: Also contains cli and website.
   - `packages/`: Contains shared packages (eslint-config, etc.).
 
 ## 5. Architectural Preferences (Heuristics)
 
 - **Frameworks**:
   - **Frontend**: React (v19) with Vite, Tailwind CSS (v4), and React Router (v7).
-  - **Backend**: Hono (running on Node.js) with Zod for validation.
+  - **Backend**: Hono (running on Bun) with Zod for validation.
 - **State Management**: TanStack Query (React Query) for server state.
 - **Form Handling**: React Hook Form.
 - **AI Integration**: Vercel AI SDK (`ai`, `@ai-sdk/google`, etc.).
-- **Database**: SQLite via `better-sqlite3`.
+- **Database**: SQLite via `bun:sqlite` + `sqlite-vec`.
 - **Styling**: Tailwind CSS (v4) with utility-first approach.
 - **Icons**: Lucide React.
 - **Component Library**: Primitive components from `cmdk` for command palettes, and custom Tailwind-based components.
 - **TypeScript**: Strictly used for both frontend and backend. Ensure types are shared via workspace packages where appropriate.
 - **Monorepo Structure**:
-  - `apps/web`: React frontend.
-  - `apps/api`: Hono backend.
+  - `apps/desktop/src/web`: React frontend.
+  - `apps/desktop/src/api`: Hono backend.
+  - `apps/desktop/src/main`: Electrobun main process.
   - `packages/`: Shared configurations and utilities.
 
 ## 6. Development Heuristics
@@ -75,7 +76,7 @@ Prettier is used for all TypeScript (`.ts`, `.tsx`) and Markdown (`.md`) files.
   - Prefer `lucide-react` for icons.
   - Ensure all API endpoints are typed and consistent.
 - **Testing**: Use `vitest` for backend testing.
-- **Formatting**: Always format files before finishing a task (`pnpm format`).
+- **Formatting**: Always format files before finishing a task (`bun run format`).
 - **Commits**: Always use conventional commits. If multiple changes are made, consider splitting them into logical commits or using a detailed description.
 
 ---

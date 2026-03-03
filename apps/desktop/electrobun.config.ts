@@ -19,15 +19,14 @@ export default {
   },
   build: {
     bun: {
-      entrypoint: "src/bun/index.ts",
+      entrypoint: "src/main/index.ts",
       external: ["bun:sqlite", "sqlite-vec"],
     },
     views: {},
     copy: {
       "vendor/node_modules/sqlite-vec": "bun/node_modules/sqlite-vec",
-      [`vendor/node_modules/${sqliteVecPlatformPkg()}`]:
-        `bun/node_modules/${sqliteVecPlatformPkg()}`,
-      "../web/dist": "web-dist",
+      [`vendor/node_modules/${sqliteVecPlatformPkg()}`]: `bun/node_modules/${sqliteVecPlatformPkg()}`,
+      dist: "web-dist",
     },
     useAsar: false,
     asarUnpack: ["*.node", "*.dll", "*.dylib", "*.so"],
