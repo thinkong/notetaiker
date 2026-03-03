@@ -36,6 +36,7 @@ type Variables = {
   indexerService: IndexerService;
   embeddingsService: EmbeddingsService;
   clustersService: ClustersService;
+  secretsService: SecretsService;
   modelRegistry: ModelRegistry;
   ollamaManager: OllamaManager;
 };
@@ -142,6 +143,7 @@ app
     c.set("eventsService", eventsService);
     c.set("aiService", aiService);
     c.set("storageService", storageService);
+    c.set("secretsService", secretsService);
     c.set("indexerService", indexerService);
     c.set("embeddingsService", embeddingsService);
     c.set("clustersService", clustersService);
@@ -167,8 +169,6 @@ const routes = app
   .route("/api/clusters", clusters)
   .route("/api/events", events)
   .route("/api/models", models);
-
-void routes;
 
 // In production, serve the static web frontend
 if (env.NODE_ENV === "production") {
@@ -215,3 +215,4 @@ if (import.meta.main) {
 
 export type AppType = typeof routes;
 export default app;
+void routes;

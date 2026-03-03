@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { getClusterColor } from "../constants/clusterColors";
 
@@ -54,64 +54,14 @@ export function useClusters() {
 export function useClusterColors(highContrast = false) {
   const { data } = useClusters();
 
-  return {
-    /**
-     * Map of clusterId -> color hex string
-     */
-    colorMap: useMemo(() => {
-      if (!data) return {};
-      const map: Record<number, string> = {};
-      data.clusters.forEach((cluster, index) => {
-        map[cluster.id] = getClusterColor(index, highContrast);
-      });
-      return map;
-    }, [data, highContrast]),
+  const colorMap = useMemo(() => {
+    if (!data) return {};
+    const map: Record<number, string> = {};
+    data.clusters.forEach((cluster, index) => {
+      map[cluster.id] = getClusterColor(index, highContrast);
+    });
+    return map;
+  }, [data, highContrast]);
 
-    /**
-     * Array of colors in cluster order (by index)
-     */
-    colors: useMemo(() => {
-      if (!data) return [];
-      return data.clusters.map((_, index) =>
-        getClusterColor(index, highContrast),
-      );
-    }, [data, highContrast]),
-
-    /**
-     * Get color for a specific cluster by ID
-     */
-    getColor: (clusterId: number) => {
-      if (!data) return "#94a3b8"; // Return default gray if no data
-      const index = data.clusters.findIndex((c) => c.id === clusterId);
-      if (index === -1) return "#94a3b8"; // Return default gray if cluster not found
-      return getClusterColor(index, highContrast);
-    },
-  };
-}
-
-/**
- * Hook to invalidate cluster queries and trigger rebuilds
- */
-export function useInvalidateClusters() {
-  const queryClient = useQueryClient();
-
-  return {
-    /**
-     * Invalidate cluster data (force refetch from cache)
-     */
-    invalidate: () => {
-      queryClient.invalidateQueries({ queryKey: ["clusters"] });
-    },
-
-    /**
-     * Trigger cluster rebuild on the backend
-     * Automatically invalidates cache after successful rebuild
-     */
-    rebuild: async () => {
-      const res = await fetch("/api/clusters/rebuild", { method: "POST" });
-      if (!res.ok) throw new Error("Failed to rebuild clusters");
-      // Invalidate cache to fetch fresh data after rebuild
-      queryClient.invalidateQueries({ queryKey: ["clusters"] });
-    },
-  };
+  return { colorMap };
 }

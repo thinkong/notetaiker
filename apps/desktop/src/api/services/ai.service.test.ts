@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AIService } from "./ai.service";
-// import type { SecretsService } from './secrets.service';
 
 // Mock the AI SDK
 vi.mock("ai", () => ({

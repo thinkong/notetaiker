@@ -71,28 +71,6 @@ export function blendClusterColors(
 }
 
 /**
- * Blend colors with a minimum visibility threshold
- * Ensures colors don't become too washed out when many clusters overlap
- *
- * @param colors - Array of hex color strings
- * @param weights - Array of weights
- * @param minAlpha - Minimum alpha value for each color (default: 0.2)
- * @returns Blended hex color string
- */
-export function blendClusterColorsWithThreshold(
-  colors: string[],
-  weights: number[],
-  minAlpha = 0.2,
-): string {
-  if (colors.length === 0) return "#94a3b8";
-
-  // Apply minimum threshold to weights
-  const adjustedWeights = weights.map((w) => Math.max(w, minAlpha));
-
-  return blendClusterColors(colors, adjustedWeights);
-}
-
-/**
  * Create radial gradient for glow effect around cluster nodes
  *
  * @param ctx - Canvas 2D rendering context
@@ -130,50 +108,4 @@ export function createGlowGradient(
 
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   return gradient;
-}
-
-/**
- * Get the dominant color from a list of colors and weights
- * Returns the color with the highest weight
- *
- * @param colors - Array of hex color strings
- * @param weights - Array of weights
- * @returns The dominant hex color
- */
-export function getDominantColor(colors: string[], weights: number[]): string {
-  if (colors.length === 0) return "#94a3b8";
-  if (colors.length === 1) return colors[0];
-
-  let maxWeight = -1;
-  let dominantIndex = 0;
-
-  for (let i = 0; i < weights.length; i++) {
-    if (weights[i] > maxWeight) {
-      maxWeight = weights[i];
-      dominantIndex = i;
-    }
-  }
-
-  return colors[dominantIndex];
-}
-
-/**
- * Adjust color brightness
- * @param hex - Hex color string
- * @param factor - Factor to adjust brightness (0-2, where 1 is unchanged, <1 darker, >1 lighter)
- * @returns Adjusted hex color
- */
-export function adjustBrightness(hex: string, factor: number): string {
-  const cleanHex = hex.replace("#", "");
-
-  let r = parseInt(cleanHex.slice(0, 2), 16);
-  let g = parseInt(cleanHex.slice(2, 4), 16);
-  let b = parseInt(cleanHex.slice(4, 6), 16);
-
-  r = Math.min(255, Math.max(0, Math.round(r * factor)));
-  g = Math.min(255, Math.max(0, Math.round(g * factor)));
-  b = Math.min(255, Math.max(0, Math.round(b * factor)));
-
-  const toHex = (n: number) => n.toString(16).padStart(2, "0");
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }

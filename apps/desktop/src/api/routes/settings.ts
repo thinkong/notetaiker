@@ -1,18 +1,10 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { SecretsService } from "../services/secrets.service";
 import { SecretsSchema } from "@notetaiker/env";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { AIService } from "../services/ai.service";
 import type { QueueService } from "../services/queue.service";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// apps/api/src/routes/settings.ts -> go up 4 levels to reach workspace root: src, api, apps, root
-const workspaceRoot = path.resolve(__dirname, "../../../..");
-
-const secretsService = new SecretsService(workspaceRoot);
+import type { SecretsService } from "../services/secrets.service";
 
 const ValidateSchema = z.object({
   provider: z.enum(["openai", "anthropic", "gemini"]),
@@ -22,14 +14,17 @@ const ValidateSchema = z.object({
 
 type Variables = {
   queueService: QueueService;
+  secretsService: SecretsService;
 };
 
 export const settings = new Hono<{ Variables: Variables }>()
   .get("/", async (c) => {
+    const secretsService = c.get("secretsService");
     const secrets = await secretsService.getSecrets();
     return c.json(secrets);
   })
   .post("/", zValidator("json", SecretsSchema), async (c) => {
+    const secretsService = c.get("secretsService");
     const data = c.req.valid("json");
     await secretsService.saveSecrets(data);
     const updatedSecrets = await secretsService.getSecrets();

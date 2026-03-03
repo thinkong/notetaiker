@@ -47,22 +47,3 @@ export function getClusterColor(
   const palette = highContrast ? HIGH_CONTRAST_COLORS : CLUSTER_COLORS;
   return palette[clusterIndex % palette.length];
 }
-
-/**
- * Get all colors for clusters up to a certain count
- * @param count - Number of clusters
- * @param highContrast - Whether to use high contrast palette
- * @returns Array of hex color strings
- */
-export function getClusterColors(
-  count: number,
-  highContrast = false,
-): string[] {
-  const palette = highContrast ? HIGH_CONTRAST_COLORS : CLUSTER_COLORS;
-  return Array.from({ length: count }, (_, i) => palette[i % palette.length]);
-}
-
-/**
- * Default color for unclustered/noise nodes
- */
-export const NOISE_NODE_COLOR = "#94a3b8";

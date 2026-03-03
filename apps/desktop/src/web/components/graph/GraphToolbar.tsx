@@ -12,15 +12,11 @@ export function GraphToolbar() {
     setFilterLogic,
     setLocalNodeId,
     setSemanticEnabled,
-    // setSemanticFilterNodeId, // Will be used when implementing note context filter
     clearSemanticFilter,
   } = useGraphState();
   const { semanticEnabled, semanticFilterNodeId } = graphState;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-
-  // Get clusters
-  // const { data: clusters } = useClusters(); // Will be used when implementing cluster-aware features
 
   // Fetch notes to extract unique tags
   const { data: notes } = useQuery({

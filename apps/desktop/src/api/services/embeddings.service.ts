@@ -230,25 +230,6 @@ export class EmbeddingsService {
   }
 
   /**
-   * Delete embedding for a note
-   */
-  deleteEmbedding(noteId: string) {
-    const deleteMeta = this.db.prepare(
-      "DELETE FROM embeddings_meta WHERE note_id = ?",
-    );
-    const deleteVec = this.db.prepare(
-      "DELETE FROM vec_notes WHERE note_id = ?",
-    );
-
-    const transaction = this.db.transaction(() => {
-      deleteMeta.run(noteId);
-      deleteVec.run(noteId);
-    });
-
-    transaction();
-  }
-
-  /**
    * Get all embeddings with their metadata
    * Returns all note embeddings for clustering operations
    */

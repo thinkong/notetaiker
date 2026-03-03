@@ -3,29 +3,9 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import type { StorageService } from "../services/storage.service";
 import type { EmbeddingsService } from "../services/embeddings.service";
-import { env } from "@notetaiker/env";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import type { QueueService } from "../services/queue.service";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-// apps/api/src/routes/notes.ts -> go up 4 levels to reach workspace root
-const workspaceRoot = path.resolve(__dirname, "../../../..");
-const notesDir = path.isAbsolute(env.NOTES_DIR)
-  ? env.NOTES_DIR
-  : path.resolve(workspaceRoot, env.NOTES_DIR);
-
-// Ensure notes directory exists (minimal check as index.ts handles main setup)
-try {
-  void notesDir;
-} catch {
-  // directory check handled by main index.ts
-}
 
 type Bindings = {};
 type Variables = {
-  queueService: QueueService;
   storageService: StorageService;
   embeddingsService: EmbeddingsService;
 };

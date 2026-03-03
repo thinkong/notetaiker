@@ -1,11 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type {
-  ModelSlot,
-  ModelDefinition,
-  ModelsConfig,
-  SlotConfig,
-} from "../types/models";
+import type { ModelSlot, ModelDefinition, ModelsConfig } from "../types/models";
 import {
   DEFAULT_SLOT_CONFIG,
   findModelById,
@@ -66,14 +61,6 @@ export class ModelRegistry {
   private saveConfig(config: ModelsConfig): void {
     fs.writeFileSync(this.configPath, JSON.stringify(config, null, 2));
     this.config = config;
-  }
-
-  getConfig(): ModelsConfig {
-    return this.config;
-  }
-
-  getSlotConfig(slot: ModelSlot): SlotConfig | undefined {
-    return this.config.slots[slot];
   }
 
   getActiveModel(slot: ModelSlot): ModelDefinition | null {

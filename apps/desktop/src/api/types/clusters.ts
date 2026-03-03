@@ -22,17 +22,3 @@ export interface ClusterData {
   computedAt: Date;
   version: number;
 }
-
-export interface ClusterSummary {
-  id: number;
-  label: string;
-  nodeCount: number;
-}
-
-export interface ClusterApiResponse {
-  clusters: ClusterSummary[];
-  nodeMemberships: Record<string, NodeMembership[]>;
-  noiseNodeIds: string[];
-  version: number;
-  computedAt: string;
-}

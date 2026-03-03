@@ -164,15 +164,15 @@ notetaiker/
 
 ## Development Commands
 
-| Command                | Description                           |
-| ---------------------- | ------------------------------------- |
-| `bun run dev`          | Start API and Web in development mode |
-| `bun run build`        | Build all packages and apps           |
-| `bun run lint`         | Run ESLint across the monorepo        |
-| `bun run lint:fix`     | Run ESLint with auto-fix              |
-| `bun run format`       | Format code with Prettier             |
-| `bun run desktop:dev`  | Build web then start Electrobun app   |
-| `bun run desktop:build`| Build web and Electrobun package      |
+| Command                 | Description                           |
+| ----------------------- | ------------------------------------- |
+| `bun run dev`           | Start API and Web in development mode |
+| `bun run build`         | Build all packages and apps           |
+| `bun run lint`          | Run ESLint across the monorepo        |
+| `bun run lint:fix`      | Run ESLint with auto-fix              |
+| `bun run format`        | Format code with Prettier             |
+| `bun run desktop:dev`   | Build web then start Electrobun app   |
+| `bun run desktop:build` | Build web and Electrobun package      |
 
 ## Tech Stack
 
@@ -182,7 +182,7 @@ notetaiker/
 | Backend      | Hono, bun:sqlite, sqlite-vec, Vercel AI SDK, p-queue                                                 |
 | AI Providers | OpenAI, Anthropic, Google Gemini, Ollama                                                             |
 | Dev Tools    | TypeScript, ESLint, Prettier, Vitest, Bun, Husky, Commitlint                                         |
-| Desktop      | Electrobun                                                                                            |
+| Desktop      | Electrobun                                                                                           |
 
 ## License
 

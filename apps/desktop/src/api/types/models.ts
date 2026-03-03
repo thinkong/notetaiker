@@ -11,14 +11,10 @@ export interface ModelDefinition {
   sizeBytes: number;
   contextSize: number;
   dimensions?: number;
-  filename?: string;
-  downloadUrl?: string;
-  llamaServerFlags?: string[];
 }
 
 export interface SlotConfig {
   activeModelId: string;
-  port?: number;
 }
 
 export interface ModelsConfig {
