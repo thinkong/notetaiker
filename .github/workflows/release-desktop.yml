@@ -1,0 +1,92 @@
+name: Release Desktop
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+concurrency:
+  group: release-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SQLITE_VEC_VERSION: "0.1.7-alpha.2"
+
+jobs:
+  build-desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: macos-arm64
+            sqlite_vec_pkg: sqlite-vec-darwin-arm64
+            artifact_ext: tar.gz
+          - os: windows-latest
+            target: win-x64
+            sqlite_vec_pkg: sqlite-vec-windows-x64
+            artifact_ext: zip
+          - os: ubuntu-latest
+            target: linux-x64
+            sqlite_vec_pkg: sqlite-vec-linux-x64
+            artifact_ext: tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-0 libnss3 libgbm-dev libxkbcommon0 libasound2
+
+      - name: Prepare platform sqlite-vec vendor
+        shell: bash
+        run: |
+          cd apps/desktop/vendor/node_modules
+          rm -rf sqlite-vec-darwin-* sqlite-vec-linux-* sqlite-vec-windows-*
+          mkdir -p ${{ matrix.sqlite_vec_pkg }}
+          curl -sL "https://registry.npmjs.org/${{ matrix.sqlite_vec_pkg }}/-/${{ matrix.sqlite_vec_pkg }}-${SQLITE_VEC_VERSION}.tgz" \
+            | tar -xz --strip-components=1 -C ${{ matrix.sqlite_vec_pkg }}
+
+      - name: Build desktop app
+        run: bun run --filter @notetaiker/desktop build:desktop:stable
+
+      - name: Package build (macOS / Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          cd apps/desktop/build
+          tar -czf notetaiker-${{ matrix.target }}.tar.gz stable-${{ matrix.target }}/
+
+      - name: Package build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd apps\desktop\build
+          Compress-Archive -Path "stable-${{ matrix.target }}\*" -DestinationPath "notetaiker-${{ matrix.target }}.zip"
+
+      - name: Upload release assets
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/desktop/build/notetaiker-${{ matrix.target }}.${{ matrix.artifact_ext }}
+
+      - name: Upload build artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: notetaiker-${{ matrix.target }}
+          path: apps/desktop/build/notetaiker-${{ matrix.target }}.${{ matrix.artifact_ext }}
