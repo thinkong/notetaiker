@@ -14,7 +14,7 @@ import {
   type GraphNode,
   type NodeType,
 } from "../../hooks/useGraphData";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 import { useClusters, useClusterColors } from "../../hooks/useClusters";
 import { blendClusterColors, createGlowGradient } from "../../lib/colorUtils";
 import { passesTagFilter } from "../../lib/graphUtils";

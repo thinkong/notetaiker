@@ -1,5 +1,4 @@
-import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
+import { serveStatic } from "hono/bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -12,6 +11,7 @@ import { settings } from "./routes/settings";
 import { events } from "./routes/events";
 import { embeddings } from "./routes/embeddings";
 import { clusters } from "./routes/clusters";
+import { models } from "./routes/models";
 import { QueueService } from "./services/queue.service";
 import { WorkerService } from "./services/worker.service";
 import { EventsService } from "./services/events.service";
@@ -21,7 +21,11 @@ import { SecretsService } from "./services/secrets.service";
 import { IndexerService } from "./services/indexer.service";
 import { EmbeddingsService } from "./services/embeddings.service";
 import { ClustersService } from "./services/clusters.service";
+import { ModelRegistry } from "./services/model-registry.service";
+import { OllamaManager } from "./services/ollama-manager.service";
+import { OllamaBootstrap } from "./services/ollama-bootstrap.service";
 export type { ParsedNote, NoteFrontmatter } from "./lib/markdown";
+export { OllamaBootstrap } from "./services/ollama-bootstrap.service";
 
 type Bindings = {};
 type Variables = {
@@ -32,15 +36,23 @@ type Variables = {
   indexerService: IndexerService;
   embeddingsService: EmbeddingsService;
   clustersService: ClustersService;
+  modelRegistry: ModelRegistry;
+  ollamaManager: OllamaManager;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// Initialize notes directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// apps/api/src/index.ts -> go up 3 levels to reach workspace root
-const workspaceRoot = path.resolve(__dirname, "../../..");
+
+function getWorkspaceRoot(): string {
+  if (process.env.WORKSPACE_ROOT) {
+    return path.resolve(process.env.WORKSPACE_ROOT);
+  }
+  return path.resolve(__dirname, "../../..");
+}
+
+const workspaceRoot = getWorkspaceRoot();
 
 const notesDir = path.isAbsolute(env.NOTES_DIR)
   ? env.NOTES_DIR
@@ -57,10 +69,34 @@ try {
 }
 
 // Initialize Core Services
+const configDir = path.join(workspaceRoot, ".notetaiker");
 const queueService = new QueueService(workspaceRoot);
 const eventsService = new EventsService();
 const secretsService = new SecretsService(workspaceRoot);
-const aiService = new AIService(secretsService);
+const modelRegistry = new ModelRegistry(path.join(configDir, "models.json"));
+
+// Bootstrap Ollama: use system install if running, otherwise download portable
+const ollamaBootstrap = new OllamaBootstrap(
+  process.env.OLLAMA_DIR || path.join(configDir, "ollama"),
+);
+
+let ollamaBaseUrl =
+  process.env.OLLAMA_BASE_URL || AIService.DEFAULT_BASE_URLS.ollama;
+
+try {
+  const bootstrapResult = await ollamaBootstrap.ensure();
+  ollamaBaseUrl = bootstrapResult.baseUrl;
+  if (bootstrapResult.managed) {
+    console.log(
+      `Ollama ${bootstrapResult.version ?? "portable"} started by bootstrap`,
+    );
+  }
+} catch (err) {
+  console.warn("Ollama bootstrap failed (AI features may be limited):", err);
+}
+
+const ollamaManager = new OllamaManager(ollamaBaseUrl, eventsService);
+const aiService = new AIService(secretsService, modelRegistry, ollamaBaseUrl);
 const indexerService = new IndexerService(workspaceRoot, notesDir);
 const storageService = new StorageService(
   notesDir,
@@ -109,6 +145,8 @@ app
     c.set("indexerService", indexerService);
     c.set("embeddingsService", embeddingsService);
     c.set("clustersService", clustersService);
+    c.set("modelRegistry", modelRegistry);
+    c.set("ollamaManager", ollamaManager);
     await next();
   })
   .use("*", logger())
@@ -127,24 +165,19 @@ const routes = app
   .route("/settings", settings)
   .route("/embeddings", embeddings)
   .route("/api/clusters", clusters)
-  .route("/api/events", events);
+  .route("/api/events", events)
+  .route("/api/models", models);
 
 // In production, serve the static web frontend
 if (env.NODE_ENV === "production") {
-  const webDistPath = path.resolve(__dirname, "../../web/dist");
+  const webDistPath =
+    process.env.WEB_DIST_PATH || path.resolve(__dirname, "../../web/dist");
 
   // Check if the web dist directory exists
   if (fs.existsSync(webDistPath)) {
     console.log("Serving static files from:", webDistPath);
 
-    // Serve static assets
-    app.use(
-      "/*",
-      serveStatic({
-        root: webDistPath,
-        rewriteRequestPath: (reqPath) => reqPath,
-      }),
-    );
+    app.use("/*", serveStatic({ root: webDistPath }));
 
     // SPA fallback - serve index.html for non-API routes
     app.get("*", async (c) => {
@@ -158,12 +191,25 @@ if (env.NODE_ENV === "production") {
 }
 
 const port = Number(process.env.PORT) || 3001;
-console.log(`Server is running on port ${port}`);
 
-serve({
-  fetch: app.fetch,
-  port,
-});
+export function startServer(listenPort: number = port) {
+  console.log(`Server is running on port ${listenPort}`);
+  return Bun.serve({
+    fetch: app.fetch,
+    port: listenPort,
+  });
+}
+
+const shutdownOllama = () => {
+  ollamaBootstrap.shutdown();
+};
+process.on("beforeExit", shutdownOllama);
+process.on("SIGINT", shutdownOllama);
+process.on("SIGTERM", shutdownOllama);
+
+if (import.meta.main) {
+  startServer();
+}
 
 export type AppType = typeof routes;
 export default app;

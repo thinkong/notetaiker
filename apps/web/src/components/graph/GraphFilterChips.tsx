@@ -1,5 +1,5 @@
 import { X, Tag } from "lucide-react";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 
 export function GraphFilterChips() {
   const { graphState, setFilterTags } = useGraphState();

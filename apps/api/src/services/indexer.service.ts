@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";
 import { parseMarkdown } from "../lib/markdown";
 import { v5 as uuidv5 } from "uuid";
@@ -23,7 +23,7 @@ export interface QueryOptions {
 }
 
 export class IndexerService {
-  private db: Database.Database;
+  private db: Database;
   private notesDir: string;
 
   constructor(workspaceRoot: string, notesDir: string) {
@@ -35,11 +35,11 @@ export class IndexerService {
 
     const dbPath = path.join(configDir, "index.db");
     this.db = new Database(dbPath);
-    sqliteVec.load(this.db);
+    this.db.loadExtension(sqliteVec.getLoadablePath());
     this.init();
   }
 
-  getDb(): Database.Database {
+  getDb(): Database {
     return this.db;
   }
 

@@ -1,6 +1,6 @@
 import { Palette, ChevronLeft } from "lucide-react";
 import { useClusters, useClusterColors } from "../../hooks/useClusters";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 
 interface ClusterLegendProps {
   isOpen: boolean;

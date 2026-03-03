@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGraphData } from "../../hooks/useGraphData";
 import { ForceGraph, type ForceGraphHandle } from "./ForceGraph";
 import { NoteSidePanel } from "./NoteSidePanel";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 import { GraphToolbar } from "./GraphToolbar";
 import { GraphFilterChips } from "./GraphFilterChips";
 import { ClusterLegend } from "./ClusterLegend";

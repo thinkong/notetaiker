@@ -1,74 +1,14 @@
+import { useState, useCallback, useEffect, type ReactNode } from "react";
 import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  type ReactNode,
-} from "react";
-
-export interface GraphCenter {
-  x: number;
-  y: number;
-}
-
-export interface PinnedNodePosition {
-  x: number;
-  y: number;
-}
-
-export interface GraphState {
-  zoom: number | undefined;
-  center: GraphCenter | undefined;
-  selectedNodeId: string | null;
-  filterTags: string[];
-  filterLogic: "AND" | "OR";
-  localNodeId: string | null;
-  pinnedNodes: Record<string, PinnedNodePosition>;
-  highContrast: boolean;
-  semanticEnabled: boolean;
-  semanticFilterNodeId: string | null;
-}
-
-interface GraphStateContextType {
-  graphState: GraphState;
-  setGraphState: (state: GraphState) => void;
-  updateGraphState: (updates: Partial<GraphState>) => void;
-  setFilterTags: (tags: string[]) => void;
-  setFilterLogic: (logic: "AND" | "OR") => void;
-  setLocalNodeId: (nodeId: string | null) => void;
-  pinNode: (id: string, x: number, y: number) => void;
-  unpinNode: (id: string) => void;
-  toggleHighContrast: () => void;
-  setSemanticEnabled: (enabled: boolean) => void;
-  setSemanticFilterNodeId: (nodeId: string | null) => void;
-  clearSemanticFilter: () => void;
-}
-
-const PINNED_NODES_KEY = "notetaiker:graph:pinned-nodes";
-
-const HIGH_CONTRAST_KEY = "notetaiker:graph:high-contrast";
-
-const defaultState: GraphState = {
-  zoom: undefined,
-  center: undefined,
-  selectedNodeId: null,
-  filterTags: [],
-  filterLogic: "OR",
-  localNodeId: null,
-  pinnedNodes: {},
-  highContrast: false,
-  semanticEnabled: false,
-  semanticFilterNodeId: null,
-};
-
-const GraphStateContext = createContext<GraphStateContextType | undefined>(
-  undefined,
-);
+  type GraphState,
+  GraphStateContext,
+  PINNED_NODES_KEY,
+  HIGH_CONTRAST_KEY,
+  defaultState,
+} from "./graphStateDefs";
 
 export function GraphStateProvider({ children }: { children: ReactNode }) {
   const [graphState, setGraphState] = useState<GraphState>(() => {
-    // Load pinned nodes and high contrast from localStorage on mount
     try {
       const pinnedStored = localStorage.getItem(PINNED_NODES_KEY);
       const highContrastStored = localStorage.getItem(HIGH_CONTRAST_KEY);
@@ -143,7 +83,6 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     (enabled: boolean) => {
       updateGraphState({
         semanticEnabled: enabled,
-        // If disabling, also clear semantic filter
         ...(enabled ? {} : { semanticFilterNodeId: null }),
       });
     },
@@ -154,7 +93,6 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     (nodeId: string | null) => {
       updateGraphState({
         semanticFilterNodeId: nodeId,
-        // Enable semantic mode when setting a filter
         ...(nodeId ? { semanticEnabled: true } : {}),
       });
     },
@@ -165,7 +103,6 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     updateGraphState({ semanticFilterNodeId: null });
   }, [updateGraphState]);
 
-  // Persist pinned nodes to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -181,7 +118,6 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
     }
   }, [graphState.pinnedNodes]);
 
-  // Persist high contrast setting to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -216,12 +152,4 @@ export function GraphStateProvider({ children }: { children: ReactNode }) {
       {children}
     </GraphStateContext.Provider>
   );
-}
-
-export function useGraphState() {
-  const context = useContext(GraphStateContext);
-  if (context === undefined) {
-    throw new Error("useGraphState must be used within a GraphStateProvider");
-  }
-  return context;
 }

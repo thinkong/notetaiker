@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
 import { v4 as uuidv4 } from "uuid";
 import { EventEmitter } from "node:events";
 
@@ -20,7 +20,7 @@ export interface Job {
 }
 
 export class QueueService extends EventEmitter {
-  private db: Database.Database;
+  private db: Database;
 
   constructor(workspaceRoot: string) {
     super();
@@ -106,7 +106,6 @@ export class QueueService extends EventEmitter {
   }
 
   getNextJob(): Job | null {
-    // In better-sqlite3, we can use a transaction to ensure atomicity
     const getJob = this.db.transaction(() => {
       const job = this.db
         .prepare(
@@ -163,15 +162,18 @@ export class QueueService extends EventEmitter {
 
   resetProcessingJobs(): number {
     const now = new Date().toISOString();
-    const stmt = this.db.prepare(`
+    this.db
+      .prepare(
+        `
       UPDATE jobs
       SET status = 'queued',
           updatedAt = ?
       WHERE status = 'processing'
-    `);
+    `,
+      )
+      .run(now);
 
-    const result = stmt.run(now);
-    return result.changes;
+    return (this.db.prepare("SELECT changes() as c").get() as { c: number }).c;
   }
 
   // Helper for testing/debugging
@@ -191,16 +193,22 @@ export class QueueService extends EventEmitter {
 
   retryFailedJobs(): number {
     const now = new Date().toISOString();
-    const stmt = this.db.prepare(`
+    this.db
+      .prepare(
+        `
         UPDATE jobs
         SET status = 'queued',
             attempts = 0,
             updatedAt = ?
         WHERE status = 'failed'
-      `);
+      `,
+      )
+      .run(now);
 
-    const result = stmt.run(now);
-    this.emit("job:enqueued", "retry-batch"); // Trigger worker to pick up
-    return result.changes;
+    const changes = (
+      this.db.prepare("SELECT changes() as c").get() as { c: number }
+    ).c;
+    this.emit("job:enqueued", "retry-batch");
+    return changes;
   }
 }

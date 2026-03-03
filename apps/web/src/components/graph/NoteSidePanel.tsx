@@ -2,7 +2,7 @@ import { X, Tag as TagIcon, Calendar, Brain } from "lucide-react";
 import { type GraphNode } from "../../hooks/useGraphData";
 import { Markdown } from "../common/Markdown";
 import { Tag } from "../common/Tag";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 
 interface NoteSidePanelProps {
   node: GraphNode;

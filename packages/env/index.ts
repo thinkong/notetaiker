@@ -30,7 +30,7 @@ export const SecretsSchema = z.object({
     })
     .optional(),
   selectedProvider: z
-    .enum(["openai", "anthropic", "gemini", "ollama"])
+    .enum(["embedded", "openai", "anthropic", "gemini", "ollama"])
     .optional(),
 });
 

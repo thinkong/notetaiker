@@ -9,3 +9,4 @@ data
 .agent
 .agents
 ollama_data
+.cursor

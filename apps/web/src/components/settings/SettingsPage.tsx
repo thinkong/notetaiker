@@ -12,6 +12,7 @@ import {
 import { useForm, useWatch } from "react-hook-form";
 import type { Secrets } from "@notetaiker/env";
 import { ProviderSection } from "./ProviderSection";
+import { ModelsSection } from "./ModelsSection";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { useEffect, useState } from "react";
@@ -301,6 +302,17 @@ export const SettingsPage = () => {
               </p>
             </div>
           )}
+        </div>
+
+        <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">
+          <h3 className="text-lg font-semibold text-nord-polar0 dark:text-nord-snow2 mb-1">
+            Ollama Models
+          </h3>
+          <p className="text-sm text-nord-polar3 dark:text-nord-snow1 mb-4">
+            Manage local AI models via Ollama. Pull and swap models per
+            capability slot.
+          </p>
+          <ModelsSection />
         </div>
 
         <div className="bg-white dark:bg-nord-polar1 p-6 rounded-lg border border-nord-snow0 dark:border-nord-polar2 shadow-sm">

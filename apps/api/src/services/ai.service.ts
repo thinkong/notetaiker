@@ -5,6 +5,8 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOllama } from "ai-sdk-ollama";
 import { z } from "zod";
 import type { SecretsService } from "./secrets.service";
+import type { ModelRegistry } from "./model-registry.service";
+import type { ModelBackend } from "../types/models";
 import { isDocker } from "@notetaiker/env";
 
 export class AIService {
@@ -23,14 +25,37 @@ export class AIService {
   } as const;
 
   private secretsService: SecretsService;
+  private modelRegistry: ModelRegistry | null;
+  private ollamaBaseUrl: string;
 
-  constructor(secretsService: SecretsService) {
+  constructor(
+    secretsService: SecretsService,
+    modelRegistry?: ModelRegistry,
+    ollamaBaseUrl?: string,
+  ) {
     this.secretsService = secretsService;
+    this.modelRegistry = modelRegistry ?? null;
+    this.ollamaBaseUrl = ollamaBaseUrl ?? AIService.DEFAULT_BASE_URLS.ollama;
   }
 
   private async getModel() {
+    if (this.modelRegistry) {
+      const active = this.modelRegistry.getActiveModel("text");
+      if (active && active.backend === "ollama") {
+        const ollama = createOllama({ baseURL: this.ollamaBaseUrl });
+        return ollama(active.ollamaModel);
+      }
+      if (active) {
+        return this.getExternalModel(active.backend);
+      }
+    }
+
+    return this.getExternalModel();
+  }
+
+  private async getExternalModel(backend?: ModelBackend) {
     const secrets = await this.secretsService.getSecrets();
-    const provider = secrets.selectedProvider;
+    const provider = backend ?? secrets.selectedProvider;
 
     if ((provider === "openai" || !provider) && secrets.openai?.apiKey) {
       const openai = createOpenAI({
@@ -62,11 +87,11 @@ export class AIService {
     if (provider === "ollama" || !provider) {
       try {
         const ollama = createOllama({
-          baseURL: AIService.DEFAULT_BASE_URLS.ollama,
+          baseURL: this.ollamaBaseUrl,
         });
         return ollama(AIService.DEFAULT_MODELS.ollama);
       } catch (error) {
-        console.warn("❌ Ollama not available:", error);
+        console.warn("Ollama not available:", error);
       }
     }
 
@@ -117,9 +142,22 @@ ${content}`,
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
-    // For embeddings, we specifically want to use Ollama with nomic-embed-text if possible,
-    // as it is the local standard for embeddings in this project.
-    // If Ollama isn't selected, we fallback to the default model of the selected provider.
+    if (this.modelRegistry) {
+      const active = this.modelRegistry.getActiveModel("embedding");
+      if (active && active.backend === "ollama") {
+        const ollama = createOllama({ baseURL: this.ollamaBaseUrl });
+        const { embedding } = await embed({
+          model: ollama.embedding(active.ollamaModel),
+          value: text,
+        });
+        return embedding;
+      }
+    }
+
+    return this.getExternalEmbedding(text);
+  }
+
+  private async getExternalEmbedding(text: string): Promise<number[]> {
     const secrets = await this.secretsService.getSecrets();
     const provider = secrets.selectedProvider;
 
@@ -127,13 +165,11 @@ ${content}`,
 
     if (provider === "ollama" || !provider) {
       const ollamaProvider = createOllama({
-        baseURL: AIService.DEFAULT_BASE_URLS.ollama,
+        baseURL: this.ollamaBaseUrl,
       });
-      embeddingModel = ollamaProvider.embedding("embeddinggemma:latest");
+      embeddingModel = ollamaProvider.embedding("nomic-embed-text");
     } else {
-      // Fallback to the provider's default model for embeddings
-      // Note: This might need more specific model names for each provider later
-      embeddingModel = await this.getModel();
+      embeddingModel = await this.getExternalModel();
     }
 
     const { embedding } = await embed({

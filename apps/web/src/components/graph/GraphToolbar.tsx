@@ -3,7 +3,7 @@ import { Command } from "cmdk";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Tag, Settings2, X, Focus, Filter, Brain } from "lucide-react";
 import { api } from "../../lib/api";
-import { useGraphState } from "../../contexts/GraphStateContext";
+import { useGraphState } from "../../contexts/useGraphState";
 
 export function GraphToolbar() {
   const {

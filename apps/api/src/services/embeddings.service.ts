@@ -1,4 +1,4 @@
-import type { Database } from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import type { StorageService, NoteMetadata } from "./storage.service";
 import type { QueueService } from "./queue.service";
 
@@ -136,8 +136,7 @@ export class EmbeddingsService {
 
     if (!result) return undefined;
 
-    // better-sqlite3 returns Blobs as Buffers/Uint8Arrays
-    // We need to interpret it as Float32Array
+    // bun:sqlite returns blobs as Uint8Arrays; interpret as Float32Array
     const float32Array = new Float32Array(
       result.vector.buffer,
       result.vector.byteOffset,
