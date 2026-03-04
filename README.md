@@ -245,4 +245,4 @@ notetaiker/
 
 ## License
 
-Private
+GNU GPLv3

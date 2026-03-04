@@ -1,6 +1,7 @@
 {
   "name": "notetaiker",
   "private": true,
+  "license": "GPL-3.0",
   "type": "module",
   "scripts": {
     "build": "bun --filter '*' build",
