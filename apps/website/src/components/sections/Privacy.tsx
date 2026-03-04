@@ -1,4 +1,4 @@
-import { Shield, HardDrive, Wifi, Lock, Container } from "lucide-react";
+import { Shield, HardDrive, Wifi, Lock, Monitor } from "lucide-react";
 
 const privacyFeatures = [
   {
@@ -11,13 +11,13 @@ const privacyFeatures = [
     icon: Wifi,
     title: "Offline Capable",
     description:
-      "Works completely offline with Ollama for local AI processing.",
+      "Runs entirely offline with bundled Ollama for fully local AI. No internet required, ever.",
   },
   {
-    icon: Container,
-    title: "Self-Hosted Docker",
+    icon: Monitor,
+    title: "Native Desktop App",
     description:
-      "Deploy with Docker Compose in one command. Full control over your infrastructure.",
+      "Runs as a native desktop application. No servers to manage, no containers to configure.",
   },
   {
     icon: Lock,
@@ -101,9 +101,9 @@ export function Privacy() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
-                    <span className="text-sm">Deployment</span>
+                    <span className="text-sm">App</span>
                     <span className="font-mono text-sm text-primary">
-                      Docker Compose
+                      Desktop (Native)
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">

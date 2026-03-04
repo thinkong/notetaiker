@@ -28,8 +28,8 @@ export function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <a href="#get-started">
-                Get Started
+              <a href="#download">
+                Download Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
@@ -47,70 +47,20 @@ export function Hero() {
         </div>
 
         {/* App Preview */}
-        <div className="mx-auto mt-16 max-w-4xl">
-          <div className="overflow-hidden rounded-xl border bg-card shadow-2xl">
-            <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-3">
-              <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-500" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                <div className="h-3 w-3 rounded-full bg-green-500" />
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">
-                notetAIker
-              </span>
-            </div>
-            <div className="p-6">
-              <pre className="font-mono text-sm">
-                <code className="text-muted-foreground">---</code>
-                {"\n"}
-                <code className="text-primary">title:</code>
-                <code className="text-muted-foreground">
-                  {" "}
-                  Product Roadmap Meeting
-                </code>
-                {"\n"}
-                <code className="text-primary">tags:</code>
-                <code className="text-muted-foreground">
-                  {" "}
-                  [meeting, product]
-                </code>
-                {"\n"}
-                <code className="text-primary">ai_tags:</code>
-                <code className="text-muted-foreground">
-                  {" "}
-                  [Q1-planning, roadmap, strategy]
-                </code>
-                {"\n"}
-                <code className="text-primary">createdAt:</code>
-                <code className="text-muted-foreground"> 2026-02-09</code>
-                {"\n"}
-                <code className="text-muted-foreground">---</code>
-                {"\n\n"}
-                <code className="font-bold text-foreground">
-                  # Product Roadmap Meeting
-                </code>
-                {"\n\n"}
-                <code className="text-muted-foreground">
-                  Discussed priorities for Q1 with the team...
-                </code>
-                {"\n"}
-                <code className="text-muted-foreground">
-                  - Feature X: High priority
-                </code>
-                {"\n"}
-                <code className="text-muted-foreground">
-                  - Bug fixes: Ongoing
-                </code>
-                {"\n"}
-                <code className="text-muted-foreground">
-                  - User research: [[Sarah]] to lead
-                </code>
-              </pre>
-            </div>
+        <div className="mx-auto mt-16 max-w-5xl">
+          <div className="overflow-hidden rounded-xl border shadow-2xl">
+            <img
+              src="/assets/screenshot.png"
+              alt="notetAIker desktop application showing the note editor, AI-generated tags, and note history sidebar"
+              className="w-full"
+              width={1920}
+              height={1080}
+              loading="eager"
+            />
           </div>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             AI generates tags, titles, and semantic connections from your
-            content automatically
+            content automatically — all running locally on your machine
           </p>
         </div>
       </div>

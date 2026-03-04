@@ -68,13 +68,6 @@ const comparisonData: ComparisonRow[] = [
     roam: "no",
   },
   {
-    feature: "Docker Deployment",
-    notetaiker: "yes",
-    notion: "no",
-    obsidian: "no",
-    roam: "no",
-  },
-  {
     feature: "Open Source",
     notetaiker: "yes",
     notion: "no",
@@ -110,7 +103,7 @@ function CellContent({ value }: { value: CellValue }) {
 
 export function Comparison() {
   return (
-    <section className="py-20 md:py-28">
+    <section id="comparison" className="py-20 md:py-28">
       <div className="container">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">

@@ -1,0 +1,165 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO="thinkong/notetaiker"
+BASE_URL="https://github.com/${REPO}/releases/latest/download"
+APP_NAME="notetAIker"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
+info()  { printf "${CYAN}%s${RESET}\n" "$*"; }
+ok()    { printf "${GREEN}%s${RESET}\n" "$*"; }
+err()   { printf "${RED}error: %s${RESET}\n" "$*" >&2; }
+bold()  { printf "${BOLD}%s${RESET}\n" "$*"; }
+
+banner() {
+  printf "\n"
+  bold "  notetAIker Installer"
+  info "  Local-first AI note taking"
+  printf "\n"
+}
+
+cleanup() {
+  if [ -n "${TMPDIR_INSTALL:-}" ] && [ -d "$TMPDIR_INSTALL" ]; then
+    rm -rf "$TMPDIR_INSTALL"
+  fi
+}
+trap cleanup EXIT
+
+detect_downloader() {
+  if command -v curl >/dev/null 2>&1; then
+    DOWNLOADER="curl"
+  elif command -v wget >/dev/null 2>&1; then
+    DOWNLOADER="wget"
+  else
+    err "curl or wget is required but neither was found"
+    exit 1
+  fi
+}
+
+download() {
+  local url="$1" dest="$2"
+  info "Downloading from ${url}..."
+  if [ "$DOWNLOADER" = "curl" ]; then
+    curl -fSL --progress-bar -o "$dest" "$url"
+  else
+    wget -q --show-progress -O "$dest" "$url"
+  fi
+}
+
+install_macos() {
+  local arch
+  arch="$(uname -m)"
+  if [ "$arch" != "arm64" ]; then
+    err "macOS builds are only available for Apple Silicon (arm64)."
+    err "Detected architecture: ${arch}"
+    exit 1
+  fi
+
+  local asset="stable-macos-arm64-${APP_NAME}.dmg"
+  local dmg_path="${TMPDIR_INSTALL}/${asset}"
+
+  download "${BASE_URL}/${asset}" "$dmg_path"
+
+  info "Mounting disk image..."
+  local mount_point
+  mount_point="$(hdiutil attach -nobrowse -readonly "$dmg_path" 2>/dev/null | tail -1 | awk '{print $NF}')"
+
+  if [ -z "$mount_point" ] || [ ! -d "$mount_point" ]; then
+    mount_point="/Volumes/${APP_NAME}"
+  fi
+
+  local app_bundle
+  app_bundle="$(find "$mount_point" -maxdepth 1 -name '*.app' -print -quit 2>/dev/null)"
+
+  if [ -z "$app_bundle" ]; then
+    hdiutil detach "$mount_point" -quiet 2>/dev/null || true
+    err "Could not find .app bundle in the disk image"
+    exit 1
+  fi
+
+  local app_name
+  app_name="$(basename "$app_bundle")"
+
+  info "Installing ${app_name} to /Applications..."
+  if [ -d "/Applications/${app_name}" ]; then
+    rm -rf "/Applications/${app_name}"
+  fi
+  cp -R "$app_bundle" "/Applications/"
+
+  info "Unmounting disk image..."
+  hdiutil detach "$mount_point" -quiet 2>/dev/null || true
+
+  printf "\n"
+  ok "  ${APP_NAME} has been installed to /Applications/${app_name}"
+  ok "  You can launch it from your Applications folder or Spotlight."
+  printf "\n"
+}
+
+install_linux() {
+  local arch
+  arch="$(uname -m)"
+  case "$arch" in
+    x86_64)  arch="x64" ;;
+    aarch64) arch="arm64" ;;
+    *)
+      err "Unsupported architecture: ${arch}"
+      err "notetAIker supports x86_64 and aarch64 on Linux."
+      exit 1
+      ;;
+  esac
+
+  local asset="stable-linux-${arch}-${APP_NAME}-Setup.tar.gz"
+  local tar_path="${TMPDIR_INSTALL}/${asset}"
+  local extract_dir="${TMPDIR_INSTALL}/extracted"
+
+  download "${BASE_URL}/${asset}" "$tar_path"
+
+  info "Extracting archive..."
+  mkdir -p "$extract_dir"
+  tar xzf "$tar_path" -C "$extract_dir"
+
+  local installer
+  installer="$(find "$extract_dir" -name 'installer' -type f -print -quit 2>/dev/null)"
+
+  if [ -z "$installer" ]; then
+    err "Could not find installer binary in the archive"
+    exit 1
+  fi
+
+  chmod +x "$installer"
+
+  info "Running installer..."
+  "$installer"
+
+  printf "\n"
+  ok "  ${APP_NAME} has been installed successfully."
+  printf "\n"
+}
+
+main() {
+  banner
+  detect_downloader
+
+  TMPDIR_INSTALL="$(mktemp -d)"
+
+  local os
+  os="$(uname -s)"
+
+  case "$os" in
+    Darwin) install_macos ;;
+    Linux)  install_linux ;;
+    *)
+      err "Unsupported operating system: ${os}"
+      err "Use the PowerShell install script on Windows:"
+      err "  powershell -c \"irm notetaiker.a-bba.dev/install.ps1 | iex\""
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

@@ -2,11 +2,11 @@ import {
   Zap,
   FileText,
   Tags,
-  Bot,
+  ShieldCheck,
   Network,
   Search,
   Command,
-  Container,
+  Link2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -30,10 +30,10 @@ const features = [
       "Background AI agents analyze your notes and generate relevant tags automatically. Dismiss or keep suggestions.",
   },
   {
-    icon: Bot,
-    title: "Multi-Model AI",
+    icon: ShieldCheck,
+    title: "Fully Local AI",
     description:
-      "Choose your AI provider: OpenAI, Anthropic, Google Gemini, or run 100% local with Ollama.",
+      "All AI processing runs locally on your machine via bundled Ollama. No API keys, no cloud calls, fully offline.",
   },
   {
     icon: Network,
@@ -54,10 +54,10 @@ const features = [
       "Power user tools at your fingertips. Quick actions, search, and keyboard-driven navigation via Cmd+K.",
   },
   {
-    icon: Container,
-    title: "Docker Ready",
+    icon: Link2,
+    title: "Related Notes",
     description:
-      "Deploy as a self-contained Docker image with Docker Compose. Includes optional local Ollama AI.",
+      "Semantic similarity surfaces connections between your notes. Discover related ideas you didn't know existed.",
   },
 ];
 

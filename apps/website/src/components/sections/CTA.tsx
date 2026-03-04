@@ -16,19 +16,15 @@ export function CTA() {
             Ready to take control of your notes?
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
-            Semantic search, knowledge graphs, AI tagging — all running locally.
-            Join developers, researchers, and thinkers who value privacy and
-            productivity.
+            Semantic search, knowledge graphs, AI tagging — all running locally
+            on your machine. Download the desktop app and join developers,
+            researchers, and thinkers who value privacy and productivity.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <a
-                href="https://github.com/thinkong/notetaiker#installation"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get Started
+              <a href="#download">
+                Download Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>

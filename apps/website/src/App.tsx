@@ -4,9 +4,9 @@ import { Hero } from "@/components/sections/Hero";
 import { Features } from "@/components/sections/Features";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Privacy } from "@/components/sections/Privacy";
+import { Download } from "@/components/sections/Download";
 import { Comparison } from "@/components/sections/Comparison";
 import { CTA } from "@/components/sections/CTA";
-import { Pricing } from "@/components/sections/Pricing";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <HowItWorks />
         <Privacy />
         <Comparison />
-        <Pricing />
+        <Download />
         <CTA />
       </main>
       <Footer />

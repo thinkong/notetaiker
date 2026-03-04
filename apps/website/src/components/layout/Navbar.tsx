@@ -6,7 +6,8 @@ const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it Works" },
   { href: "#privacy", label: "Privacy" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "#comparison", label: "Comparison" },
+  { href: "#download", label: "Download" },
 ];
 
 export function Navbar() {
@@ -47,7 +48,7 @@ export function Navbar() {
             </a>
           </Button>
           <Button asChild>
-            <a href="#get-started">Get Started</a>
+            <a href="#download">Download</a>
           </Button>
         </div>
 
@@ -93,7 +94,7 @@ export function Navbar() {
                 </a>
               </Button>
               <Button size="sm" asChild>
-                <a href="#get-started">Get Started</a>
+                <a href="#download">Download</a>
               </Button>
             </div>
           </div>
