@@ -8,6 +8,9 @@ import {
   HardDrive,
   ExternalLink,
   Loader2,
+  Terminal,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -215,6 +218,80 @@ function AllDownloads({
   );
 }
 
+const INSTALL_COMMANDS = {
+  bash: `curl -fsSL https://notetaiker.a-bba.dev/install | bash`,
+  powershell: `powershell -c "irm notetaiker.a-bba.dev/install.ps1 | iex"`,
+} as const;
+
+type ShellTab = keyof typeof INSTALL_COMMANDS;
+
+function InstallScript() {
+  const [tab, setTab] = useState<ShellTab>("bash");
+  const [copied, setCopied] = useState(false);
+
+  const copy = () => {
+    navigator.clipboard.writeText(INSTALL_COMMANDS[tab]).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="mx-auto mt-6 max-w-xl">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="h-px flex-1 bg-border" />
+        <span>or install via command line</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+      <div className="mt-4 overflow-hidden rounded-lg border bg-[#1a1a2e] shadow-lg">
+        <div className="flex items-center border-b border-white/10">
+          {(["bash", "powershell"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => {
+                setTab(t);
+                setCopied(false);
+              }}
+              className={cn(
+                "px-4 py-2 text-xs font-medium transition-colors",
+                tab === t
+                  ? "bg-white/10 text-white"
+                  : "text-white/50 hover:text-white/80",
+              )}
+            >
+              {t === "bash" ? "macOS / Linux" : "Windows"}
+            </button>
+          ))}
+          <div className="flex-1" />
+          <button
+            onClick={copy}
+            className="mr-2 flex items-center gap-1.5 rounded px-2 py-1 text-xs text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+            title="Copy to clipboard"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div className="flex items-center gap-3 p-4">
+          <Terminal className="h-4 w-4 shrink-0 text-green-400" />
+          <code className="overflow-x-auto text-sm text-green-300">
+            {INSTALL_COMMANDS[tab]}
+          </code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SystemRequirements() {
   const requirements = [
     {
@@ -373,6 +450,8 @@ export function Download() {
               </div>
             )}
           </div>
+
+          <InstallScript />
         </div>
 
         {showAll && (
