@@ -3,7 +3,6 @@ name: Release Desktop
 on:
   schedule:
     - cron: "0 6 * * *"
-    - cron: "0 8 * * 1"
   workflow_dispatch:
     inputs:
       channel:
@@ -36,13 +35,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine channel and check for changes
+      - name: Determine channel and check for code changes
         id: config
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             CHANNEL="${{ inputs.channel }}"
-          elif [ "${{ github.event.schedule }}" = "0 8 * * 1" ]; then
-            CHANNEL="dev"
           else
             CHANNEL="canary"
           fi
@@ -54,14 +51,24 @@ jobs:
           fi
 
           TAG="desktop-${CHANNEL}-latest"
+          CODE_PATHS=(
+            "apps/desktop"
+            "packages"
+            "bun.lock"
+            "package.json"
+            "tsconfig.json"
+            "turbo.json"
+            ".github/workflows/release-desktop.yml"
+          )
+
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             LAST_SHA=$(git rev-parse "$TAG")
             HEAD_SHA=$(git rev-parse HEAD)
-            if [ "$LAST_SHA" = "$HEAD_SHA" ]; then
-              echo "No changes since last $CHANNEL build ($TAG -> $LAST_SHA)"
+            if git diff --quiet "$LAST_SHA..$HEAD_SHA" -- "${CODE_PATHS[@]}"; then
+              echo "No code changes since last $CHANNEL build ($TAG -> $LAST_SHA)"
               echo "should_build=false" >> "$GITHUB_OUTPUT"
             else
-              echo "Changes detected: $LAST_SHA -> $HEAD_SHA"
+              echo "Code changes detected: $LAST_SHA -> $HEAD_SHA"
               echo "should_build=true" >> "$GITHUB_OUTPUT"
             fi
           else
