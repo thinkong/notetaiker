@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0](https://github.com/thinkong/notetaiker/compare/v0.3.1...v0.4.0) (2026-05-07)
+
+
+### Features
+
+* add command line installation options to Download section with copy functionality ([cefbc06](https://github.com/thinkong/notetaiker/commit/cefbc06a151ffdcc1d0851b77c70c16fc2e94e35))
+* change workflow ([0675a77](https://github.com/thinkong/notetaiker/commit/0675a77c125fa6bd6764502bb324c3292605cd09))
+* enhance website with new download section, update meta tags, and improve installation scripts ([1748150](https://github.com/thinkong/notetaiker/commit/17481505668f5f8107d427a444156e84ea008853))
+* update README with enhanced app description ([05007ee](https://github.com/thinkong/notetaiker/commit/05007ee8a0b2f2ec5742ed78441312b519adfad1))
+
 ## [0.3.1](https://github.com/thinkong/notetaiker/compare/v0.3.0...v0.3.1) (2026-03-03)
 
 ### Bug Fixes
